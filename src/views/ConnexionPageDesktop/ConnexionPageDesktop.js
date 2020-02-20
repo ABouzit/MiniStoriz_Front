@@ -18,7 +18,7 @@ import Parallax from "components/Parallax/Parallax.js";
 import styles from "assets/jss/material-kit-react/views/landingPage.js";
 
 // Sections for this page
-import NosHistoires from "./Sections/NosHistoires.js";
+import Echanger from "./Sections/Echanger";
 const dashboardRoutes = [];
 
 const useStyles = makeStyles(styles);
@@ -68,7 +68,7 @@ export default function ConnexionPageDesktp(props) {
       </Parallax>
       <div className={classNames(classes.main, classes.mainRaised)}>
         <div className={classes.container}>
-          <NosHistoires />
+          <Echanger />
         </div>
       </div>
       <Footer />
