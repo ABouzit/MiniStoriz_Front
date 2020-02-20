@@ -1,9 +1,11 @@
 import React from "react";
+import PropTypes from "prop-types";
 // react component for creating beautiful carousel
 import Slider from "react-slick";
 // @material-ui/core components
-import { makeStyles, withStyles } from "@material-ui/core/styles";
+import { withStyles } from "@material-ui/core/styles";
 import Rating from "@material-ui/lab/Rating";
+
 // core components
 import GridContainer from "components/Grid/GridContainer.js";
 import GridItem from "components/Grid/GridItem.js";
@@ -31,7 +33,7 @@ import StarBorderIcon from "@material-ui/icons/StarBorder";
 import SimpleBar from "simplebar-react";
 import "simplebar/dist/simplebar.min.css";
 
-export default class NosHistoires extends React.Component {
+class NosHistoires extends React.Component {
   constructor(props) {
     super(props);
     // Don't call this.setState() here!
@@ -55,7 +57,6 @@ export default class NosHistoires extends React.Component {
       ratingText: 0,
       ratingDessin: 0
     };
-    this.classes = makeStyles(styles);
     this.next = this.next.bind(this);
     this.previous = this.previous.bind(this);
   }
@@ -73,9 +74,9 @@ export default class NosHistoires extends React.Component {
   //modal - carousel
   render() {
     const { settings, modal } = this.state;
-    const { classes } = this;
+    const { classes } = this.props;
     return (
-      <div className={this.classes.section}>
+      <div className={classes.section}>
         <Dialog
           classes={{
             root: classes.center,
@@ -437,7 +438,7 @@ export default class NosHistoires extends React.Component {
                   color="primary"
                   style={{ margin: 0 }}
                   onClick={() => {
-                    this.setState({ counter: 1, modal: false });
+                    this.setState({ modal: false });
                     this.gotToIndex(1);
                   }}
                 >
@@ -711,3 +712,7 @@ function SamplePrevArrow(props) {
     </IconButton>
   );
 }
+NosHistoires.propTypes = {
+  classes: PropTypes.object.isRequired
+};
+export default withStyles(styles)(NosHistoires);
