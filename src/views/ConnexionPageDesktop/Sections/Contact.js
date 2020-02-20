@@ -1,28 +1,26 @@
 import React from "react";
+import PropTypes from "prop-types";
 // @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles";
-import Rating from "@material-ui/lab/Rating";
+import { withStyles } from "@material-ui/core/styles";
 // core components
 import GridContainer from "components/Grid/GridContainer.js";
 import GridItem from "components/Grid/GridItem.js";
-import Card from "components/Card/Card.js";
-import CardBody from "components/Card/CardBody.js";
 import Button from "components/CustomButtons/Button.js";
-import ButtonBase from "@material-ui/core/ButtonBase";
 import styles from "assets/jss/material-kit-react/views/landingPageSections/productStyle.js";
-import CustomDropdown from "components/CustomDropdown/CustomDropdown";
 import CustomInput from "components/CustomInput/CustomInput.js";
 import TextField from '@material-ui/core/TextField';
 import Tooltip from "@material-ui/core/Tooltip";
-import Typography from '@material-ui/core/Typography';
 import headerStyle from "assets/jss/material-kit-react/components/headerStyle";
 
-const useStyles = makeStyles(styles);
-const headerStyles = makeStyles(headerStyle);
 
-export default function Contact() {
-  const classes = useStyles();
-  const headerClasse = headerStyles();
+class Contact extends React.Component {
+    constructor(props) {
+        super(props);
+        this.headerClasse = makeStyles(headerStyle);
+    }
+render() {
+    const { classes } = this.props;
   return (
     <div className={classes.section}>
       <GridContainer justify="center">
@@ -99,43 +97,43 @@ export default function Contact() {
                         alignItems="center" 
                         spacing={4}
                      style={{ marginTop: 30 }}>
-          <GridItem xs={4} sm={4} md={4}>
+          <GridItem xs={4} sm={4} md={4} style={{ textAlign: 'center'}}>
             <Tooltip
                 id="instagram-tooltip"
                 title="Follow us on instagram"
                 placement={window.innerWidth > 959 ? "top" : "left"}
-                classes={{ tooltip: headerClasse.tooltip }}
+                classes={{ tooltip: this.headerClasse.tooltip }}
                 >
                 <Button
                     color="transparent"
                     href="https://www.instagram.com/ministoriz/"
                     target="_blank"
-                    className={headerClasse.navLink}
+                    className={this.headerClasse.navLink}
                 >
-                    <i className={headerClasse.socialIcons + " fab fa-instagram"} style={{color: '#000000', fontSize: 35}} />
+                    <i className={this.headerClasse.socialIcons + " fab fa-instagram"} style={{color: '#000000', fontSize: 35}} />
                 </Button>
                 
             </Tooltip>
-            <h4 style={{color: '#000000', fontFamily: 'monospace'}}>Instagram</h4>
+            <h4 alignItems="center" style={{color: '#000000', fontFamily: 'monospace'}}>Instagram</h4>
             <h4 style={{color: "#9c27b0", fontFamily: 'monospace'}}>Ministoriz</h4>
           </GridItem>
-          <GridItem xs={4} sm={4} md={4}>
+          <GridItem xs={4} sm={4} md={4} style={{ textAlign: 'center'}}>
           <Tooltip
                 id="instagram-tooltip"
                 title="Contact us on mail"
                 placement={window.innerWidth > 959 ? "top" : "left"}
-                classes={{ tooltip: headerClasse.tooltip }}
+                classes={{ tooltip: this.headerClasse.tooltip }}
                 >
                 <Button
                     color="transparent"
                     href="mailto:contact@ministoriz.com"
                     target="_blank"
-                    className={headerClasse.navLink}
+                    className={this.headerClasse.navLink}
                 >
-                    <i className={headerClasse.socialIcons + " far fa-envelope"} style={{color: '#000000', fontSize: 35}} />
+                    <i className={this.headerClasse.socialIcons + " far fa-envelope"} style={{color: '#000000', fontSize: 35}} />
                 </Button>
             </Tooltip>
-                <h4 style={{color: '#000000', fontFamily: 'monospace'}}>Mail</h4>
+                <h4 style={{color: '#000000', fontFamily: 'monospace' }}>Mail</h4>
                 <h4 style={{color: "#9c27b0", fontFamily: 'monospace'}}>contact@ministoriz.com</h4>
           </GridItem>
         </GridContainer>
@@ -143,3 +141,8 @@ export default function Contact() {
     </div>
   );
 }
+}
+Contact.propTypes = {
+    classes: PropTypes.object.isRequired
+  };
+  export default withStyles(styles)(Contact);
