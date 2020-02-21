@@ -101,5 +101,6 @@ CustomTabs.propTypes = {
     })
   ),
   rtlActive: PropTypes.bool,
-  plainTabs: PropTypes.bool
+  plainTabs: PropTypes.bool,
+  variant: PropTypes.string
 };
