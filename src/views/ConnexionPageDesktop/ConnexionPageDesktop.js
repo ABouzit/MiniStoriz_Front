@@ -20,6 +20,8 @@ import styles from "assets/jss/material-kit-react/views/landingPage.js";
 // Sections for this page
 import Echanger from "./Sections/Echanger";
 import Contact from "./Sections/Contact";
+import NosHistoires from "./Sections/NosHistoires";
+import Publier from "./Sections/Publier";
 
 const dashboardRoutes = [];
 
@@ -70,7 +72,7 @@ export default function ConnexionPageDesktp(props) {
       </Parallax>
       <div className={classNames(classes.main, classes.mainRaised)}>
         <div className={classes.container}>
-          <Contact />
+          <Publier />
         </div>
       </div>
       <Footer />

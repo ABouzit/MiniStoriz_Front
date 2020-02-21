@@ -20,7 +20,7 @@ class Contact extends React.Component {
         this.headerClasse = makeStyles(headerStyle);
     }
 render() {
-    const { classes } = this.props;
+  const { classes } = this.props;
   return (
     <div className={classes.section}>
       <GridContainer justify="center">
@@ -145,4 +145,4 @@ render() {
 Contact.propTypes = {
     classes: PropTypes.object.isRequired
   };
-  export default withStyles(styles)(Contact);
+export default withStyles(styles)(Contact);
