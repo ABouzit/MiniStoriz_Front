@@ -61,6 +61,7 @@ class NosHistoires extends React.Component {
     this.previous = this.previous.bind(this);
   }
   next() {
+    console.log(this.slider);
     this.slider.slickNext();
   }
   previous() {
