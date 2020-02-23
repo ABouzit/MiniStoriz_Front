@@ -54,7 +54,7 @@ class Echanger extends React.Component {
     this.setState({ selectedIndex: index, typeModal: type, modal: true });
   }
   scrollBottom() {
-        this.SimpleBar.current.getScrollElement().scrollTop = 1000;
+    this.SimpleBar.current.getScrollElement().scrollTop = 1000;
   }
   modalContent() {
     const { classes } = this.props;
@@ -139,7 +139,12 @@ class Echanger extends React.Component {
                 />
                 <p>13 dessins</p>
               </GridItem>
-              <GridItem xs={12} sm={12} md={12} style={{ textAlign: "center",marginLeft:"30px" }}>
+              <GridItem
+                xs={12}
+                sm={12}
+                md={12}
+                style={{ textAlign: "center", marginLeft: "30px" }}
+              >
                 <Button
                   color="primary"
                   style={{ margin: 0 }}
