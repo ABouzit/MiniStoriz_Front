@@ -24,8 +24,7 @@ export default function CustomInput(props) {
     error,
     white,
     inputRootCustomClasses,
-    success,
-    rows
+    success
   } = props;
 
   const labelClasses = classNames({

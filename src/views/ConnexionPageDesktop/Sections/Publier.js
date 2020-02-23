@@ -41,7 +41,10 @@ class Publier extends React.Component {
     this.headerClasse = makeStyles(headerStyle);
     // Don't call this.setState() here!
     this.state = {
+      planche: [{text: '', img: ''}],
       counter: 1,
+      selectedIndex: 0,
+      typeModal: -1,
       modal: false,
       settings: {
         beforeChange: (current, next) => {
@@ -64,7 +67,13 @@ class Publier extends React.Component {
     this.previous = this.previous.bind(this);
   }
   next() {
+    if (this.state.counter == this.state.planche.length) {
+      this.state.planche.push({text: '', img: ''});
+      this.forceUpdate();
+    }
+    
     this.slider.slickNext();
+    console.log(this.state.planche);
   }
   previous() {
     this.slider.slickPrev();
@@ -75,11 +84,17 @@ class Publier extends React.Component {
   }
 
   //modal - carousel
-  render() {
+  handleListItemClick(event, index, type) {
+    
+    this.setState({ selectedIndex: index, typeModal: type, modal: true });
+    this.forceUpdate();
+  }
+  modalContent() {
+ 
     const { settings, modal } = this.state;
     const { classes } = this.props;
+    if (this.state.modal === true && this.state.typeModal === 1) {
     return (
-      <div className={classes.section}>
         <Dialog
           classes={{
             root: classes.center,
@@ -111,7 +126,7 @@ class Publier extends React.Component {
                 fontWeight: "600"
               }}
             >
-              histoire numero 23
+              Texte & Dessins
             </h3>
           </DialogTitle>
           <DialogContent
@@ -122,7 +137,6 @@ class Publier extends React.Component {
             <SampleNextArrow
               onClick={() => this.next()}
               style={Styles.NextArrow}
-              disabled={this.state.counter === 3 ? true : false}
             />
             <Slider
               ref={slider => (this.slider = slider)}
@@ -135,9 +149,12 @@ class Publier extends React.Component {
                 marginRight: 20
               }}
             >
-              <div key={1}>
+             {  this.state.planche.map((planch , index) => {
+              return (
+              
+              <div key={index}>
                 <GridContainer justify="center" alignItems="center">
-                  <GridItem xs={12} sm={12} md={12}>
+                  <GridItem xs={12} sm={12} md={10}>
                     <h5
                       style={{
                         textAlign: "center",
@@ -145,7 +162,7 @@ class Publier extends React.Component {
                         fontWeight: "400"
                       }}
                     >
-                      cree par houssam et houssa
+                      Planche {index}
                     </h5>
                   </GridItem>
                 </GridContainer>
@@ -155,268 +172,30 @@ class Publier extends React.Component {
                   alignItems="center"
                 >
                   <GridItem
-                    xs={7}
-                    sm={7}
-                    md={7}
-                    justify="center"
-                    alignItems="center"
-                    style={{ paddingRight: "20px" }}
-                  >
-                    {" "}
-                    <SimpleBar style={{ maxHeight: "365px" }}>
-                      <h5
-                        style={{
-                          color: "black",
-                          width: "100%",
-                          maxHeight: "365px",
-                          margin: "0px",
-                          paddingLeft: "10px",
-                          paddingRight: "10px",
-                          fontSize: "16px"
-                        }}
-                      >
-                        <LocationOn className="slick-icons" />
-                        Yellowstone National Park, United Statesjhvjh vjhvjhvjh
-                        vjhvj hvjhvj hvjhvjhv j hvjhvjhvj hvjhvjhvjh vjhvjhvh
-                        jvjhvhjv jhvhjvhj vhjvhjv jhvhjvjhvj hvhjv hgchgch gcSta
-                        tesjhvjh vjhvjhvjh vjhvjhvjhvjh vjhvjhvj hvjhvjhv
-                        jhvjhvjh vjhvjhvjhv hjvjhv hjvjh vhjvhjv hjvhjvjhvh
-                        jvjhvjh vhjv Statesj hvjhvjhv jhvjhvjh vjhvjhvjh
-                        vjhvjhvjhv jhvjhvjhvj hvjhvjhvj hvjhvhjvjhvhjv jhvhjvh
-                        jvhjvhjvj hvhjvjhvjhv hjv Statesj hvjhvjhv jhvjhvjh
-                        vjhvjhvjh vjhvjh vjhvjhv jhvjhvjhvj hvjhvjhvjhv
-                        hjvjhvhjvjh vhjvhjvhj vhjvjhvhjv jhvjhvhjv Yellows tone
-                        National Park, United Statesj hvjhvjhv jhvjhvjhv jhvjhvj
-                        hvjhvjhvj hvjhvjhvjhvj hvjhvjhvj hvjhvhjvjh vhjvjh
-                        vhjvhjvhjv hjvjhv hjvjhv jhvhjv hgchgch gcStatesjhvj
-                        hvjhvjhvjhv jhvjhvjhv jhvjhvjhvj hvjhvjhvj
-                        hvjhvjhvjhvjhvjhv hjvjhvhj vjhvhjv hjvhjvh jvjhvhj
-                        vjhvjhvhjv Statesj hvjhvjhvjhvj hvjhvjhvj hvjhvjhv
-                        jhvjhvjhvj hvjhvjhvjhv jhvjhvjhvhj vjhvhjvjhvhjvhjvhj
-                        vhjvjhvhjvj hvjhvhjv Statesj hvjhvjhvjhv jhvjhvjhv
-                        jhvjhvjhv jhvjhvjhvj hvjhvjhvjh vjhvjhvjh vhjvjhvhj
-                        vjhvhjvh jvhjvhjvjh vhjvjhvjhv hjv Yellows tone National
-                        Park, United Statesj hvjhvjhvjhv jhvjhvjhvjh vjhvjhvj
-                        hvjhvjhvj hvjhvjhvj hvjhvjhvjh vhjvjhvh jvjhvhjvhjv
-                        hjvhjvjhvh jvjhvjhvhjv hgchgch gcStatesjhvj h vjhvjhvj
-                        hvjhvjhvj hvjhvjhvj hvjhvjhvjh vjhvjhvjh vjhvjhvjh
-                        vhjvjhvhj vjhvhjvhjv hjvhjvjhvh jvjhvjh vhjv Statesj
-                        hvjhvjhvjhvj hvjh vjhvjhv jhvjhvjhv jhvjhvjhv jhvjhvjhv
-                        jhvjhvjhvh jvjhvhjvj hvhjvhjv hjvhjvjhv hjvjhvj hvhjv
-                        Statesj hvjhvjhvjhvjhvjhvj hvjhvjhvjhv jhvjhvjhvjhvjhv j
-                        hvjhvhjvjh vhjvjhvh jvhjvhjv hjvjhvhj vjhvjh vhjv
-                        Yellows tone National Park, United Statesj
-                        hvjhvjhvjhvjhv jhvjhvjhvjh vjhvjhvjh vjhvjhvjhvjh
-                        vjhvjhvjh vjhvhjvjhvhjvj hvhjvhjvhjvhj vjhvhjvjh vjhvhjv
-                        hgchgchgcState sjhvjhvjhv jhvjhv jhvjhvjhvjhvjhvj hvjhv
-                        jhvjhvjhvjhvjh vjhvjhvjhvhjvj hvhjvjhv hjvhjvh jvhjvjhvh
-                        jvjhvjhvhjv Stat esjhvjhvjhvjhvjhv jhvjhvjhvjh
-                        vjhvjhvjhvjh vjhvjhvjhvjh vjhvjhvjhvhj vjhvhjvjh
-                        vhjvhjvhjv hjvjhvhjvj hvjhvhjv Statesjhvjhv jhvjhvjhvjh
-                        vjhvjhvjhvjhvjhvj hvjhvjhvjhvj hvjhvjhvjhvjhv
-                        hjvjhvhjvjhvhj vhjvhjvh jvjhvhjv jhvjhvhjv Yellowstone
-                        National Park, United Statesj hvjhvjhvjhvjhv
-                        jhvjhvjhvjhvjhvjhvjhvjhvj hvjhvjhvjhvj hvjhvj hvhjvj
-                        hvhjvjhvhjvhj vhjvhjvj hvhjvjh vjhvhjv hgchgchgc
-                        Statesjh vjhvjhvj hvjhvjh vjhvj hvjhvjhvjhvjh
-                        vjhvjhvjhvjhvjhv jhvjhvjh vhjvjhvhjvj hvhjvhjvh
-                        jvhjvjhvhjvjhv jhvhjv Statesjhvjh vjhvj hvjhv jhvjhv
-                        jhvjhvjhvjhvj hvjhvjhv jhvjhvjh vjhvjhvjhv hjvjhvh
-                        jvjhvhjv hjvhj vhjvj hvhjvjhv jhvhjv Statesjhv jhvj
-                        hvjhvj hvjhvjh vjhvjhvjhv jhvjhvjhv jhvjhvjhvjh vjhvjhv
-                        jhvhjvjhvhjv jhvhjvhjv hjvhjv jhvhjvj hvjhvhjv
-                      </h5>
-                    </SimpleBar>
-                  </GridItem>
-                  <GridItem
-                    xs={5}
-                    sm={5}
-                    md={5}
-                    justify="center"
-                    alignItems="center"
-                  >
-                    <img
-                      src={require("assets/img/landing-bg.jpg")}
-                      alt="First slide"
-                      className="slick-image"
-                      style={{
-                        alignSelf: "center",
-                        maxHeight: "365px",
-                        height: "auto",
-                        maxWidth: "auto",
-                        paddingRight: "10px"
-                      }}
-                    />
-                  </GridItem>
-                </GridContainer>
-              </div>
-              <div key={2}>
-                <GridContainer justify="center" alignItems="center">
-                  <GridItem xs={12} sm={12} md={12}>
-                    <h5
-                      style={{
-                        textAlign: "center",
-                        fontSize: "17px",
-                        fontWeight: "400"
-                      }}
-                    >
-                      cree par houssam et houssa
-                    </h5>
-                  </GridItem>
-                </GridContainer>
-                <GridContainer
-                  style={{ height: "365px" }}
-                  justify="center"
-                  alignItems="center"
-                >
-                  <GridItem
-                    xs={7}
-                    sm={7}
-                    md={7}
-                    justify="center"
-                    alignItems="center"
-                    style={{ paddingRight: "20px" }}
-                  >
-                    <SimpleBar style={{ maxHeight: "365px" }}>
-                      <h5
-                        style={{
-                          color: "black",
-                          width: "100%",
-                          maxHeight: "365px",
-                          overflowY: "auto",
-                          margin: "0px",
-                          paddingLeft: "10px",
-                          paddingRight: "10px",
-                          fontSize: "16px"
-                        }}
-                      >
-                        <LocationOn className="slick-icons" />
-                        Yellowstone National Park, United Statesjhvjh vjhvjhvjh
-                        vjhvj hvjhvj hvjhvjhv j hvjhvjhvj hvjhvjhvjh vjhvjhvh
-                        jvjhvhjv jhvhjvhj vhjvhjv jhvhjvjhvj hvhjv hgchgch gcSta
-                        tesjhvjh vjhvjhvjh vjhvjhvjhvjh vjhvjhvj hvjhvjhv
-                        jhvjhvjh vjhvjhvjhv hjvjhv hjvjh vhjvhjv hjvhjvjhvh
-                        jvjhvjh vhjv Statesj hvjhvjhv jhvjhvjh vjhvjhvjh
-                        vjhvjhvjhv jhvjhvjhvj hvjhvjhvj hvjhvhjvjhvhjv jhvhjvh
-                        jvhjvhjvj hvhjvjhvjhv hjv Statesj hvjhvjhv jhvjhvjh
-                        vjhvjhvjh vjhvjh vjhvjhv
-                      </h5>
-                    </SimpleBar>
-                  </GridItem>
-                  <GridItem
-                    xs={5}
-                    sm={5}
-                    md={5}
-                    justify="center"
-                    alignItems="center"
-                  >
-                    <img
-                      src={require("assets/img/examples/clem-onojegaw.jpg")}
-                      alt="First slide"
-                      className="slick-image"
-                      style={{
-                        alignSelf: "center",
-                        maxHeight: "365px",
-                        height: "auto",
-                        width: "auto",
-                        paddingRight: "10px"
-                      }}
-                    />
-                  </GridItem>
-                </GridContainer>
-              </div>
-              <div key={3}>
-                <GridContainer>
-                  <GridItem
                     xs={12}
                     sm={12}
                     md={12}
                     justify="center"
                     alignItems="center"
-                    style={{ marginTop: "40px" }}
-                  >
-                    <p
-                      style={{
-                        fontSize: 16,
-                        fontWeight: 400,
-                        textAlign: "center"
-                      }}
-                    >
-                      L’histoire est terminée. Encourage les auteurs en leur
-                      attribuant une note !
-                    </p>
-                  </GridItem>
-
-                  <GridItem
-                    xs={6}
-                    sm={6}
-                    md={6}
-                    style={{ textAlign: "center", marginTop: "20px" }}
-                  >
-                    <GridContainer>
-                      <GridItem xs={2} sm={2} md={2}></GridItem>
-                      <GridItem xs={3} sm={3} md={3}>
-                        <p>Text :</p>
-                      </GridItem>
-                      <GridItem xs={5} sm={5} md={5}>
-                        <StyledRating
-                          style={{ fontSize: "20px" }}
-                          name="rating-Text"
-                          value={this.state.ratingText}
-                          emptyIcon={<StarBorderIcon fontSize="24px" />}
-                          onChange={(event, newValue1) => {
-                            this.setState({ ratingText: newValue1 });
-                          }}
-                        />
-                      </GridItem>
-                      <GridItem xs={1} sm={1} md={1}></GridItem>
-                    </GridContainer>
-                  </GridItem>
-                  <GridItem
-                    xs={6}
-                    sm={6}
-                    md={6}
-                    style={{ textAlign: "center", marginTop: "20px" }}
-                  >
-                    <GridContainer>
-                      <GridItem xs={2} sm={2} md={2}></GridItem>
-                      <GridItem xs={3} sm={3} md={3}>
-                        <p>Dessins :</p>
-                      </GridItem>
-                      <GridItem xs={5} sm={5} md={5}>
-                        <StyledRating
-                          name="simple-controlled"
-                          value={this.state.ratingDessin}
-                          emptyIcon={<StarBorderIcon fontSize="24px" />}
-                          size="large"
-                          onChange={(event, newValue) => {
-                            this.setState({ ratingDessin: newValue });
-                          }}
-                        />
-                      </GridItem>
-                      <GridItem xs={1} sm={1} md={1}></GridItem>
-                    </GridContainer>
-                  </GridItem>
-                  <GridItem
-                    xs={12}
-                    sm={12}
-                    md={12}
-                    justify="center"
-                    alignItems="center"
+                    style={{ paddingRight: "20px", paddingRight: "10px" }}
                   >
                     <TextField
                       id="standard-multiline-static"
-                      placeholder="Laissez un commentaire(facultatif)"
-                      label="commentaire"
+                      placeholder="Ecrire votre text"
+                      label="Text"
                       multiline
                       rows="9"
-                      value={this.state.commentaire}
                       style={{ width: "100%" }}
-                      autoFocus={this.state.counter !== 3 ? false : true}
                     />
+                    
                   </GridItem>
+                  
                 </GridContainer>
               </div>
+               );
+              })
+            }
+              
             </Slider>
             <SamplePrevArrow
               onClick={() => this.previous()}
@@ -434,9 +213,6 @@ class Publier extends React.Component {
                 fontWeight: "400"
               }}
             >
-              {this.state.counter !== 3 ? (
-                this.state.counter
-              ) : (
                 <Button
                   color="primary"
                   style={{ margin: 0 }}
@@ -445,12 +221,20 @@ class Publier extends React.Component {
                     this.gotToIndex(1);
                   }}
                 >
-                  Terminée
+                  Valider
                 </Button>
-              )}
             </h3>
           </MuiDialogActions>
         </Dialog>
+        );
+        }
+        }
+      render() {
+        const { classes } = this.props;
+        const { selectedIndex } = this.state;
+        return (
+          <div className={classes.section}>
+            {this.modalContent()}
         <GridContainer justify="center">
           <GridItem xs={12} sm={12} md={8}>
             <h2 className={classes.title}>PUBLIER</h2>
@@ -480,7 +264,10 @@ class Publier extends React.Component {
                 style={{
                   width: "20rem"
                 }}
-                onClick={() => this.setState({ modal: true })}
+                selected={selectedIndex === 1}
+                onClick={event =>
+                  this.handleListItemClick(event, 1, 1)
+                }
               >
                 <Card style={{ width: "20rem" }}>
                   <h4 className={classes.cardTitle} style={{ fontWeight: "bold", fontFamily: "monospace"}} >Ecrire & illustrer</h4>

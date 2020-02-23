@@ -14,6 +14,19 @@ const productStyle = {
   },
   description: {
     color: "#999"
+  },
+  card: {
+    minHeight: "100px",
+    maxHeight: "100px",
+    width: "100%"
+  },
+  messageTab: {
+    display: "-webkit-box",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    WebkitLineClamp: 3,
+    WebkitBoxOrient: "vertical",
+    height: "60px"
   }
 };
 
