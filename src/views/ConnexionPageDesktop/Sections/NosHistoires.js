@@ -34,10 +34,10 @@ import "simplebar/dist/simplebar.min.css";
 import Axios from "axios";
 import config from "config/config";
 import { Input } from "@material-ui/core";
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select'
-import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from "@material-ui/core/MenuItem";
+import FormControl from "@material-ui/core/FormControl";
+import Select from "@material-ui/core/Select";
+import InputLabel from "@material-ui/core/InputLabel";
 
 class NosHistoires extends React.Component {
   constructor(props) {
@@ -45,7 +45,7 @@ class NosHistoires extends React.Component {
     // Don't call this.setState() here!
     this.state = {
       counter: 1,
-      selectedFiltre: '',
+      selectedFiltre: "",
       modal: false,
       settings: {
         beforeChange: (current, next) => {
@@ -80,63 +80,56 @@ class NosHistoires extends React.Component {
     });
   }
 
-  handleChange = (e) => {
+  handleChange = e => {
     this.setState({ selectedFiltre: e.target.value });
     console.log(this.state.selectedFiltre);
-  }
+  };
 
   handleCheck(e) {
     if (e.currentTarget.dataset.id == 1) {
       Axios.get(config.API_URL + "histoires/nbrvue", {}).then(res => {
         this.setState({ histoires: res.data });
         this.forceUpdate();
-        console.log(this.state.histoires)
+        console.log(this.state.histoires);
       });
-      
-    }else if(e.currentTarget.dataset.id == 2){
+    } else if (e.currentTarget.dataset.id == 2) {
       Axios.get(config.API_URL + "histoires/populaire", {}).then(res => {
         this.setState({ histoires: res.data });
         this.forceUpdate();
       });
-    }else if(e.currentTarget.dataset.id == 3){
+    } else if (e.currentTarget.dataset.id == 3) {
       Axios.get(config.API_URL + "histoires/plusrecent", {}).then(res => {
         this.setState({ histoires: res.data });
         this.forceUpdate();
       });
-    }else if(e.currentTarget.dataset.id == 4){
+    } else if (e.currentTarget.dataset.id == 4) {
       Axios.get(config.API_URL + "histoires/plusancient", {}).then(res => {
         this.setState({ histoires: res.data });
         this.forceUpdate();
       });
     }
-   
- }
+  }
 
   fetchPlanche(histoire) {
     Axios.get(config.API_URL + "planches/histoire/" + histoire.id, {}).then(
       res => {
         this.setState({ planches: res.data });
-        histoire.nombreVue= histoire.nombreVue + 1;
+        histoire.nombreVue = histoire.nombreVue + 1;
         console.log(histoire);
-        Axios.put(config.API_URL + "histoires/", histoire).then(
-            res => {
-              this.forceUpdate();
-            }
-        );
+        Axios.put(config.API_URL + "histoires/", histoire).then(res => {
+          this.forceUpdate();
+        });
       }
     );
-    
   }
-
-
 
   seeAllHistoire() {
     console.log("URL api" + config.API_URL);
     Axios.get(config.API_URL + "histoires/", {}).then(res => {
       this.setState({ histoires: res.data });
     });
-    const listmenu = document.getElementById('buttonSeeAll');
-    listmenu.style.display = 'none';
+    const listmenu = document.getElementById("buttonSeeAll");
+    listmenu.style.display = "none";
     this.forceUpdate();
   }
   next() {
@@ -184,6 +177,7 @@ class NosHistoires extends React.Component {
             maxWidth={"md"}
             fullWidth={true}
             scroll="paper"
+            style={{ backgroundColor: "#e3f3fd" }}
           >
             <DialogTitle
               id="customized-dialog-title"
@@ -191,10 +185,15 @@ class NosHistoires extends React.Component {
                 this.setState({ modal: false });
                 this.gotToIndex(1);
               }}
-              style={{ paddingBottom: "0px" }}
+              style={{
+                paddingBottom: "0px",
+                backgroundColor: "#e3f3fd",
+                color: "#332861"
+              }}
             >
               <h3
                 style={{
+                  color: "#332861",
                   textAlign: "center",
                   marginTop: "0px",
                   marginBottom: "0px",
@@ -207,7 +206,7 @@ class NosHistoires extends React.Component {
             <DialogContent
               id="modal-slide-description"
               className={classes.modalBody}
-              style={{ padding: 0 }}
+              style={{ padding: 0, backgroundColor: "#e3f3fd" }}
             >
               <SampleNextArrow
                 onClick={() => this.next()}
@@ -240,7 +239,8 @@ class NosHistoires extends React.Component {
                                 style={{
                                   textAlign: "center",
                                   fontSize: "17px",
-                                  fontWeight: "400"
+                                  fontWeight: "400",
+                                  color: "#332861"
                                 }}
                               >
                                 Texts par
@@ -260,43 +260,47 @@ class NosHistoires extends React.Component {
                               </h5>
                             </GridItem>
                           </GridContainer>
-                           {planche.text === "" ? (
-                             <GridContainer
-                                style={{ height: "365px" }}
-                                justify="center"
-                                alignItems="center"
-                              >
-                             <GridItem
+                          {planche.text === "" ? (
+                            <GridContainer
+                              style={{ height: "365px" }}
+                              justify="center"
+                              alignItems="center"
+                            >
+                              <GridItem
                                 xs={12}
                                 sm={12}
                                 md={12}
                                 justify="center"
                                 alignItems="center"
                               >
-                                <div style={{height: "365px",
-                                      width: "100%",
-                                      textAlign: "center",
-                                      display: "block"}}>
-                                <img
-                                  src={config.API_URL+planche.lienDessin}
-                                  alt="First slide"
+                                <div
                                   style={{
                                     height: "365px",
-                                    marginLeft: "auto",
-                                    marginRight: "auto",
+                                    width: "100%",
+                                    textAlign: "center",
                                     display: "block"
                                   }}
-                                />
+                                >
+                                  <img
+                                    src={config.API_URL + planche.lienDessin}
+                                    alt="First slide"
+                                    style={{
+                                      height: "365px",
+                                      marginLeft: "auto",
+                                      marginRight: "auto",
+                                      display: "block"
+                                    }}
+                                  />
                                 </div>
                               </GridItem>
                             </GridContainer>
-                           ) : planche.lienDessin === "" ? (
+                          ) : planche.lienDessin === "" ? (
                             <GridContainer
-                                style={{ height: "365px" }}
-                                justify="center"
-                                alignItems="center"
-                              >
-                            <GridItem
+                              style={{ height: "365px" }}
+                              justify="center"
+                              alignItems="center"
+                            >
+                              <GridItem
                                 xs={12}
                                 sm={12}
                                 md={12}
@@ -308,7 +312,7 @@ class NosHistoires extends React.Component {
                                 <SimpleBar style={{ maxHeight: "365px" }}>
                                   <h5
                                     style={{
-                                      color: "black",
+                                      color: "#332861",
                                       width: "100%",
                                       maxHeight: "365px",
                                       margin: "0px",
@@ -322,59 +326,59 @@ class NosHistoires extends React.Component {
                                 </SimpleBar>
                               </GridItem>
                             </GridContainer>
-                           ) : (
+                          ) : (
                             <GridContainer
-                                style={{ height: "365px" }}
+                              style={{ height: "365px" }}
+                              justify="center"
+                              alignItems="center"
+                            >
+                              <GridItem
+                                xs={7}
+                                sm={7}
+                                md={7}
+                                justify="center"
+                                alignItems="center"
+                                style={{ paddingRight: "20px" }}
+                              >
+                                {" "}
+                                <SimpleBar style={{ maxHeight: "365px" }}>
+                                  <h5
+                                    style={{
+                                      color: "#332861",
+                                      width: "100%",
+                                      maxHeight: "365px",
+                                      margin: "0px",
+                                      paddingLeft: "10px",
+                                      paddingRight: "10px",
+                                      fontSize: "16px"
+                                    }}
+                                  >
+                                    {planche.text}
+                                  </h5>
+                                </SimpleBar>
+                              </GridItem>
+                              <GridItem
+                                xs={5}
+                                sm={5}
+                                md={5}
                                 justify="center"
                                 alignItems="center"
                               >
-                                <GridItem
-                                  xs={7}
-                                  sm={7}
-                                  md={7}
-                                  justify="center"
-                                  alignItems="center"
-                                  style={{ paddingRight: "20px" }}
-                                >
-                                  {" "}
-                                  <SimpleBar style={{ maxHeight: "365px" }}>
-                                    <h5
-                                      style={{
-                                        color: "black",
-                                        width: "100%",
-                                        maxHeight: "365px",
-                                        margin: "0px",
-                                        paddingLeft: "10px",
-                                        paddingRight: "10px",
-                                        fontSize: "16px"
-                                      }}
-                                    >
-                                      {planche.text}
-                                    </h5>
-                                  </SimpleBar>
-                                </GridItem>
-                                <GridItem
-                                  xs={5}
-                                  sm={5}
-                                  md={5}
-                                  justify="center"
-                                  alignItems="center"
-                                >
-                                  <img
-                                    src={config.API_URL+planche.lienDessin}
-                                    alt="First slide"
-                                    className="slick-image"
-                                    style={{
-                                      alignSelf: "center",
-                                      maxHeight: "365px",
-                                      height: "auto",
-                                      maxWidth: "auto",
-                                      paddingRight: "10px"
-                                    }}
-                                  />
-                                </GridItem>
-                            </GridContainer>) } 
-                            
+                                <img
+                                  src={config.API_URL + planche.lienDessin}
+                                  alt="First slide"
+                                  className="slick-image"
+                                  style={{
+                                    alignSelf: "center",
+                                    maxHeight: "365px",
+                                    height: "auto",
+                                    maxWidth: "auto",
+                                    paddingRight: "10px"
+                                  }}
+                                />
+                              </GridItem>
+                            </GridContainer>
+                          )}
                         </div>
                       );
                     })
@@ -387,7 +391,7 @@ class NosHistoires extends React.Component {
                       );
                     }}
                 <div key={this.state.planches.length + 1}>
-                  <GridContainer>
+                  <GridContainer style={{ height: "411px" }}>
                     <GridItem
                       xs={12}
                       sm={12}
@@ -400,7 +404,8 @@ class NosHistoires extends React.Component {
                         style={{
                           fontSize: 16,
                           fontWeight: 400,
-                          textAlign: "center"
+                          textAlign: "center",
+                          color: "#332861"
                         }}
                       >
                         L’histoire est terminée. Encourage les auteurs en leur
@@ -417,7 +422,7 @@ class NosHistoires extends React.Component {
                       <GridContainer>
                         <GridItem xs={2} sm={2} md={2}></GridItem>
                         <GridItem xs={3} sm={3} md={3}>
-                          <p>Text :</p>
+                          <p style={{ color: "#332861" }}>Text :</p>
                         </GridItem>
                         <GridItem xs={5} sm={5} md={5}>
                           <StyledRating
@@ -442,7 +447,7 @@ class NosHistoires extends React.Component {
                       <GridContainer>
                         <GridItem xs={2} sm={2} md={2}></GridItem>
                         <GridItem xs={3} sm={3} md={3}>
-                          <p>Dessins :</p>
+                          <p style={{ color: "#332861" }}>Dessins :</p>
                         </GridItem>
                         <GridItem xs={5} sm={5} md={5}>
                           <StyledRating
@@ -487,28 +492,31 @@ class NosHistoires extends React.Component {
                     </GridItem>
                   </GridContainer>
                 </div>
+                <div key={this.state.planches.length + 2}></div>
               </Slider>
               <SamplePrevArrow
                 onClick={() => this.previous()}
                 disabled={this.state.counter === 1 ? true : false}
               />
             </DialogContent>
-            <MuiDialogActions>
+            <MuiDialogActions style={{ padding: 0 }}>
               <h3
                 style={{
-                  height: "41px",
+                  height: "49px",
                   textAlign: "center",
                   marginTop: "0px",
                   marginBottom: "0px",
                   width: "100%",
-                  fontWeight: "400"
+                  fontWeight: "400",
+                  backgroundColor: "#e3f3fd",
+                  color: "#332861"
                 }}
               >
                 {this.state.counter !== this.state.planches.length + 1 ? (
                   this.state.counter
                 ) : (
                   <Button
-                    color="primary"
+                    color="white"
                     style={{ margin: 0 }}
                     onClick={() => {
                       this.setState({ modal: false });
@@ -524,7 +532,9 @@ class NosHistoires extends React.Component {
           </Dialog>
           <GridContainer justify="center">
             <GridItem xs={12} sm={12} md={8}>
-              <h2 className={classes.title}>NOS HISTOIRES {this.state.selectedFiltre} </h2>
+              <h2 className={classes.title}>
+                NOS HISTOIRES {this.state.selectedFiltre}{" "}
+              </h2>
             </GridItem>
           </GridContainer>
           <GridContainer justify="flex-end">
@@ -532,18 +542,25 @@ class NosHistoires extends React.Component {
               <CustomDropdown
                 buttonProps={{
                   round: true,
-                  color: "primary"
+                  color: "white"
                 }}
                 buttonText="Filtre"
                 value={this.state.selectedFiltre}
                 onChange={this.handleChange}
                 dropdownList={[
-                  <li onClick={this.handleCheck.bind(this)} data-id="1"><span>Les plus lues</span></li>,
-                  <li onClick={this.handleCheck.bind(this)} data-id="2"><span>Les plus populaires</span></li>,
-                  <li onClick={this.handleCheck.bind(this)} data-id="3"><span>Les plus recentes</span></li>,
-                  <li onClick={this.handleCheck.bind(this)} data-id="4"><span>Les plus anciennes</span></li>
+                  <li onClick={this.handleCheck.bind(this)} data-id="1">
+                    <span>Les plus lues</span>
+                  </li>,
+                  <li onClick={this.handleCheck.bind(this)} data-id="2">
+                    <span>Les plus populaires</span>
+                  </li>,
+                  <li onClick={this.handleCheck.bind(this)} data-id="3">
+                    <span>Les plus recentes</span>
+                  </li>,
+                  <li onClick={this.handleCheck.bind(this)} data-id="4">
+                    <span>Les plus anciennes</span>
+                  </li>
                 ]}
-                
               />
             </GridItem>
           </GridContainer>
@@ -574,18 +591,31 @@ class NosHistoires extends React.Component {
                         this.fetchPlanche(histoire);
                       }}
                     >
-                      <Card style={{ width: "20rem" }}>
-                        <h4 className={classes.cardTitle}
-                            style={{
-                              fontFamily: "monospace",
-                              fontWeight: "bold"
-                            }}>
+                      <Card
+                        style={{ width: "20rem", backgroundColor: "#e3f3fd" }}
+                      >
+                        <h4
+                          className={classes.cardTitle}
+                          style={{
+                            fontFamily: "monospace",
+                            fontWeight: "bold",
+                            backgroundColor: "#594f76",
+                            color: "white",
+                            paddingTop: "10px",
+                            paddingBottom: "10px",
+                            margin: 0
+                          }}
+                        >
                           {histoire.titreHistoire}
                         </h4>
-                        <div style={{height: "240px",
-                              width: "100%",
-                              textAlign: "center",
-                              display: "block"}}>
+                        <div
+                          style={{
+                            height: "240px",
+                            width: "100%",
+                            textAlign: "center",
+                            display: "block"
+                          }}
+                        >
                           <img
                             style={{
                               height: "240px",
@@ -594,12 +624,26 @@ class NosHistoires extends React.Component {
                               display: "block"
                             }}
                             className={classes.imgCardTop}
-                            src={histoire.lienIllustration !== null ? config.API_URL+histoire.lienIllustration: ""}
+                            src={
+                              histoire.lienIllustration !== null
+                                ? config.API_URL + histoire.lienIllustration
+                                : ""
+                            }
                             alt={histoire.titreHistoire}
                           />
                         </div>
-                        
-                        <h5>
+
+                        <h5
+                          style={{
+                            fontFamily: "monospace",
+                            fontWeight: "bold",
+                            backgroundColor: "#594f76",
+                            color: "white",
+                            paddingTop: "10px",
+                            paddingBottom: "10px",
+                            margin: 0
+                          }}
+                        >
                           {histoire.nombreVue ? histoire.nombreVue : 0} vues - 3
                           jours
                         </h5>
@@ -648,14 +692,14 @@ class NosHistoires extends React.Component {
             </GridContainer>
           </div>
           <GridContainer justify="flex-end">
-            <GridItem xs={4} sm={4} md={4} >
-            <Button 
-                    color="primary"
-                    id="buttonSeeAll"
-                    onClick={() => this.seeAllHistoire()}
-                    >
-                      Toutes les histoires
-            </Button>
+            <GridItem xs={4} sm={4} md={4}>
+              <Button
+                color="white"
+                id="buttonSeeAll"
+                onClick={() => this.seeAllHistoire()}
+              >
+                Toutes les histoires
+              </Button>
             </GridItem>
           </GridContainer>
         </div>
@@ -725,7 +769,10 @@ function SampleNextArrow(props) {
       disabled={disabled}
     >
       <div className={className} style={{ height: "50px", width: "50px" }}>
-        <ArrowRightOutlined color="green" style={{ fontSize: "50px" }} />
+        <ArrowRightOutlined
+          color="green"
+          style={{ color: "#332861", fontSize: "50px" }}
+        />
       </div>
     </IconButton>
   );
@@ -748,7 +795,7 @@ function SamplePrevArrow(props) {
       disabled={disabled}
     >
       <div className={className} style={{ height: "50px", width: "50px" }}>
-        <ArrowLeftOutlined style={{ fontSize: "50px" }} />
+        <ArrowLeftOutlined style={{ fontSize: "50px", color: "#332861" }} />
       </div>
     </IconButton>
   );

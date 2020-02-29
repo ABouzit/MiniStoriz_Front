@@ -36,14 +36,16 @@ export default function ConnexionPageDesktp(props) {
         color="transparent"
         routes={dashboardRoutes}
         // brand="Mateeeerial Kit React"
-        leftLinks={<img
-          src={config.API_URL+"images/asset/logo.png"}
-          alt="Logo"
-          style={{
-            display: "block",
-            width: '146px'
-          }}
-        />}
+        leftLinks={
+          <img
+            src={config.API_URL + "images/asset/logo.png"}
+            alt="Logo"
+            style={{
+              display: "block",
+              width: "146px"
+            }}
+          />
+        }
         rightLinks={<HeaderLinks />}
         fixed
         changeColorOnScroll={{
@@ -52,16 +54,13 @@ export default function ConnexionPageDesktp(props) {
         }}
         {...rest}
       />
-      <Parallax filter image={require("assets/img/landing-bg.jpg")}>
+      <Parallax filter image={config.API_URL + "images/asset/bg1.jpg"}>
         <div className={classes.container}>
           <GridContainer>
             <GridItem xs={12} sm={12} md={6}>
-              <h1 className={classes.title}>Your Story Starts With Us.</h1>
+              <h1 className={classes.title}>Ecris ton histoire !</h1>
               <h4>
-                Every landing page needs a small description after the big bold
-                title, that{"'"}s why we added this text here. Add here all the
-                information that can make you or your product create the first
-                impression.
+                Ministoriz est un site collaboratif permettant q nos membres (les mini-artostes), passionnes d'ecriture ou de dessin, de publier des histoires et de ravir nos lecteurs!
               </h4>
               <br />
               <Button
@@ -72,7 +71,7 @@ export default function ConnexionPageDesktp(props) {
                 rel="noopener noreferrer"
               >
                 <i className="fas fa-play" />
-                Watch video
+                Regarder la video
               </Button>
             </GridItem>
           </GridContainer>
@@ -82,8 +81,12 @@ export default function ConnexionPageDesktp(props) {
         <div className={classes.container}>
           <NosHistoires />
         </div>
-      </div><br></br>
-      <div className={classNames(classes.main, classes.mainRaised)} style={{marginTop: 20}}>
+      </div>
+      <br></br>
+      <div
+        className={classNames(classes.main, classes.mainRaised)}
+        style={{ marginTop: 20 }}
+      >
         <div className={classes.container}>
           <Publier />
         </div>
