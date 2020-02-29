@@ -14,7 +14,7 @@ import GridItem from "components/Grid/GridItem.js";
 import Button from "components/CustomButtons/Button.js";
 import HeaderLinks from "components/Header/HeaderLinks.js";
 import Parallax from "components/Parallax/Parallax.js";
-
+import config from "config/config";
 import styles from "assets/jss/material-kit-react/views/landingPage.js";
 
 // Sections for this page
@@ -35,12 +35,20 @@ export default function ConnexionPageDesktp(props) {
       <Header
         color="transparent"
         routes={dashboardRoutes}
-        brand="Mateeeerial Kit React"
+        // brand="Mateeeerial Kit React"
+        leftLinks={<img
+          src={config.API_URL+"images/asset/logo.png"}
+          alt="Logo"
+          style={{
+            display: "block",
+            width: '146px'
+          }}
+        />}
         rightLinks={<HeaderLinks />}
         fixed
         changeColorOnScroll={{
           height: 400,
-          color: "white"
+          color: "info"
         }}
         {...rest}
       />
@@ -71,6 +79,11 @@ export default function ConnexionPageDesktp(props) {
         </div>
       </Parallax>
       <div className={classNames(classes.main, classes.mainRaised)}>
+        <div className={classes.container}>
+          <NosHistoires />
+        </div>
+      </div><br></br>
+      <div className={classNames(classes.main, classes.mainRaised)} style={{marginTop: 20}}>
         <div className={classes.container}>
           <Publier />
         </div>

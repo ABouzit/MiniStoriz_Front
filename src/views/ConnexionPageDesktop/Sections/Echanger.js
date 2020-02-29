@@ -1,6 +1,5 @@
 import React from "react";
 import PropTypes from "prop-types";
-import "simplebar/dist/simplebar.min.css";
 // @material-ui/core components
 import { withStyles } from "@material-ui/core/styles";
 import styles from "assets/jss/material-kit-react/views/landingPageSections/productStyle.js";
@@ -47,9 +46,15 @@ class Echanger extends React.Component {
       typeModal: -1,
       modal: false
     };
+    this.SimpleBar = React.createRef();
+
+    this.scrollBottom = this.scrollBottom.bind(this);
   }
   handleListItemClick(event, index, type) {
     this.setState({ selectedIndex: index, typeModal: type, modal: true });
+  }
+  scrollBottom() {
+    this.SimpleBar.current.getScrollElement().scrollTop = 1000;
   }
   modalContent() {
     const { classes } = this.props;
@@ -135,13 +140,11 @@ class Echanger extends React.Component {
                 <p>13 dessins</p>
               </GridItem>
               <GridItem
-                xs={2}
-                sm={2}
-                md={2}
-                style={{ textAlign: "center" }}
-              ></GridItem>
-
-              <GridItem xs={8} sm={8} md={8} style={{ textAlign: "center" }}>
+                xs={12}
+                sm={12}
+                md={12}
+                style={{ textAlign: "center", marginLeft: "30px" }}
+              >
                 <Button
                   color="primary"
                   style={{ margin: 0 }}
@@ -331,28 +334,259 @@ class Echanger extends React.Component {
           >
             {/* conversation //////////////////////////////////////// */}
             <SimpleBar
-              style={{ maxHeight: "367px", height: "367px", maxWidth: "960px" }}
+              ref={this.SimpleBar}
+              style={{
+                maxHeight: "367px",
+                height: "367px",
+                maxWidth: "960px",
+                overflowX: "hidden"
+              }}
+              autoHide={true}
             >
               <GridContainer
                 style={{
                   padding: 0,
                   width: "100%",
                   marginTop: "15px",
-                  marginLeft: "0px",
-                  height: "352px"
+                  marginLeft: "0px"
                 }}
                 spacing={2}
-                direction="column"
+                direction="column-reverse"
                 justify="flex-end"
                 alignItems="center"
               >
+                {" "}
+                {/* message 1 vert ( envoyee par l utilisateur)*/}
                 <GridItem
                   xs={12}
                   sm={12}
                   md={12}
                   style={{ alignItems: "center" }}
                 >
-                  {/* message 1 vert ( envoyee par l utilisateur)*/}
+                  <GridContainer
+                    style={{
+                      padding: 0,
+                      width: "100%",
+                      marginLeft: "0px"
+                    }}
+                  >
+                    <GridItem
+                      xs={1}
+                      sm={1}
+                      md={1}
+                      style={{ alignItems: "center" }}
+                    ></GridItem>
+                    <GridItem
+                      xs={1}
+                      sm={1}
+                      md={1}
+                      style={{ alignItems: "center" }}
+                    >
+                      <Avatar
+                        alt="Remy Sharp"
+                        src={require("assets/img/faces/christian.jpg")}
+                      />
+                    </GridItem>
+                    <GridItem
+                      xs={9}
+                      sm={9}
+                      md={9}
+                      style={{ alignItems: "center" }}
+                      className={classes.root}
+                      spacing={2}
+                    >
+                      <SnackbarContent
+                        message={
+                          <span>
+                            1You've got some friends nearby, stop looking at
+                            your phone and find them...
+                          </span>
+                        }
+                        style={{
+                          background: "#4caf50"
+                        }}
+                      />
+                    </GridItem>
+                    <GridItem
+                      xs={1}
+                      sm={1}
+                      md={1}
+                      style={{ alignItems: "center" }}
+                    ></GridItem>
+                  </GridContainer>
+                </GridItem>
+                {/* message 2 gris ( envoyee par le recepteur)*/}
+                <GridItem
+                  xs={12}
+                  sm={12}
+                  md={12}
+                  style={{ alignItems: "center" }}
+                >
+                  <GridContainer
+                    style={{
+                      padding: 0,
+                      width: "100%",
+                      marginLeft: "0px"
+                    }}
+                    alignItems="flex-end"
+                  >
+                    <GridItem
+                      xs={1}
+                      sm={1}
+                      md={1}
+                      style={{ alignItems: "center" }}
+                    ></GridItem>
+                    <GridItem
+                      xs={9}
+                      sm={9}
+                      md={9}
+                      style={{ alignItems: "center" }}
+                      className={classes.root}
+                      spacing={2}
+                    >
+                      <SnackbarContent
+                        message={
+                          <span>
+                            You've got some friends nearby, stop looking at your
+                            phone and find them...
+                          </span>
+                        }
+                        style={{
+                          background: "#999999"
+                        }}
+                      />
+                    </GridItem>
+                    <GridItem
+                      xs={1}
+                      sm={1}
+                      md={1}
+                      style={{ alignItems: "center", padding: "24px" }}
+                    >
+                      <Avatar
+                        alt="Remy Sharp"
+                        src={require("assets/img/faces/christian.jpg")}
+                      />
+                    </GridItem>
+                  </GridContainer>
+                </GridItem>
+                <GridItem
+                  xs={12}
+                  sm={12}
+                  md={12}
+                  style={{ alignItems: "center" }}
+                >
+                  <GridContainer
+                    style={{
+                      padding: 0,
+                      width: "100%",
+                      marginLeft: "0px"
+                    }}
+                  >
+                    <GridItem
+                      xs={1}
+                      sm={1}
+                      md={1}
+                      style={{ alignItems: "center" }}
+                    ></GridItem>
+                    <GridItem
+                      xs={1}
+                      sm={1}
+                      md={1}
+                      style={{ alignItems: "center" }}
+                    >
+                      <Avatar
+                        alt="Remy Sharp"
+                        src={require("assets/img/faces/christian.jpg")}
+                      />
+                    </GridItem>
+                    <GridItem
+                      xs={9}
+                      sm={9}
+                      md={9}
+                      style={{ alignItems: "center" }}
+                      className={classes.root}
+                      spacing={2}
+                    >
+                      <SnackbarContent
+                        message={
+                          <span>
+                            You've got some friends nearby, stop looking at your
+                            phone and find them...
+                          </span>
+                        }
+                        style={{
+                          background: "#4caf50"
+                        }}
+                      />
+                    </GridItem>
+                    <GridItem
+                      xs={1}
+                      sm={1}
+                      md={1}
+                      style={{ alignItems: "center" }}
+                    ></GridItem>
+                  </GridContainer>
+                </GridItem>
+                {/* message 2 gris ( envoyee par le recepteur)*/}
+                <GridItem
+                  xs={12}
+                  sm={12}
+                  md={12}
+                  style={{ alignItems: "center" }}
+                >
+                  <GridContainer
+                    style={{
+                      padding: 0,
+                      width: "100%",
+                      marginLeft: "0px"
+                    }}
+                    alignItems="flex-end"
+                  >
+                    <GridItem
+                      xs={1}
+                      sm={1}
+                      md={1}
+                      style={{ alignItems: "center" }}
+                    ></GridItem>
+                    <GridItem
+                      xs={9}
+                      sm={9}
+                      md={9}
+                      style={{ alignItems: "center" }}
+                      className={classes.root}
+                      spacing={2}
+                    >
+                      <SnackbarContent
+                        message={
+                          <span>
+                            You've got some friends nearby, stop looking at your
+                            phone and find them...
+                          </span>
+                        }
+                        style={{
+                          background: "#999999"
+                        }}
+                      />
+                    </GridItem>
+                    <GridItem
+                      xs={1}
+                      sm={1}
+                      md={1}
+                      style={{ alignItems: "center", padding: "24px" }}
+                    >
+                      <Avatar
+                        alt="Remy Sharp"
+                        src={require("assets/img/faces/christian.jpg")}
+                      />
+                    </GridItem>
+                  </GridContainer>
+                </GridItem>
+                <GridItem
+                  xs={12}
+                  sm={12}
+                  md={12}
+                  style={{ alignItems: "center" }}
+                >
                   <GridContainer
                     style={{
                       padding: 0,
@@ -499,6 +733,7 @@ class Echanger extends React.Component {
                   style={{ display: "none" }}
                   id="icon-button-file"
                   type="file"
+                  onClick={() => this.scrollBottom()}
                 />
                 <label htmlFor="icon-button-file">
                   <IconButton
@@ -1194,7 +1429,9 @@ class Echanger extends React.Component {
                           }}
                         />
                         <GridItem xs={12} sm={12} md={12}>
-                          <SimpleBar style={{ maxHeight: "412px" }}>
+                          <SimpleBar
+                            style={{ maxHeight: "412px", width: "100%" }}
+                          >
                             <List className={classes.root}>
                               <ListItem
                                 alignItems="flex-start"

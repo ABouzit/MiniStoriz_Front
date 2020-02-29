@@ -32,8 +32,12 @@ import StarBorderIcon from "@material-ui/icons/StarBorder";
 import headerStyle from "assets/jss/material-kit-react/components/headerStyle";
 import { makeStyles } from "@material-ui/core/styles";
 //scroll bare text
+import CustomInput from "components/CustomInput/CustomInput.js";
 import SimpleBar from "simplebar-react";
 import "simplebar/dist/simplebar.min.css";
+import Axios from "axios";
+import config from "config/config";
+import { Input } from "@material-ui/core";
 
 class Publier extends React.Component {
   constructor(props) {
@@ -41,7 +45,15 @@ class Publier extends React.Component {
     this.headerClasse = makeStyles(headerStyle);
     // Don't call this.setState() here!
     this.state = {
-      planche: [{text: '', img: ''}],
+      imgSrc: '',
+      dataImgPlanche: '',
+      lienImgPlanche: '',
+      textHistoire: '',
+      titleHistoire: '',
+      imgHistoire: '',
+      lienImgHistoire: '',
+      dataImgHistoire: '',
+      planche: [{text: '', img: '', data: '', lien: ''}],
       counter: 1,
       selectedIndex: 0,
       typeModal: -1,
@@ -57,7 +69,9 @@ class Publier extends React.Component {
         speed: 500,
         slidesToShow: 1,
         slidesToScroll: 1,
-        autoplay: false
+        autoplay: false,
+        swipe: false,
+        draggable: false
       },
       commentaire: "",
       ratingText: 0,
@@ -67,15 +81,42 @@ class Publier extends React.Component {
     this.previous = this.previous.bind(this);
   }
   next() {
+  
+    this.state.planche[this.state.counter - 1].img = this.state.imgSrc;
+    this.state.planche[this.state.counter - 1].text = this.state.textHistoire;
+    this.state.planche[this.state.counter - 1].data = this.state.dataImgPlanche;
+    this.state.planche[this.state.counter - 1].lien = this.state.lienImgPlanche;
+    this.state.textHistoire = '';
+    this.state.imgSrc = '';
+    this.state.dataImgPlanche = '';
+    this.state.lienImgPlanche = '';
+    if (this.state.counter < this.state.planche.length) {
+      this.state.textHistoire = this.state.planche[this.state.counter].text;
+      this.state.imgSrc = this.state.planche[this.state.counter].img;
+      this.state.dataImgPlanche = this.state.planche[this.state.counter].data;
+      this.state.lienImgPlanche = this.state.planche[this.state.counter].lien;
+    }
+
     if (this.state.counter == this.state.planche.length) {
-      this.state.planche.push({text: '', img: ''});
+      this.state.planche.push({text: '', img: '', data: '', lien: ''});
+      this.state.textHistoire = '';
+      this.state.imgSrc = '';
       this.forceUpdate();
     }
-    
     this.slider.slickNext();
     console.log(this.state.planche);
+    console.log(this.state.counter);
+    
   }
   previous() {
+    this.state.planche[this.state.counter - 1].img = this.state.imgSrc;
+    this.state.planche[this.state.counter - 1].text = this.state.textHistoire;
+    this.state.planche[this.state.counter - 1].data = this.state.dataImgPlanche;
+    this.state.planche[this.state.counter - 1].lien = this.state.lienImgPlanche;
+    this.state.textHistoire = this.state.planche[this.state.counter - 2].text;
+    this.state.imgSrc = this.state.planche[this.state.counter - 2].img;
+    this.state.dataImgPlanche = this.state.planche[this.state.counter - 2].data;
+    this.state.lienImgPlanche = this.state.planche[this.state.counter - 2].lien;
     this.slider.slickPrev();
   }
   gotToIndex(index) {
@@ -83,14 +124,84 @@ class Publier extends React.Component {
     this.setState({ counter: 1 });
   }
 
+  // save image histoire
+  saveHistoire(file){
+    console.log(this.state.titleHistoire);
+   var reader = new FileReader();
+   var url = reader.readAsDataURL(file[0]);
+    let data = new FormData();
+    data.append("file", file[0]);
+   reader.onloadend = function (e) {
+      this.setState({
+          imgHistoire: [reader.result],
+          dataImgHistoire: data,
+          lienImgHistoire: "images/histoires/" + file[0].name
+      })
+    }.bind(this);
+    console.log(file[0].name) // Would see a path?
+  }
+  saveHistoireWithPlanche(){
+    const _this = this;
+    Axios.post(config.API_URL + "images/histoires/", this.state.dataImgHistoire).then(() =>
+    Axios.post(config.API_URL + "histoires", {
+      userText: { id: "5448c755-5085-4652-88fa-ffcac3987071" },
+      userDessin: { id: "5448c755-5085-4652-88fa-ffcac3987071" },
+      lienIllustration: this.state.lienImgHistoire,
+      titreHistoire: this.state.titleHistoire
+    }).then(function (response) {
+      _this.state.planche.map((planch , index) => {
+        if (index > 0) {
+          
+            Axios.post(config.API_URL + "planches", {
+              histoire: response.data.id,
+              lienDessin: planch.lien,
+              text: planch.text,
+              index: index
+            }).then(() =>  Axios.post(config.API_URL + "images/planches/", planch.data)
+          );
+          console.log("planche numero : "+ index)
+          console.log(planch)
+        }
+      })
+    })
+    .catch(function (error) {
+      console.log(error);
+    })
+  );
+  }
+  //exemple sauvgarger planches avec image
+  savePlanches(file) {
+   var reader = new FileReader();
+   var url = reader.readAsDataURL(file[0]);
+
+    let data = new FormData();
+    data.append("file", file[0]);
+
+   reader.onloadend = function (e) {
+      this.setState({
+          imgSrc: [reader.result],
+          dataImgPlanche: data,
+          lienImgPlanche: "images/planches/" + file[0].name
+      })
+    }.bind(this);
+  }
+ 
+
   //modal - carousel
   handleListItemClick(event, index, type) {
     
+    this.setState({ selectedIndex: index, typeModal: type, modal: true }, ()=>{setTimeout(()=>{this.next();
+      }, 1);});
+  }
+  handleListItemValide(event, index, type) {
     this.setState({ selectedIndex: index, typeModal: type, modal: true });
-    this.forceUpdate();
+    this.state.planche[this.state.planche.length - 1].text = this.state.textHistoire;
+    this.state.planche[this.state.planche.length - 1].img = this.state.imgSrc;
+    this.state.planche[this.state.planche.length - 1].data = this.state.dataImgPlanche;
+    this.state.planche[this.state.planche.length - 1].lien = this.state.lienImgPlanche;
   }
   modalContent() {
- 
+    
     const { settings, modal } = this.state;
     const { classes } = this.props;
     if (this.state.modal === true && this.state.typeModal === 1) {
@@ -101,9 +212,13 @@ class Publier extends React.Component {
             paper: classes.modal
           }}
           open={modal}
+          onBackdropClick={() => {
+            this.setState({ modal: false, planche: [{text: '', img: '', data: '', lien: ''}] });
+            this.gotToIndex(1);
+          }}
           TransitionComponent={Transition}
           keepMounted
-          onClose={() => this.setState({ modal: false })}
+          onClose={() => this.setState({ modal: false, planche: [{text: '', img: '', data: '', lien: ''}] })}
           aria-labelledby="modal-slide-title"
           aria-describedby="modal-slide-description"
           maxWidth={"md"}
@@ -113,7 +228,7 @@ class Publier extends React.Component {
           <DialogTitle
             id="customized-dialog-title"
             onClose={() => {
-              this.setState({ modal: false });
+              this.setState({ modal: false, planche: [{text: '', img: '', data: '', lien: ''}] });
               this.gotToIndex(1);
             }}
             style={{ paddingBottom: "0px" }}
@@ -146,15 +261,16 @@ class Publier extends React.Component {
                 paddingLeft: 30,
                 paddingRight: 30,
                 marginLeft: 20,
-                marginRight: 20
+                marginRight: 20,
+                maxWidth: '890px'
               }}
             >
              {  this.state.planche.map((planch , index) => {
               return (
               
-              <div key={index}>
+              <div key={index} >
                 <GridContainer justify="center" alignItems="center">
-                  <GridItem xs={12} sm={12} md={10}>
+                  <GridItem xs={12} sm={12} md={12}>
                     <h5
                       style={{
                         textAlign: "center",
@@ -172,9 +288,9 @@ class Publier extends React.Component {
                   alignItems="center"
                 >
                   <GridItem
-                    xs={12}
-                    sm={12}
-                    md={12}
+                    xs={7}
+                    sm={7}
+                    md={7}
                     justify="center"
                     alignItems="center"
                     style={{ paddingRight: "20px", paddingRight: "10px" }}
@@ -186,10 +302,39 @@ class Publier extends React.Component {
                       multiline
                       rows="9"
                       style={{ width: "100%" }}
+                      value={this.state.textHistoire}
+                      autoFocus={
+                        this.state.counter !== this.state.planche[this.state.counter - 1]
+                          ? false
+                          : true
+                      }
+                      onChange={(textHistoire, event) => {
+                        this.setState({
+                          textHistoire: textHistoire.target.value
+                        });
+                      }}
                     />
-                    
+                    <h5 style={{fontWeight: 'bold', fontFamily: 'monospace', marginTop: 30}}>Illustration (facultatif)</h5>
+                    <Input
+                        accept="image/*"
+                        className={classes.input}
+                        id="contained-button-file"
+                        multiple
+                        type="file"
+                        style={{ }}
+                        onChange={file => this.savePlanches(file.target.files)}
+                      ></Input>
                   </GridItem>
                   
+                  <GridItem
+                    xs={5}
+                    sm={5}
+                    md={5}
+                    justify="center"
+                    alignItems="center"
+                    style={{ paddingRight: "20px", paddingRight: "10px" }}>
+                      <img src={this.state.imgSrc} style={{maxWidth: 270, maxHeight: 360, marginLeft: "10%"}} />
+                    </GridItem>
                 </GridContainer>
               </div>
                );
@@ -199,7 +344,7 @@ class Publier extends React.Component {
             </Slider>
             <SamplePrevArrow
               onClick={() => this.previous()}
-              disabled={this.state.counter === 1 ? true : false}
+              disabled={this.state.counter === 2 ? true : false}
             />
           </DialogContent>
           <MuiDialogActions>
@@ -216,9 +361,9 @@ class Publier extends React.Component {
                 <Button
                   color="primary"
                   style={{ margin: 0 }}
-                  onClick={() => {
-                    this.setState({ modal: false });
-                    this.gotToIndex(1);
+                  onClick={event => {
+                    // this.setState({ modal: false });
+                    this.handleListItemValide(event, 1, 2)
                   }}
                 >
                   Valider
@@ -228,6 +373,473 @@ class Publier extends React.Component {
         </Dialog>
         );
         }
+
+        if (this.state.modal === true && this.state.typeModal === 4) {
+          return (
+              <Dialog
+                classes={{
+                  root: classes.center,
+                  paper: classes.modal
+                }}
+                open={modal}
+                onBackdropClick={() => {
+                  this.setState({ modal: false, planche: [{text: '', img: '', data: '', lien: ''}] });
+                  this.gotToIndex(1);
+                }}
+                TransitionComponent={Transition}
+                keepMounted
+                onClose={() => this.setState({ modal: false, planche: [{text: '', img: '', data: '', lien: ''}] })}
+                aria-labelledby="modal-slide-title"
+                aria-describedby="modal-slide-description"
+                maxWidth={"md"}
+                fullWidth={true}
+                scroll="paper"
+              >
+                <DialogTitle
+                  id="customized-dialog-title"
+                  onClose={() => {
+                    this.setState({ modal: false, planche: [{text: '', img: '', data: '', lien: ''}] });
+                    this.gotToIndex(1);
+                  }}
+                  style={{ paddingBottom: "0px" }}
+                >
+                  <h3
+                    style={{
+                      textAlign: "center",
+                      marginTop: "0px",
+                      marginBottom: "0px",
+                      fontWeight: "600"
+                    }}
+                  >
+                    Dessins
+                  </h3>
+                </DialogTitle>
+                <DialogContent
+                  id="modal-slide-description"
+                  className={classes.modalBody}
+                  style={{ padding: 0 }}
+                >
+                  <SampleNextArrow
+                    onClick={() => this.next()}
+                    style={Styles.NextArrow}
+                  />
+                  <Slider
+                    ref={slider => (this.slider = slider)}
+                    {...settings}
+                    style={{
+                      height: "100%",
+                      paddingLeft: 30,
+                      paddingRight: 30,
+                      marginLeft: 20,
+                      marginRight: 20,
+                      maxWidth: '890px'
+                    }}
+                  >
+                   {  this.state.planche.map((planch , index) => {
+                    return (
+                    
+                    <div key={index} >
+                      <GridContainer justify="center" alignItems="center">
+                        <GridItem xs={12} sm={12} md={12}>
+                          <h5
+                            style={{
+                              textAlign: "center",
+                              fontSize: "17px",
+                              fontWeight: "400"
+                            }}
+                          >
+                            Planche {index}
+                          </h5>
+                        </GridItem>
+                      </GridContainer>
+                      <GridContainer
+                        style={{ height: "365px" }}
+                        justify="center"
+                        alignItems="center"
+                      >
+                        <GridItem
+                          xs={7}
+                          sm={7}
+                          md={7}
+                          justify="center"
+                          alignItems="center"
+                          style={{ paddingRight: "20px", paddingRight: "10px" }}
+                        >
+                          <h5 style={{fontWeight: 'bold', fontFamily: 'monospace', marginTop: 30}}>Illustration (facultatif)</h5>
+                          <Input
+                              accept="image/*"
+                              className={classes.input}
+                              id="contained-button-file"
+                              multiple
+                              type="file"
+                              style={{ }}
+                              onChange={file => this.savePlanches(file.target.files)}
+                            ></Input>
+                        </GridItem>
+                        
+                        <GridItem
+                          xs={5}
+                          sm={5}
+                          md={5}
+                          justify="center"
+                          alignItems="center"
+                          style={{ paddingRight: "20px", paddingRight: "10px" }}>
+                            <img src={this.state.imgSrc} style={{maxWidth: 270, maxHeight: 360, marginLeft: "10%"}} />
+                          </GridItem>
+                      </GridContainer>
+                    </div>
+                     );
+                    })
+                  }
+                    
+                  </Slider>
+                  <SamplePrevArrow
+                    onClick={() => this.previous()}
+                    disabled={this.state.counter === 2 ? true : false}
+                  />
+                </DialogContent>
+                <MuiDialogActions>
+                  <h3
+                    style={{
+                      height: "41px",
+                      textAlign: "center",
+                      marginTop: "0px",
+                      marginBottom: "0px",
+                      width: "100%",
+                      fontWeight: "400"
+                    }}
+                  >
+                      <Button
+                        color="primary"
+                        style={{ margin: 0 }}
+                        onClick={event => {
+                          // this.setState({ modal: false });
+                          this.handleListItemClick(event, 1, 2)
+                        }}
+                      >
+                        Valider
+                      </Button>
+                  </h3>
+                </MuiDialogActions>
+              </Dialog>
+              );
+              }
+
+        if (this.state.modal === true && this.state.typeModal === 3) {
+          return (
+              <Dialog
+                classes={{
+                  root: classes.center,
+                  paper: classes.modal
+                }}
+                open={modal}
+                onBackdropClick={() => {
+                  this.setState({ modal: false, planche: [{text: '', img: '', data: '', lien: ''}] });
+                  this.gotToIndex(1);
+                }}
+                TransitionComponent={Transition}
+                keepMounted
+                onClose={() => this.setState({ modal: false, planche: [{text: '', img: '', data: '', lien: ''}] })}
+                aria-labelledby="modal-slide-title"
+                aria-describedby="modal-slide-description"
+                maxWidth={"md"}
+                fullWidth={true}
+                scroll="paper"
+              >
+                <DialogTitle
+                  id="customized-dialog-title"
+                  onClose={() => {
+                    this.setState({ modal: false, planche: [{text: '', img: '', data: '', lien: ''}] });
+                    this.gotToIndex(1);
+                  }}
+                  style={{ paddingBottom: "0px" }}
+                >
+                  <h3
+                    style={{
+                      textAlign: "center",
+                      marginTop: "0px",
+                      marginBottom: "0px",
+                      fontWeight: "600"
+                    }}
+                  >
+                    Ecrire
+                  </h3>
+                </DialogTitle>
+                <DialogContent
+                  id="modal-slide-description"
+                  className={classes.modalBody}
+                  style={{ padding: 0 }}
+                >
+                  <SampleNextArrow
+                    onClick={() => this.next()}
+                    style={Styles.NextArrow}
+                  />
+                  <Slider
+                    ref={slider => (this.slider = slider)}
+                    {...settings}
+                    style={{
+                      height: "100%",
+                      paddingLeft: 30,
+                      paddingRight: 30,
+                      marginLeft: 20,
+                      marginRight: 20,
+                      maxWidth: '890px'
+                    }}
+                  >
+                   {  this.state.planche.map((planch , index) => {
+                    return (
+                    
+                    <div key={index} >
+                      <GridContainer justify="center" alignItems="center">
+                        <GridItem xs={12} sm={12} md={12}>
+                          <h5
+                            style={{
+                              textAlign: "center",
+                              fontSize: "17px",
+                              fontWeight: "400"
+                            }}
+                          >
+                            Planche {index}
+                          </h5>
+                        </GridItem>
+                      </GridContainer>
+                      <GridContainer
+                        style={{ height: "365px" }}
+                        justify="center"
+                        alignItems="center"
+                      >
+                        <GridItem
+                          xs={10}
+                          sm={10}
+                          md={10}
+                          justify="center"
+                          alignItems="center"
+                          style={{ paddingRight: "20px", paddingRight: "10px" }}
+                        >
+                          <TextField
+                            id="standard-multiline-static"
+                            placeholder="Ecrire votre text"
+                            label="Text"
+                            multiline
+                            rows="9"
+                            style={{ width: "100%" }}
+                            value={this.state.textHistoire}
+                            autoFocus={
+                              this.state.counter !== this.state.planche[this.state.counter - 1]
+                                ? false
+                                : true
+                            }
+                            onChange={(textHistoire, event) => {
+                              this.setState({
+                                textHistoire: textHistoire.target.value
+                              });
+                            }}
+                          />
+                        </GridItem>
+                      </GridContainer>
+                    </div>
+                     );
+                    })
+                  }
+                    
+                  </Slider>
+                  <SamplePrevArrow
+                    onClick={() => this.previous()}
+                    disabled={this.state.counter === 2 ? true : false}
+                  />
+                </DialogContent>
+                <MuiDialogActions>
+                  <h3
+                    style={{
+                      height: "41px",
+                      textAlign: "center",
+                      marginTop: "0px",
+                      marginBottom: "0px",
+                      width: "100%",
+                      fontWeight: "400"
+                    }}
+                  >
+                      <Button
+                        color="primary"
+                        style={{ margin: 0 }}
+                        onClick={event => {
+                          this.handleListItemClick(event, 1, 2)
+                        }}
+                      >
+                        Valider
+                      </Button>
+                  </h3>
+                </MuiDialogActions>
+              </Dialog>
+              );
+            }
+
+        if (this.state.modal === true && this.state.typeModal === 2) {
+          return (
+              <Dialog
+                classes={{
+                  root: classes.center,
+                  paper: classes.modal
+                }}
+                open={modal}
+                TransitionComponent={Transition}
+                keepMounted
+                onBackdropClick={() => {
+                  this.setState({ modal: false, planche: [{text: '', img: '', data: '', lien: ''}] });
+                  this.gotToIndex(1);
+                }}
+                onClose={() => this.setState({ modal: false, planche: [{text: '', img: '', data: '', lien: ''}] })}
+                aria-labelledby="modal-slide-title"
+                aria-describedby="modal-slide-description"
+                maxWidth={"md"}
+                fullWidth={true}
+                scroll="paper"
+              >
+                <DialogTitle
+                  id="customized-dialog-title"
+                  onClose={() => {
+                    this.setState({ modal: false, planche: [{text: '', img: '', data: '', lien: ''}] });
+                    this.gotToIndex(1);
+                  }}
+                  style={{ paddingBottom: "0px" }}
+                >
+                  <h3
+                    style={{
+                      textAlign: "center",
+                      marginTop: "0px",
+                      marginBottom: "0px",
+                      fontWeight: "600"
+                    }}
+                  >
+                    Affiche d'histoire
+                  </h3>
+                </DialogTitle>
+                <DialogContent
+                  id="modal-slide-description"
+                  className={classes.modalBody}
+                  style={{ padding: 0 }}
+                >
+                  <Slider
+                    ref={slider => (this.slider = slider)}
+                    {...settings}
+                    style={{
+                      height: "100%",
+                      paddingLeft: 30,
+                      paddingRight: 30,
+                      marginLeft: 20,
+                      marginRight: 20,
+                      maxWidth: '890px'
+                    }}
+                  >
+                    
+                    <div key={1} >
+                      <GridContainer justify="center" alignItems="center">
+                        <GridItem xs={12} sm={12} md={10}>
+                          <h5
+                            style={{
+                              textAlign: "center",
+                              fontSize: "17px",
+                              fontWeight: "400"
+                            }}
+                          >
+                            Histoire
+                          </h5>
+                        </GridItem>
+                      </GridContainer>
+                      <GridContainer
+                        style={{ height: "365px" }}
+                        justify="center"
+                        alignItems="center"
+                      >
+                        <GridItem
+                          xs={10}
+                          sm={10}
+                          md={10}
+                          justify="center"
+                          alignItems="center"
+                          style={{ paddingRight: "20px", paddingRight: "10px" }}
+                        >
+                          <h3 style={{fontWeight: 'bold', color: '#000000', textAlign: 'left', fontFamily: 'cursive'}}>Tu as presque terminé la publication de l’histoire, il ne reste qu’à finaliser...</h3>
+                        </GridItem>
+                         
+                        <GridItem
+                          xs={10}
+                          sm={10}
+                          md={6}
+                          justify="center"
+                          alignItems="center"
+                          style={{ paddingRight: "20px", paddingRight: "10px", marginTop: -20 }}
+                        >
+                          <CustomInput
+                            labelText="Titre de l'histoire"
+                            id="float"
+                            value={this.state.titleHistoire}
+                            onChange={ event => {
+                              const { value } = event.target;
+                              this.setState({
+                                titleHistoire: value
+                              });
+                            }}
+                            formControlProps={{
+                              fullWidth: true,
+                              required: true
+                            }}
+                          />
+                          <h5 style={{fontWeight: 'bold', fontFamily: 'monospace'}}>Illustration (facultatif)</h5>
+                          <Input
+                            aria-describedby=""
+                            accept="image/*"
+                            className={classes.input}
+                            id="contained-button-file"
+                            multiple
+                            type="file"
+                            onChange={file => this.saveHistoire(file.target.files)}
+                            // onChange={file => this.saveHistoire(file.target.files)}
+                          ></Input>
+                          
+                        </GridItem>
+                        
+                        <GridItem
+                          xs={10}
+                          sm={10}
+                          md={4}
+                          justify="center"
+                          alignItems="center"
+                          style={{ paddingRight: "20px", paddingRight: "10px" }}>
+                            <img src={this.state.imgHistoire} style={{maxWidth: 200, maxHeight: 300, marginLeft: "auto"}} />
+                          </GridItem>
+                      </GridContainer>
+                    </div>
+                    
+                  </Slider>
+                </DialogContent>
+                <MuiDialogActions>
+                  <h3
+                    style={{
+                      height: "41px",
+                      textAlign: "center",
+                      marginTop: "0px",
+                      marginBottom: "0px",
+                      width: "100%",
+                      fontWeight: "400"
+                    }}
+                  >
+                      <Button
+                        color="primary"
+                        style= {{margin: 0}}
+                        onClick={() => {
+                          this.saveHistoireWithPlanche();
+                          this.setState({ modal: false });
+                          this.gotToIndex(1);
+                        }}
+                      >
+                        Terminer
+                      </Button>
+                  </h3>
+                </MuiDialogActions>
+              </Dialog>
+              );
+              }
         }
       render() {
         const { classes } = this.props;
@@ -278,12 +890,12 @@ class Publier extends React.Component {
                       classes={{ tooltip: this.headerClasse.tooltip }}
                       >
                       <Button
-                          color="transparent"
-                          target="_blank"
-                          className={this.headerClasse.navLink}
+                        color="transparent"
+                        target="_blank"
+                        className={this.headerClasse.navLink}
                       >
-                          <i className={this.headerClasse.socialIcons + " fas fa-keyboard"} style={{color: '#000000', fontSize: 100}} />
-                          <i className={this.headerClasse.socialIcons + " fas fa-pencil-alt"} style={{color: '#000000', fontSize: 100, marginLeft: 30}} />
+                        <i className={this.headerClasse.socialIcons + " fas fa-keyboard"} style={{color: '#000000', fontSize: 100}} />
+                        <i className={this.headerClasse.socialIcons + " fas fa-pencil-alt"} style={{color: '#000000', fontSize: 100, marginLeft: 30}} />
                       </Button>
                       
                   </Tooltip>
@@ -308,6 +920,9 @@ class Publier extends React.Component {
                 style={{
                   width: "20rem"
                 }}
+                onClick={event =>
+                  this.handleListItemClick(event, 1, 3)
+                }
               >
                 <Card style={{ width: "20rem" }}>
                 <h4 className={classes.cardTitle} style={{ fontWeight: "bold", fontFamily: "monospace"}} >Ecrire</h4>
@@ -347,6 +962,9 @@ class Publier extends React.Component {
                 style={{
                   width: "20rem"
                 }}
+                onClick={event =>
+                  this.handleListItemClick(event, 1, 4)
+                }
               >
                 <Card style={{ width: "20rem" }}>
                 <h4 className={classes.cardTitle} style={{ fontWeight: "bold", fontFamily: "monospace"}} >Illustrer</h4>
@@ -372,6 +990,7 @@ class Publier extends React.Component {
                 </Card>
               </ButtonBase>
             </GridItem>
+            {/* <img src={config.API_URL+"images/planches/18107.jpg"} style={{maxWidth: 270, maxHeight: 360, marginLeft: "10%"}} /> */}
           </GridContainer>
         </div>
       </div>

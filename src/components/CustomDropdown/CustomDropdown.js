@@ -55,7 +55,8 @@ export default function CustomDropdown(props) {
     hoverColor,
     left,
     rtlActive,
-    noLiPadding
+    noLiPadding,
+    onChange
   } = props;
   const caretClasses = classNames({
     [classes.caret]: true,
