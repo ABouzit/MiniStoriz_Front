@@ -166,28 +166,28 @@ class Publier extends React.Component {
     }.bind(this);
     console.log(file[0].name); // Would see a path?
   }
-  saveHistoireWithPlanche() {
+  async saveHistoireWithPlanche() {
     const _this = this;
-    Axios.post(
+    await Axios.post(
       config.API_URL + "images/histoires/",
       this.state.dataImgHistoire
-    ).then(() =>
-      Axios.post(config.API_URL + "histoires", {
-        userText: { id: "5448c755-5085-4652-88fa-ffcac3987071" },
-        userDessin: { id: "5448c755-5085-4652-88fa-ffcac3987071" },
+    ).then(async () =>
+      await Axios.post(config.API_URL + "histoires", {
+        userText: { id: "3748b6ad-9fcd-4bf5-878a-3ea9aa00952d" },
+        userDessin: { id: "3748b6ad-9fcd-4bf5-878a-3ea9aa00952d" },
         lienIllustration: this.state.lienImgHistoire,
         titreHistoire: this.state.titleHistoire
       })
-        .then(function(response) {
-          _this.state.planche.map((planch, index) => {
+        .then(async function(response) {
+          _this.state.planche.map(async (planch, index) => {
             if (index > 0) {
-              Axios.post(config.API_URL + "planches", {
+              await Axios.post(config.API_URL + "planches", {
                 histoire: response.data.id,
                 lienDessin: planch.lien,
                 text: planch.text,
                 index: index
-              }).then(() =>
-                Axios.post(config.API_URL + "images/planches/", planch.data)
+              }).then(async () =>
+                await Axios.post(config.API_URL + "images/planches/", planch.data)
               );
               console.log("planche numero : " + index);
               console.log(planch);

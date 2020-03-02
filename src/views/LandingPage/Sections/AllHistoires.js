@@ -5,7 +5,9 @@ import Slider from "react-slick";
 // @material-ui/core components
 import { withStyles } from "@material-ui/core/styles";
 import Rating from "@material-ui/lab/Rating";
-
+import CustomInput from "components/CustomInput/CustomInput.js";
+import InputAdornment from "@material-ui/core/InputAdornment";
+import Search from "@material-ui/icons/Search";
 // core components
 import Tooltip from '@material-ui/core/Tooltip';
 import GridContainer from "components/Grid/GridContainer.js";
@@ -41,7 +43,7 @@ import Select from "@material-ui/core/Select";
 import InputLabel from "@material-ui/core/InputLabel";
 import moment from "moment";
 
-class NosHistoires extends React.Component {
+class AllHistoires extends React.Component {
   constructor(props) {
     super(props);
     // Don't call this.setState() here!
@@ -76,9 +78,9 @@ class NosHistoires extends React.Component {
     this.handleChange = this.handleChange.bind(this);
     this.fetchHistoire();
   }
-  async fetchHistoire() {
+  fetchHistoire() {
     console.log("URL api" + config.API_URL);
-    await Axios.get(config.API_URL + "histoires/nbrvue", {}).then(res => {
+    Axios.get(config.API_URL + "histoires/nbrvues", {}).then(res => {
       this.setState({ histoires: res.data });
     });
   }
@@ -88,33 +90,33 @@ class NosHistoires extends React.Component {
     console.log(this.state.selectedFiltre);
   };
 
-  async handleCheck(e) {
+  handleCheck(e) {
     if (e.currentTarget.dataset.id == 1) {
-      await Axios.get(config.API_URL + "histoires/nbrvue", {}).then(res => {
+      Axios.get(config.API_URL + "histoires/nbrvues", {}).then(res => {
         this.setState({ histoires: res.data, currentFiltre:1 });
         this.forceUpdate();
         console.log(this.state.histoires);
       });
     } else if (e.currentTarget.dataset.id == 2) {
-      await Axios.get(config.API_URL + "histoires/populaire", {}).then(res => {
+      Axios.get(config.API_URL + "histoires/populaires", {}).then(res => {
         this.setState({ histoires: res.data, currentFiltre:2 });
         this.forceUpdate();
       });
     } else if (e.currentTarget.dataset.id == 3) {
-      await Axios.get(config.API_URL + "histoires/plusrecent", {}).then(res => {
+      Axios.get(config.API_URL + "histoires/plusrecents", {}).then(res => {
         this.setState({ histoires: res.data, currentFiltre:3 });
         this.forceUpdate();
       });
     } else if (e.currentTarget.dataset.id == 4) {
-      await Axios.get(config.API_URL + "histoires/plusancient", {}).then(res => {
+      Axios.get(config.API_URL + "histoires/plusancients", {}).then(res => {
         this.setState({ histoires: res.data, currentFiltre:4 });
         this.forceUpdate();
       });
     }
   }
 
-  async fetchPlanche(histoire) {
-    await Axios.get(config.API_URL + "planches/histoire/" + histoire.id, {}).then(
+  fetchPlanche(histoire) {
+    Axios.get(config.API_URL + "planches/histoire/" + histoire.id, {}).then(
       res => {
         this.setState({ planches: res.data });
         histoire.nombreVue = histoire.nombreVue + 1;
@@ -137,15 +139,7 @@ class NosHistoires extends React.Component {
     }
     return dt;
   }
-  seeAllHistoire() {
-    console.log("URL api" + config.API_URL);
-    Axios.get(config.API_URL + "histoires/", {}).then(res => {
-      this.setState({ histoires: res.data });
-    });
-    const listmenu = document.getElementById("buttonSeeAll");
-    listmenu.style.display = "none";
-    this.forceUpdate();
-  }
+  
   next() {
     console.log(this.slider);
     this.slider.slickNext();
@@ -157,37 +151,33 @@ class NosHistoires extends React.Component {
     this.slider.slickGoTo(index - 1);
     this.setState({ counter: 1 });
   }
-  async submitCommantaire() {
-    await Axios.post(config.API_URL + "impressions", {
+  submitCommantaire() {
+    Axios.post(config.API_URL + "impressions", {
       histoire: this.state.selectedHistoire,
       commentaire: this.state.commentaire,
       noteHistoire: this.state.ratingText,
       noteDessin: this.state.ratingDessin,
       isActive: true
-    }).then(async res => {
+    }).then(res => {
       if (this.state.currentFiltre == 1) {
-        await Axios.get(config.API_URL + "histoires/nbrvue", {}).then(async res => {
+        Axios.get(config.API_URL + "histoires/nbrvue", {}).then(res => {
           this.setState({ histoires: res.data });
-          setTimeout(()=>{ this.forceUpdate(); }, 3000);          
-          console.log("histoire execute nbrvue");
+          this.forceUpdate();
         });
       } else if (this.state.currentFiltre == 2) {
-        await Axios.get(config.API_URL + "histoires/populaire", {}).then(async res => {
+        Axios.get(config.API_URL + "histoires/populaire", {}).then(res => {
           this.setState({ histoires: res.data });
-          setTimeout(()=>{ this.forceUpdate(); }, 3000);
-          console.log("histoire execute nbrvue");
+          this.forceUpdate();
         });
       } else if (this.state.currentFiltre == 3) {
-        await Axios.get(config.API_URL + "histoires/plusrecent", {}).then(async res => {
+        Axios.get(config.API_URL + "histoires/plusrecent", {}).then(res => {
           this.setState({ histoires: res.data });
-          setTimeout(()=>{ this.forceUpdate(); }, 3000);
-          console.log("histoire execute nbrvue");
+          this.forceUpdate();
         });
       } else if (this.state.currentFiltre == 4) {
-        await Axios.get(config.API_URL + "histoires/plusancient", {}).then(async res => {
+        Axios.get(config.API_URL + "histoires/plusancient", {}).then(res => {
           this.setState({ histoires: res.data });
-          setTimeout(()=>{ this.forceUpdate(); }, 3000);
-          console.log("histoire execute nbrvue");
+          this.forceUpdate();
         });
       }
     });;
@@ -588,7 +578,24 @@ class NosHistoires extends React.Component {
               </h2>
             </GridItem>
           </GridContainer>
+          
           <GridContainer justify="flex-end">
+            <GridItem xs={8} sm={8} md={8}>
+                <CustomInput
+                    labelText="Recherche"
+                    id="material"
+                    formControlProps={{
+                    fullWidth: true
+                    }}
+                    inputProps={{
+                    endAdornment: (
+                        <InputAdornment position="end">
+                        <Search />
+                        </InputAdornment>
+                    )
+                    }}
+                />
+            </GridItem>
             <GridItem xs={4} sm={4} md={4}>
               <CustomDropdown
                 buttonProps={{
@@ -761,15 +768,10 @@ class NosHistoires extends React.Component {
               })}
             </GridContainer>
           </div>
-          <GridContainer justify="flex-end">
+          <GridContainer justify="flex-center">
             <GridItem xs={4} sm={4} md={4}>
-              <Button
-                color="white"
-                id="buttonSeeAll"
-                // onClick={() => this.seeAllHistoire()}
-              >
-                Toutes les histoires
-              </Button>
+              Pagination
+              
             </GridItem>
           </GridContainer>
         </div>
@@ -871,7 +873,7 @@ function SamplePrevArrow(props) {
     </IconButton>
   );
 }
-NosHistoires.propTypes = {
+AllHistoires.propTypes = {
   classes: PropTypes.object.isRequired
 };
-export default withStyles(styles)(NosHistoires);
+export default withStyles(styles)(AllHistoires);
