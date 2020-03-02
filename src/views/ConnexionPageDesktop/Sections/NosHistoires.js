@@ -7,6 +7,7 @@ import { withStyles } from "@material-ui/core/styles";
 import Rating from "@material-ui/lab/Rating";
 
 // core components
+import Tooltip from '@material-ui/core/Tooltip';
 import GridContainer from "components/Grid/GridContainer.js";
 import GridItem from "components/Grid/GridItem.js";
 import Card from "components/Card/Card.js";
@@ -38,6 +39,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
 import InputLabel from "@material-ui/core/InputLabel";
+import moment from "moment";
 
 class NosHistoires extends React.Component {
   constructor(props) {
@@ -45,6 +47,7 @@ class NosHistoires extends React.Component {
     // Don't call this.setState() here!
     this.state = {
       counter: 1,
+      currentFiltre: 1,
       selectedFiltre: "",
       modal: false,
       settings: {
@@ -75,7 +78,7 @@ class NosHistoires extends React.Component {
   }
   fetchHistoire() {
     console.log("URL api" + config.API_URL);
-    Axios.get(config.API_URL + "histoires/take/3", {}).then(res => {
+    Axios.get(config.API_URL + "histoires/nbrvue", {}).then(res => {
       this.setState({ histoires: res.data });
     });
   }
@@ -88,23 +91,23 @@ class NosHistoires extends React.Component {
   handleCheck(e) {
     if (e.currentTarget.dataset.id == 1) {
       Axios.get(config.API_URL + "histoires/nbrvue", {}).then(res => {
-        this.setState({ histoires: res.data });
+        this.setState({ histoires: res.data, currentFiltre:1 });
         this.forceUpdate();
         console.log(this.state.histoires);
       });
     } else if (e.currentTarget.dataset.id == 2) {
       Axios.get(config.API_URL + "histoires/populaire", {}).then(res => {
-        this.setState({ histoires: res.data });
+        this.setState({ histoires: res.data, currentFiltre:2 });
         this.forceUpdate();
       });
     } else if (e.currentTarget.dataset.id == 3) {
       Axios.get(config.API_URL + "histoires/plusrecent", {}).then(res => {
-        this.setState({ histoires: res.data });
+        this.setState({ histoires: res.data, currentFiltre:3 });
         this.forceUpdate();
       });
     } else if (e.currentTarget.dataset.id == 4) {
       Axios.get(config.API_URL + "histoires/plusancient", {}).then(res => {
-        this.setState({ histoires: res.data });
+        this.setState({ histoires: res.data, currentFiltre:4 });
         this.forceUpdate();
       });
     }
@@ -122,7 +125,18 @@ class NosHistoires extends React.Component {
       }
     );
   }
+  getDay(date) {
+    const d = moment(new Date());
+    const dHistoire = moment(date);
+    let dt="";
+    if (d.diff(dHistoire, 'days') > 30) {
+      dt = Math.floor(d.diff(dHistoire, 'month'))+" mois "+(d.diff(dHistoire, 'days')-(d.diff(dHistoire, 'month')*30))+" jours ";
 
+    } else {
+      dt = d.diff(dHistoire, 'days')+" jours"
+    }
+    return dt;
+  }
   seeAllHistoire() {
     console.log("URL api" + config.API_URL);
     Axios.get(config.API_URL + "histoires/", {}).then(res => {
@@ -150,7 +164,34 @@ class NosHistoires extends React.Component {
       noteHistoire: this.state.ratingText,
       noteDessin: this.state.ratingDessin,
       isActive: true
-    });
+    }).then(res => {
+      if (this.state.currentFiltre == 1) {
+        Axios.get(config.API_URL + "histoires/nbrvue", {}).then(res => {
+          this.setState({ histoires: res.data });
+          this.forceUpdate();
+          console.log("histoire execute nbrvue");
+        });
+      } else if (this.state.currentFiltre == 2) {
+        Axios.get(config.API_URL + "histoires/populaire", {}).then(res => {
+          this.setState({ histoires: res.data });
+          this.forceUpdate();
+          console.log("histoire execute nbrvue");
+        });
+      } else if (this.state.currentFiltre == 3) {
+        Axios.get(config.API_URL + "histoires/plusrecent", {}).then(res => {
+          this.setState({ histoires: res.data });
+          this.forceUpdate();
+          console.log("histoire execute nbrvue");
+        });
+      } else if (this.state.currentFiltre == 4) {
+        Axios.get(config.API_URL + "histoires/plusancient", {}).then(res => {
+          this.setState({ histoires: res.data });
+          this.forceUpdate();
+          console.log("histoire execute nbrvue");
+        });
+      }
+    });;
+    
   }
   //modal - carousel
   render() {
@@ -165,13 +206,13 @@ class NosHistoires extends React.Component {
               paper: classes.modal
             }}
             onBackdropClick={() => {
-              this.setState({ modal: false });
+              this.setState({ modal: false, ratingDessin: 0, ratingText: 0, commentaire: "" });
               this.gotToIndex(1);
             }}
             open={modal}
             TransitionComponent={Transition}
             keepMounted
-            onClose={() => this.setState({ modal: false })}
+            onClose={() => this.setState({ modal: false, ratingDessin: 0, ratingText: 0, commentaire: "" })}
             aria-labelledby="modal-slide-title"
             aria-describedby="modal-slide-description"
             maxWidth={"md"}
@@ -182,7 +223,7 @@ class NosHistoires extends React.Component {
             <DialogTitle
               id="customized-dialog-title"
               onClose={() => {
-                this.setState({ modal: false });
+                this.setState({ modal: false, ratingDessin: 0, ratingText: 0, commentaire: "" });
                 this.gotToIndex(1);
               }}
               style={{
@@ -211,6 +252,10 @@ class NosHistoires extends React.Component {
               <SampleNextArrow
                 onClick={() => this.next()}
                 style={Styles.NextArrow}
+                Color={
+                  this.state.counter === this.state.planches.length + 1
+                  ? 'rgba(0, 0, 0, 0.26)'
+                  : '#332861'}
                 disabled={
                   this.state.counter === this.state.planches.length + 1
                     ? true
@@ -433,6 +478,7 @@ class NosHistoires extends React.Component {
                             onChange={(event, newValue1) => {
                               this.setState({ ratingText: newValue1 });
                             }}
+                            precision={0.5}
                           />
                         </GridItem>
                         <GridItem xs={1} sm={1} md={1}></GridItem>
@@ -458,6 +504,7 @@ class NosHistoires extends React.Component {
                             onChange={(event, newValue) => {
                               this.setState({ ratingDessin: newValue });
                             }}
+                            precision={0.5}
                           />
                         </GridItem>
                         <GridItem xs={1} sm={1} md={1}></GridItem>
@@ -496,6 +543,10 @@ class NosHistoires extends React.Component {
               </Slider>
               <SamplePrevArrow
                 onClick={() => this.previous()}
+                Color={
+                  this.state.counter === 1
+                  ? 'rgba(0, 0, 0, 0.26)'
+                  : '#332861'}
                 disabled={this.state.counter === 1 ? true : false}
               />
             </DialogContent>
@@ -519,7 +570,7 @@ class NosHistoires extends React.Component {
                     color="white"
                     style={{ margin: 0 }}
                     onClick={() => {
-                      this.setState({ modal: false });
+                      this.setState({ modal: false, ratingDessin: 0, ratingText: 0, commentaire: "" });
                       this.gotToIndex(1);
                       this.submitCommantaire();
                     }}
@@ -533,7 +584,7 @@ class NosHistoires extends React.Component {
           <GridContainer justify="center">
             <GridItem xs={12} sm={12} md={8}>
               <h2 className={classes.title}>
-                NOS HISTOIRES {this.state.selectedFiltre}{" "}
+                NOS HISTOIRES
               </h2>
             </GridItem>
           </GridContainer>
@@ -544,6 +595,7 @@ class NosHistoires extends React.Component {
                   round: true,
                   color: "white"
                 }}
+                color="white"
                 buttonText="Filtre"
                 value={this.state.selectedFiltre}
                 onChange={this.handleChange}
@@ -644,32 +696,47 @@ class NosHistoires extends React.Component {
                             margin: 0
                           }}
                         >
-                          {histoire.nombreVue ? histoire.nombreVue : 0} vues - 3
-                          jours
+                          {histoire.nombreVue ? histoire.nombreVue : 0} vues - {this.getDay(histoire.dateDeCreation)}
                         </h5>
                         <CardBody>
                           <GridContainer>
                             <GridItem xs={12} sm={12} md={12}>
                               <p>{"Text par " + histoire.userText.pseudo}</p>
-                              <Rating
-                                name="read-only"
-                                value={
-                                  histoire.noteHistoireMoy
-                                    ? histoire.noteHistoireMoy
-                                    : 0
-                                }
-                                emptyIcon={
-                                  <StarBorderIcon fontSize="inherit" />
-                                }
-                                readOnly
-                              />
+                              <Tooltip disableFocusListener disableTouchListener title={
+                                    histoire.noteHistoireMoy
+                                      ? parseFloat(Math.round(histoire.noteHistoireMoy*100)/100).toFixed(2)  + "/5"
+                                      : 0
+                                  }>
+                                <ButtonBase >
+                                <StyledRating
+                                  name="read-only"
+                                  value={
+                                    histoire.noteHistoireMoy
+                                      ? histoire.noteHistoireMoy
+                                      : 0
+                                  }
+                                  emptyIcon={
+                                    <StarBorderIcon fontSize="inherit" />
+                                  }
+                                  precision={0.5}
+                                  readOnly
+                                />
+                                </ButtonBase>
+                              </Tooltip>
+                              
                             </GridItem>
                             <GridItem xs={12} sm={12} md={12}>
                               <p>
                                 {" "}
                                 {"Dessin par " + histoire.userDessin.pseudo}
                               </p>
-                              <Rating
+                              <Tooltip disableFocusListener disableTouchListener title={
+                                    histoire.noteHistoireMoy
+                                      ? parseFloat(Math.round(histoire.noteDessinMoy*100)/100).toFixed(2)  + "/5"
+                                      : 0
+                                  }>
+                                <ButtonBase >
+                              <StyledRating
                                 name="read-only"
                                 value={
                                   histoire.noteDessinMoy
@@ -679,8 +746,11 @@ class NosHistoires extends React.Component {
                                 emptyIcon={
                                   <StarBorderIcon fontSize="inherit" />
                                 }
+                                precision={0.5}
                                 readOnly
                               />
+                              </ButtonBase>
+                              </Tooltip>
                             </GridItem>
                           </GridContainer>
                         </CardBody>
@@ -708,6 +778,7 @@ class NosHistoires extends React.Component {
   }
 }
 const StyledRating = withStyles({
+  decimal: {display:'flex'},
   iconFilled: {
     color: "#ffb400",
     fontSize: "24px"
@@ -752,7 +823,7 @@ const DialogTitle = withStyles(styles1)(props => {
   );
 });
 function SampleNextArrow(props) {
-  const { className, style, onClick, disabled } = props;
+  const { className, style, onClick, disabled, Color } = props;
   return (
     <IconButton
       aria-label="delete"
@@ -771,7 +842,7 @@ function SampleNextArrow(props) {
       <div className={className} style={{ height: "50px", width: "50px" }}>
         <ArrowRightOutlined
           color="green"
-          style={{ color: "#332861", fontSize: "50px" }}
+          style={{ color: Color, fontSize: "50px" }}
         />
       </div>
     </IconButton>
@@ -779,7 +850,7 @@ function SampleNextArrow(props) {
 }
 
 function SamplePrevArrow(props) {
-  const { className, style, onClick, disabled } = props;
+  const { className, style, onClick, disabled, Color } = props;
   return (
     <IconButton
       style={{
@@ -795,7 +866,7 @@ function SamplePrevArrow(props) {
       disabled={disabled}
     >
       <div className={className} style={{ height: "50px", width: "50px" }}>
-        <ArrowLeftOutlined style={{ fontSize: "50px", color: "#332861" }} />
+        <ArrowLeftOutlined style={{ fontSize: "50px", color: Color }} />
       </div>
     </IconButton>
   );

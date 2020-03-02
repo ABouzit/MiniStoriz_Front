@@ -17,6 +17,46 @@ class Contact extends React.Component {
     constructor(props) {
         super(props);
         this.headerClasse = makeStyles(headerStyle);
+        this.state = {
+          nom: "",
+          email: "",
+          objet: "",
+          message: ""
+        };
+        this.valideContact = this.valideContact.bind(this);
+    }
+    valideContact() {
+      if (this.state.nom === "") {
+        const nom = document.getElementById("nomContact");
+        nom.setAttribute("error", "error");
+        this.forceUpdate();
+      } else {
+        const nom = document.getElementById("nomContact");
+        nom.removeAttribute("error");
+      }
+      if (this.state.email === "") {
+        const email = document.getElementById("emailContact");
+        email.setAttribute("error", "error");
+      } else {
+        const email = document.getElementById("emailContact");
+        email.removeAttribute("error");
+        this.forceUpdate();
+      }
+      if (this.state.objet === "") {
+        const objet = document.getElementById("objetContact");
+        objet.setAttribute("error", "error");
+      } else {
+        const objet = document.getElementById("objetContact");
+        objet.removeAttribute("error");
+      }
+      if (this.state.message === "") {
+        const message = document.getElementById("messageContact");
+        message.setAttribute("error", "error");
+      } else {
+        const message = document.getElementById("messageContact");
+        message.removeAttribute("error");
+      }
+      
     }
 render() {
   const { classes } = this.props;
@@ -41,18 +81,32 @@ render() {
         <GridContainer justify="center" style={{ marginTop: 5 }}>
           <GridItem xs={12} sm={12} md={6}>
             <CustomInput
+            
               labelText="Nom ou pseudo"
-              id="float"
               formControlProps={{
                 fullWidth: true,
                 required: true
+              }}
+              id="nomContact"
+              value={this.state.nom}
+              onChange={(nom, event) => {
+                this.setState({
+                  nom: nom.target.value
+                });
+                
               }}
             />
           </GridItem>
           <GridItem xs={12} sm={12} md={6}>
             <CustomInput
               labelText="Adresse mail"
-              id="float"
+              id="emailContact"
+              value={this.state.email}
+              onChange={(email, event) => {
+                this.setState({
+                  email: email.target.value
+                });
+              }}
               formControlProps={{
                 fullWidth: true,
                 required: true
@@ -62,7 +116,14 @@ render() {
           <GridItem xs={12} sm={12} md={12}>
             <CustomInput
               labelText="Objet"
-              id="float"
+              id="objetContact"
+              value={this.state.objet}
+              onChange={(objet, event) => {
+                this.setState({
+                  objet: objet.target.value
+                });
+                
+              }}
               formControlProps={{
                 fullWidth: true,
                 required: true
@@ -74,7 +135,14 @@ render() {
               color="primary"
               fullWidth
               label="Votre commentaire"
-              id="float"
+              id="messageContact"
+              value={this.state.message}
+              onChange={(message, event) => {
+                this.setState({
+                  message: message.target.value
+                });
+                
+              }}
               multiline
               rows="5"
               required
@@ -94,7 +162,14 @@ render() {
               justify="center"
               style={{ width: "auto" }}
             >
-              <Button color="primary">Envoyer</Button>
+              <Button 
+                      color="white"
+                      onClick={() => {
+                        this.valideContact()
+                      }}
+              >
+                Envoyer
+              </Button>
             </GridItem>
           </GridContainer>
           <GridContainer

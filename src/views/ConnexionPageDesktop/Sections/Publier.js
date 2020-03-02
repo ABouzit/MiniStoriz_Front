@@ -47,6 +47,8 @@ class Publier extends React.Component {
       imgSrc: "",
       dataImgPlanche: "",
       lienImgPlanche: "",
+      testNext: 0,
+      testNextText: 0,
       textHistoire: "",
       titleHistoire: "",
       imgHistoire: "",
@@ -79,6 +81,7 @@ class Publier extends React.Component {
     };
     this.next = this.next.bind(this);
     this.previous = this.previous.bind(this);
+    this.testTextNext = this.testTextNext.bind(this);
   }
   next() {
     this.setState({
@@ -105,22 +108,40 @@ class Publier extends React.Component {
       this.state.imgSrc = "";
       this.forceUpdate();
     }
+    if (this.state.textHistoire === "") {
+      this.setState({ testNextText: 0 });
+      this.forceUpdate();
+    }else {
+      this.setState({ testNextText: 1 });
+      this.forceUpdate();
+    }
+    if (this.state.imgSrc === "") {
+      this.setState({ testNext: 0 });
+      this.forceUpdate();
+    }else {
+      this.setState({ testNext: 1 });
+      this.forceUpdate();
+    }
+
     this.slider.slickNext();
     console.log(this.state.planche);
     console.log(this.state.counter);
   }
   previous() {
-    this.setState({
-      lienInputUpload: ""
-    });
+    
     this.state.planche[this.state.counter - 1].img = this.state.imgSrc;
     this.state.planche[this.state.counter - 1].text = this.state.textHistoire;
     this.state.planche[this.state.counter - 1].data = this.state.dataImgPlanche;
     this.state.planche[this.state.counter - 1].lien = this.state.lienImgPlanche;
-    this.state.textHistoire = this.state.planche[this.state.counter - 2].text;
-    this.state.imgSrc = this.state.planche[this.state.counter - 2].img;
-    this.state.dataImgPlanche = this.state.planche[this.state.counter - 2].data;
-    this.state.lienImgPlanche = this.state.planche[this.state.counter - 2].lien;
+    this.setState({
+      lienInputUpload: "",
+      imgSrc: this.state.planche[this.state.counter - 2].img,
+      textHistoire: this.state.planche[this.state.counter - 2].text,
+      lienImgPlanche: this.state.planche[this.state.counter - 2].lien,
+      dataImgPlanche: this.state.planche[this.state.counter - 2].data,
+      testNextText: 1,
+      testNext: 1
+    }, ()=> {this.forceUpdate()});
     this.slider.slickPrev();
   }
   gotToIndex(index) {
@@ -180,6 +201,8 @@ class Publier extends React.Component {
   }
   //exemple sauvgarger planches avec image
   savePlanches(file) {
+    this.setState({ testNext: 1 });
+    this.forceUpdate();
     this.setState({ lienInputUpload: file[0].name });
     var reader = new FileReader();
     var url = reader.readAsDataURL(file[0]);
@@ -195,7 +218,15 @@ class Publier extends React.Component {
       });
     }.bind(this);
   }
-
+  testTextNext() {
+    if (this.state.textHistoire === "") {
+      this.setState({ testNextText: 0 });
+      this.forceUpdate();
+    }else {
+      this.setState({ testNextText: 1 });
+      this.forceUpdate();
+    }
+  }
   //modal - carousel
   handleListItemClick(event, index, type) {
     this.setState(
@@ -289,6 +320,10 @@ class Publier extends React.Component {
           >
             <SampleNextArrow
               onClick={() => this.next()}
+              Color={ this.state.testNext == 1 && this.state.testNextText == 1
+                ? '#332861'
+                : 'rgba(0, 0, 0, 0.26)'}
+              disabled={this.state.testNext == 1 && this.state.testNextText == 1 ? false : true}
               style={Styles.NextArrow}
             />
             <Slider
@@ -357,7 +392,8 @@ class Publier extends React.Component {
                           onChange={(textHistoire, event) => {
                             this.setState({
                               textHistoire: textHistoire.target.value
-                            });
+                            },() => {this.testTextNext()});
+                            
                           }}
                         />
                         <h5
@@ -367,7 +403,7 @@ class Publier extends React.Component {
                             marginTop: 30
                           }}
                         >
-                          Illustration (facultatif)
+                          Illustration
                         </h5>
                         <Input
                           accept="image/*"
@@ -421,6 +457,10 @@ class Publier extends React.Component {
             </Slider>
             <SamplePrevArrow
               onClick={() => this.previous()}
+              Color={
+                this.state.counter === 2
+                ? 'rgba(0, 0, 0, 0.26)'
+                : '#332861'}
               disabled={this.state.counter === 2 ? true : false}
             />
           </DialogContent>
@@ -444,6 +484,7 @@ class Publier extends React.Component {
                   // this.setState({ modal: false });
                   this.handleListItemValide(event, 1, 2);
                 }}
+                disabled={this.state.testNext == 1 && this.state.testNextText == 1 && this.state.planche.length == this.state.counter ? false : true}
               >
                 Valider
               </Button>
@@ -520,6 +561,11 @@ class Publier extends React.Component {
             <SampleNextArrow
               onClick={() => this.next()}
               style={Styles.NextArrow}
+              Color={ this.state.testNext == 1
+                ? '#332861'
+                : 'rgba(0, 0, 0, 0.26)'}
+              disabled={this.state.testNext == 1 ? false : true}
+              style={Styles.NextArrow}
             />
             <Slider
               ref={slider => (this.slider = slider)}
@@ -623,6 +669,10 @@ class Publier extends React.Component {
             </Slider>
             <SamplePrevArrow
               onClick={() => this.previous()}
+              Color={
+                this.state.counter === 2
+                ? 'rgba(0, 0, 0, 0.26)'
+                : '#332861'}
               disabled={this.state.counter === 2 ? true : false}
             />
           </DialogContent>
@@ -644,8 +694,9 @@ class Publier extends React.Component {
                 style={{ margin: 0 }}
                 onClick={event => {
                   // this.setState({ modal: false });
-                  this.handleListItemClick(event, 1, 2);
+                  this.handleListItemValide(event, 1, 2);
                 }}
+                disabled={this.state.testNext == 1 && this.state.planche.length == this.state.counter ? false : true}
               >
                 Valider
               </Button>
@@ -722,6 +773,11 @@ class Publier extends React.Component {
             <SampleNextArrow
               onClick={() => this.next()}
               style={Styles.NextArrow}
+              Color={ this.state.testNextText == 1
+                ? '#332861'
+                : 'rgba(0, 0, 0, 0.26)'}
+              disabled={this.state.testNextText == 1 ? false : true}
+              style={Styles.NextArrow}
             />
             <Slider
               ref={slider => (this.slider = slider)}
@@ -780,7 +836,8 @@ class Publier extends React.Component {
                           }
                           onChange={(textHistoire, event) => {
                             this.setState({
-                              textHistoire: textHistoire.target.value
+                              textHistoire: textHistoire.target.value,
+                              testNextText: 1
                             });
                           }}
                         />
@@ -792,6 +849,10 @@ class Publier extends React.Component {
             </Slider>
             <SamplePrevArrow
               onClick={() => this.previous()}
+              Color={
+                this.state.counter === 2
+                ? 'rgba(0, 0, 0, 0.26)'
+                : '#332861'}
               disabled={this.state.counter === 2 ? true : false}
             />
           </DialogContent>
@@ -812,8 +873,9 @@ class Publier extends React.Component {
                 color="white"
                 style={{ margin: 0 }}
                 onClick={event => {
-                  this.handleListItemClick(event, 1, 2);
+                  this.handleListItemValide(event, 1, 2);
                 }}
+                disabled={this.state.testNextText == 1 && this.state.planche.length == this.state.counter ? false : true}
               >
                 Valider
               </Button>
@@ -836,14 +898,25 @@ class Publier extends React.Component {
           onBackdropClick={() => {
             this.setState({
               modal: false,
-              planche: [{ text: "", img: "", data: "", lien: "" }]
+              planche: [{ text: "", img: "", data: "", lien: "" }],
+              titleHistoire: "",
+              lienImgHistoire: "",
+              dataImgHistoire: "",
+              imgHistoire: "",
+              lienInputUploadhistoire: ""
+            
             });
             this.gotToIndex(1);
           }}
           onClose={() =>
             this.setState({
               modal: false,
-              planche: [{ text: "", img: "", data: "", lien: "" }]
+              planche: [{ text: "", img: "", data: "", lien: "" }],
+              titleHistoire: "",
+              lienImgHistoire: "",
+              dataImgHistoire: "",
+              imgHistoire: "",
+              lienInputUploadhistoire: ""
             })
           }
           aria-labelledby="modal-slide-title"
@@ -857,7 +930,12 @@ class Publier extends React.Component {
             onClose={() => {
               this.setState({
                 modal: false,
-                planche: [{ text: "", img: "", data: "", lien: "" }]
+                planche: [{ text: "", img: "", data: "", lien: "" }],
+                titleHistoire: "",
+                lienImgHistoire: "",
+                dataImgHistoire: "",
+                imgHistoire: "",
+                lienInputUploadhistoire: ""
               });
               this.gotToIndex(1);
             }}
@@ -1339,7 +1417,7 @@ const DialogTitle = withStyles(styles1)(props => {
   );
 });
 function SampleNextArrow(props) {
-  const { className, style, onClick, disabled } = props;
+  const { className, style, onClick, disabled, Color } = props;
   return (
     <IconButton
       aria-label="delete"
@@ -1356,14 +1434,14 @@ function SampleNextArrow(props) {
       disabled={disabled}
     >
       <div className={className} style={{ height: "50px", width: "50px" }}>
-        <ArrowRightOutlined color="green" style={{ fontSize: "50px" }} />
+        <ArrowRightOutlined color="green" style={{ fontSize: "50px", color: Color }} />
       </div>
     </IconButton>
   );
 }
 
 function SamplePrevArrow(props) {
-  const { className, style, onClick, disabled } = props;
+  const { className, style, onClick, disabled, Color } = props;
   return (
     <IconButton
       style={{
@@ -1379,7 +1457,7 @@ function SamplePrevArrow(props) {
       disabled={disabled}
     >
       <div className={className} style={{ height: "50px", width: "50px" }}>
-        <ArrowLeftOutlined style={{ fontSize: "50px" }} />
+        <ArrowLeftOutlined style={{ fontSize: "50px", color: Color }} />
       </div>
     </IconButton>
   );

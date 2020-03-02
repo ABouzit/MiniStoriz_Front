@@ -77,7 +77,7 @@ export default function ConnexionPageDesktp(props) {
           </GridContainer>
         </div>
       </Parallax>
-      <div className={classNames(classes.main, classes.mainRaised)}>
+      <div className={classNames(classes.main, classes.mainRaised)} id="noshistoire">
         <div className={classes.container}>
           <NosHistoires />
         </div>
@@ -86,9 +86,31 @@ export default function ConnexionPageDesktp(props) {
       <div
         className={classNames(classes.main, classes.mainRaised)}
         style={{ marginTop: 20 }}
+        id="publier"
       >
         <div className={classes.container}>
           <Publier />
+        </div>
+      </div>
+      <br></br>
+      <div
+        className={classNames(classes.main, classes.mainRaised)}
+        style={{ marginTop: 20 }}
+        
+        id="echanger"
+      >
+        <div className={classes.container}>
+          <Echanger />
+        </div>
+      </div>
+      <br></br>
+      <div
+        className={classNames(classes.main, classes.mainRaised)}
+        style={{ marginTop: 20 }}
+        id="contact"
+      >
+        <div className={classes.container}>
+          <Contact />
         </div>
       </div>
       <Footer />

@@ -768,7 +768,7 @@ class Echanger extends React.Component {
           <GridItem xs={12} sm={12} md={12}>
             <CustomTabs
               variant="fullWidth"
-              headerColor="primary"
+              headerColor="info"
               tabs={[
                 {
                   tabName: "Mon réseau (23)",

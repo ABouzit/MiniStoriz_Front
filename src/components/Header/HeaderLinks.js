@@ -3,7 +3,7 @@ import React from "react";
 import DeleteIcon from "@material-ui/icons/Delete";
 import IconButton from "@material-ui/core/IconButton";
 // react components for routing our app without refresh
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 
 // @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles";
@@ -19,14 +19,16 @@ import CustomDropdown from "components/CustomDropdown/CustomDropdown.js";
 import Button from "components/CustomButtons/Button.js";
 
 import styles from "assets/jss/material-kit-react/components/headerLinksStyle.js";
-
+import { Link } from "react-scroll";
+import headerStyle from "assets/jss/material-kit-react/components/headerStyle";
 const useStyles = makeStyles(styles);
 
 export default function HeaderLinks(props) {
   const classes = useStyles();
+  const headerClasse = makeStyles(headerStyle);
   return (
     <List className={classes.list}>
-      <ListItem className={classes.listItem}>
+      {/* <ListItem className={classes.listItem}>
         <CustomDropdown
           noLiPadding
           buttonText="Components"
@@ -36,9 +38,9 @@ export default function HeaderLinks(props) {
           }}
           buttonIcon={Apps}
           dropdownList={[
-            <Link to="/" className={classes.dropdownLink}>
-              All components
-            </Link>,
+            // <Link to="/" className={classes.dropdownLink}>
+            //   All components
+            // </Link>,
             <a
               href="https://creativetimofficial.github.io/material-kit-react/#/documentation?ref=mkr-navbar"
               target="_blank"
@@ -58,6 +60,106 @@ export default function HeaderLinks(props) {
         >
           <CloudDownload className={classes.icons} /> Download
         </Button>
+      </ListItem> */}
+      <ListItem className={classes.listItem}>
+      <Link
+          color="transparent"
+          style={{color:"white"}}
+          activeClass="active"
+          to="noshistoire"
+          spy={true}
+          smooth={true}
+          offset={0}
+          duration= {500}
+          >
+        <Button
+          color="transparent"
+          target="_blank"
+          className={classes.navLink}
+        >
+          <i
+            className={
+              headerClasse.socialIcons + " fab fa-readme"
+            }
+            style={{  fontSize: 15 }}
+          /> Lire
+        </Button>
+        </Link>
+      </ListItem>
+      <ListItem className={classes.listItem}>
+      <Link
+          color="transparent"
+          style={{color:"white"}}
+          activeClass="active"
+          to="publier"
+          spy={true}
+          smooth={true}
+          offset={0}
+          duration= {500}
+          >
+        <Button
+          color="transparent"
+          target="_blank"
+          className={classes.navLink}
+        >
+          <i
+            className={
+              headerClasse.socialIcons + " fas fa-pen-square"
+            }
+            style={{  fontSize: 15 }}
+          /> Publier
+        </Button>
+        </Link>
+      </ListItem>
+      <ListItem className={classes.listItem}>
+      <Link
+          color="transparent"
+          style={{color:"white"}}
+          activeClass="active"
+          to="echanger"
+          spy={true}
+          smooth={true}
+          offset={0}
+          duration= {500}
+          >
+        <Button
+          color="transparent"
+          target="_blank"
+          className={classes.navLink}
+        >
+          <i
+            className={
+              headerClasse.socialIcons + " fas fa-comments"
+            }
+            style={{  fontSize: 15 }}
+          /> Echanger
+        </Button>
+        </Link>
+      </ListItem>
+      <ListItem className={classes.listItem}>
+      <Link
+          color="transparent"
+          style={{color:"white"}}
+          activeClass="active"
+          to="contact"
+          spy={true}
+          smooth={true}
+          offset={0}
+          duration= {500}
+          >
+        <Button
+          color="transparent"
+          target="_blank"
+          className={classes.navLink}
+        >
+          <i
+            className={
+              headerClasse.socialIcons + " fas fa-comment-dots"
+            }
+            style={{  fontSize: 15 }}
+          /> Contact
+        </Button>
+        </Link>
       </ListItem>
       <ListItem className={classes.listItem}>
         {/*<Tooltip title="Delete">
