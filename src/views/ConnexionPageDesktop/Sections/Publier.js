@@ -177,10 +177,10 @@ class Publier extends React.Component {
       this.state.dataImgHistoire
     ).then(() =>
       Axios.post(config.API_URL + "histoires", {
-        //userText: { id: "3748b6ad-9fcd-4bf5-878a-3ea9aa00952d" },
-       // userDessin: { id: "3748b6ad-9fcd-4bf5-878a-3ea9aa00952d" }, //id user serveur
-        userText: { id: "4305f81f-8e67-45df-80eb-54a646387457" },
-        userDessin: { id: "4305f81f-8e67-45df-80eb-54a646387457" },
+        userText: { id: "3748b6ad-9fcd-4bf5-878a-3ea9aa00952d" },
+        userDessin: { id: "3748b6ad-9fcd-4bf5-878a-3ea9aa00952d" }, //id user serveur
+       // userText: { id: "4305f81f-8e67-45df-80eb-54a646387457" },7
+       // userDessin: { id: "4305f81f-8e67-45df-80eb-54a646387457" },
         lienIllustration: this.state.lienImgHistoire,
         titreHistoire: this.state.titleHistoire
       })
@@ -195,6 +195,7 @@ class Publier extends React.Component {
               }).then(() =>
                 Axios.post(config.API_URL + "images/planches/", planch.data)
               );
+
               console.log("planche numero : " + index);
               console.log(planch);
             }
@@ -213,7 +214,7 @@ class Publier extends React.Component {
             dataImgHistoire: "",
             planche: [{ text: "", img: "", data: "", lien: "" }],
             lienInputUpload: "",
-            lienInputUploadhistoire:""
+            lienInputUploadhistoire: ""
           });
         })
         .catch(function(error) {

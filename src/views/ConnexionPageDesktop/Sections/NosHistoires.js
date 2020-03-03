@@ -193,7 +193,51 @@ class NosHistoires extends React.Component {
     this.slider.slickGoTo(index - 1);
     this.setState({ counter: 1 });
   }
-  async submitCommantaire() {
+  submitCommantaire() {
+    Axios.post(config.API_URL + "impressions", {
+      histoire: this.state.selectedHistoire,
+      commentaire: this.state.commentaire,
+      noteHistoire: this.state.ratingText,
+      noteDessin: this.state.ratingDessin,
+      isActive: true
+    }).then(res => {
+      console.log(res);
+      if (this.state.currentFiltre == 1) {
+        return Axios.get(config.API_URL + "histoires/nbrvue", {}).then(res => {
+          return this.setState({ histoires: res.data }, () =>
+            this.forceUpdate()
+          );
+        });
+      } else if (this.state.currentFiltre == 2) {
+        return Axios.get(config.API_URL + "histoires/populaire", {}).then(
+          res => {
+            return this.setState({ histoires: res.data }, () =>
+              this.forceUpdate()
+            );
+          }
+        );
+      } else if (this.state.currentFiltre == 3) {
+        console.log('Debut de requet');
+        return Axios.get(config.API_URL + "histoires/plusrecent", {}).then(
+          res => {
+            console.log('res2'+res)
+            return this.setState({ histoires: res.data }, () =>
+              this.forceUpdate()
+            );
+          }
+        );
+      } else if (this.state.currentFiltre == 4) {
+        return Axios.get(config.API_URL + "histoires/plusancient", {}).then(
+          res => {
+            return this.setState({ histoires: res.data }, () =>
+              this.forceUpdate()
+            );
+          }
+        );
+      }
+    });
+  }
+  /*submitCommantaire() {
     Axios.post(config.API_URL + "impressions", {
       histoire: this.state.selectedHistoire,
       commentaire: this.state.commentaire,
@@ -227,7 +271,7 @@ class NosHistoires extends React.Component {
         });
       }
     });
-  }
+  }*/
   //modal - carousel
   render() {
     const { settings, modal } = this.state;
