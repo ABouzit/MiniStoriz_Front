@@ -37,7 +37,7 @@ import "simplebar/dist/simplebar.min.css";
 import Axios from "axios";
 import config from "config/config";
 import { Input } from "@material-ui/core";
-
+import { subscriber, messageService } from "./../../../services/messageService";
 class Publier extends React.Component {
   constructor(props) {
     super(props);
@@ -111,14 +111,14 @@ class Publier extends React.Component {
     if (this.state.textHistoire === "") {
       this.setState({ testNextText: 0 });
       this.forceUpdate();
-    }else {
+    } else {
       this.setState({ testNextText: 1 });
       this.forceUpdate();
     }
     if (this.state.imgSrc === "") {
       this.setState({ testNext: 0 });
       this.forceUpdate();
-    }else {
+    } else {
       this.setState({ testNext: 1 });
       this.forceUpdate();
     }
@@ -128,20 +128,24 @@ class Publier extends React.Component {
     console.log(this.state.counter);
   }
   previous() {
-    
     this.state.planche[this.state.counter - 1].img = this.state.imgSrc;
     this.state.planche[this.state.counter - 1].text = this.state.textHistoire;
     this.state.planche[this.state.counter - 1].data = this.state.dataImgPlanche;
     this.state.planche[this.state.counter - 1].lien = this.state.lienImgPlanche;
-    this.setState({
-      lienInputUpload: "",
-      imgSrc: this.state.planche[this.state.counter - 2].img,
-      textHistoire: this.state.planche[this.state.counter - 2].text,
-      lienImgPlanche: this.state.planche[this.state.counter - 2].lien,
-      dataImgPlanche: this.state.planche[this.state.counter - 2].data,
-      testNextText: 1,
-      testNext: 1
-    }, ()=> {this.forceUpdate()});
+    this.setState(
+      {
+        lienInputUpload: "",
+        imgSrc: this.state.planche[this.state.counter - 2].img,
+        textHistoire: this.state.planche[this.state.counter - 2].text,
+        lienImgPlanche: this.state.planche[this.state.counter - 2].lien,
+        dataImgPlanche: this.state.planche[this.state.counter - 2].data,
+        testNextText: 1,
+        testNext: 1
+      },
+      () => {
+        this.forceUpdate();
+      }
+    );
     this.slider.slickPrev();
   }
   gotToIndex(index) {
@@ -171,32 +175,40 @@ class Publier extends React.Component {
     await Axios.post(
       config.API_URL + "images/histoires/",
       this.state.dataImgHistoire
-    ).then(async () =>
-      await Axios.post(config.API_URL + "histoires", {
-        userText: { id: "3748b6ad-9fcd-4bf5-878a-3ea9aa00952d" },
-        userDessin: { id: "3748b6ad-9fcd-4bf5-878a-3ea9aa00952d" },
-        lienIllustration: this.state.lienImgHistoire,
-        titreHistoire: this.state.titleHistoire
-      })
-        .then(async function(response) {
-          _this.state.planche.map(async (planch, index) => {
-            if (index > 0) {
-              await Axios.post(config.API_URL + "planches", {
-                histoire: response.data.id,
-                lienDessin: planch.lien,
-                text: planch.text,
-                index: index
-              }).then(async () =>
-                await Axios.post(config.API_URL + "images/planches/", planch.data)
-              );
-              console.log("planche numero : " + index);
-              console.log(planch);
-            }
-          });
+    ).then(
+      async () =>
+        await Axios.post(config.API_URL + "histoires", {
+          // userText: { id: "3748b6ad-9fcd-4bf5-878a-3ea9aa00952d" },
+          // userDessin: { id: "3748b6ad-9fcd-4bf5-878a-3ea9aa00952d" },//id user serveur 
+          userText: { id: "4305f81f-8e67-45df-80eb-54a646387457" },
+          userDessin: { id: "4305f81f-8e67-45df-80eb-54a646387457" },
+          lienIllustration: this.state.lienImgHistoire,
+          titreHistoire: this.state.titleHistoire
         })
-        .catch(function(error) {
-          console.log(error);
-        })
+          .then(async function(response) {
+            _this.state.planche.map(async (planch, index) => {
+              if (index > 0) {
+                await Axios.post(config.API_URL + "planches", {
+                  histoire: response.data.id,
+                  lienDessin: planch.lien,
+                  text: planch.text,
+                  index: index
+                }).then(
+                  async () =>
+                    await Axios.post(
+                      config.API_URL + "images/planches/",
+                      planch.data
+                    )
+                );
+                console.log("planche numero : " + index);
+                console.log(planch);
+              }
+            });
+            subscriber.next(true);
+          })
+          .catch(function(error) {
+            console.log(error);
+          })
     );
   }
   //exemple sauvgarger planches avec image
@@ -222,7 +234,7 @@ class Publier extends React.Component {
     if (this.state.textHistoire === "") {
       this.setState({ testNextText: 0 });
       this.forceUpdate();
-    }else {
+    } else {
       this.setState({ testNextText: 1 });
       this.forceUpdate();
     }
@@ -320,10 +332,16 @@ class Publier extends React.Component {
           >
             <SampleNextArrow
               onClick={() => this.next()}
-              Color={ this.state.testNext == 1 && this.state.testNextText == 1
-                ? '#332861'
-                : 'rgba(0, 0, 0, 0.26)'}
-              disabled={this.state.testNext == 1 && this.state.testNextText == 1 ? false : true}
+              Color={
+                this.state.testNext == 1 && this.state.testNextText == 1
+                  ? "#332861"
+                  : "rgba(0, 0, 0, 0.26)"
+              }
+              disabled={
+                this.state.testNext == 1 && this.state.testNextText == 1
+                  ? false
+                  : true
+              }
               style={Styles.NextArrow}
             />
             <Slider
@@ -390,10 +408,14 @@ class Publier extends React.Component {
                               : true
                           }
                           onChange={(textHistoire, event) => {
-                            this.setState({
-                              textHistoire: textHistoire.target.value
-                            },() => {this.testTextNext()});
-                            
+                            this.setState(
+                              {
+                                textHistoire: textHistoire.target.value
+                              },
+                              () => {
+                                this.testTextNext();
+                              }
+                            );
                           }}
                         />
                         <h5
@@ -458,9 +480,8 @@ class Publier extends React.Component {
             <SamplePrevArrow
               onClick={() => this.previous()}
               Color={
-                this.state.counter === 2
-                ? 'rgba(0, 0, 0, 0.26)'
-                : '#332861'}
+                this.state.counter === 2 ? "rgba(0, 0, 0, 0.26)" : "#332861"
+              }
               disabled={this.state.counter === 2 ? true : false}
             />
           </DialogContent>
@@ -484,7 +505,13 @@ class Publier extends React.Component {
                   // this.setState({ modal: false });
                   this.handleListItemValide(event, 1, 2);
                 }}
-                disabled={this.state.testNext == 1 && this.state.testNextText == 1 && this.state.planche.length == this.state.counter ? false : true}
+                disabled={
+                  this.state.testNext == 1 &&
+                  this.state.testNextText == 1 &&
+                  this.state.planche.length == this.state.counter
+                    ? false
+                    : true
+                }
               >
                 Valider
               </Button>
@@ -561,9 +588,9 @@ class Publier extends React.Component {
             <SampleNextArrow
               onClick={() => this.next()}
               style={Styles.NextArrow}
-              Color={ this.state.testNext == 1
-                ? '#332861'
-                : 'rgba(0, 0, 0, 0.26)'}
+              Color={
+                this.state.testNext == 1 ? "#332861" : "rgba(0, 0, 0, 0.26)"
+              }
               disabled={this.state.testNext == 1 ? false : true}
               style={Styles.NextArrow}
             />
@@ -670,9 +697,8 @@ class Publier extends React.Component {
             <SamplePrevArrow
               onClick={() => this.previous()}
               Color={
-                this.state.counter === 2
-                ? 'rgba(0, 0, 0, 0.26)'
-                : '#332861'}
+                this.state.counter === 2 ? "rgba(0, 0, 0, 0.26)" : "#332861"
+              }
               disabled={this.state.counter === 2 ? true : false}
             />
           </DialogContent>
@@ -696,7 +722,12 @@ class Publier extends React.Component {
                   // this.setState({ modal: false });
                   this.handleListItemValide(event, 1, 2);
                 }}
-                disabled={this.state.testNext == 1 && this.state.planche.length == this.state.counter ? false : true}
+                disabled={
+                  this.state.testNext == 1 &&
+                  this.state.planche.length == this.state.counter
+                    ? false
+                    : true
+                }
               >
                 Valider
               </Button>
@@ -773,9 +804,9 @@ class Publier extends React.Component {
             <SampleNextArrow
               onClick={() => this.next()}
               style={Styles.NextArrow}
-              Color={ this.state.testNextText == 1
-                ? '#332861'
-                : 'rgba(0, 0, 0, 0.26)'}
+              Color={
+                this.state.testNextText == 1 ? "#332861" : "rgba(0, 0, 0, 0.26)"
+              }
               disabled={this.state.testNextText == 1 ? false : true}
               style={Styles.NextArrow}
             />
@@ -850,9 +881,8 @@ class Publier extends React.Component {
             <SamplePrevArrow
               onClick={() => this.previous()}
               Color={
-                this.state.counter === 2
-                ? 'rgba(0, 0, 0, 0.26)'
-                : '#332861'}
+                this.state.counter === 2 ? "rgba(0, 0, 0, 0.26)" : "#332861"
+              }
               disabled={this.state.counter === 2 ? true : false}
             />
           </DialogContent>
@@ -875,7 +905,12 @@ class Publier extends React.Component {
                 onClick={event => {
                   this.handleListItemValide(event, 1, 2);
                 }}
-                disabled={this.state.testNextText == 1 && this.state.planche.length == this.state.counter ? false : true}
+                disabled={
+                  this.state.testNextText == 1 &&
+                  this.state.planche.length == this.state.counter
+                    ? false
+                    : true
+                }
               >
                 Valider
               </Button>
@@ -904,7 +939,6 @@ class Publier extends React.Component {
               dataImgHistoire: "",
               imgHistoire: "",
               lienInputUploadhistoire: ""
-            
             });
             this.gotToIndex(1);
           }}
@@ -1094,7 +1128,7 @@ class Publier extends React.Component {
           </DialogContent>
           <MuiDialogActions
             style={{
-              padding: 0,
+              padding: 0
             }}
           >
             <h3
@@ -1434,7 +1468,10 @@ function SampleNextArrow(props) {
       disabled={disabled}
     >
       <div className={className} style={{ height: "50px", width: "50px" }}>
-        <ArrowRightOutlined color="green" style={{ fontSize: "50px", color: Color }} />
+        <ArrowRightOutlined
+          color="green"
+          style={{ fontSize: "50px", color: Color }}
+        />
       </div>
     </IconButton>
   );

@@ -54,7 +54,8 @@ class Echanger extends React.Component {
     this.setState({ selectedIndex: index, typeModal: type, modal: true });
   }
   scrollBottom() {
-    this.SimpleBar.current.getScrollElement().scrollTop = 1000;
+    this.SimpleBar.current.getScrollElement().scrollTop = 3000;
+    console.log(this.SimpleBar.current.getScrollElement());
   }
   modalContent() {
     const { classes } = this.props;
@@ -79,7 +80,11 @@ class Echanger extends React.Component {
             onClose={() => {
               this.setState({ modal: false });
             }}
-            style={{ paddingBottom: "0px" }}
+            style={{
+              paddingBottom: "0px",
+              backgroundColor: "#e3f3fd",
+              color: "#332861"
+            }}
           >
             <h3
               style={{
@@ -95,7 +100,13 @@ class Echanger extends React.Component {
           <DialogContent
             id="modal-slide-description"
             className={classes.modalBody}
-            style={{ padding: 0, width: "100%", height: "200px" }}
+            style={{
+              padding: 0,
+              width: "100%",
+              height: "200px",
+              backgroundColor: "#e3f3fd",
+              color: "#332861"
+            }}
             spacing={0}
           >
             <GridContainer
@@ -146,7 +157,7 @@ class Echanger extends React.Component {
                 style={{ textAlign: "center", marginLeft: "30px" }}
               >
                 <Button
-                  color="primary"
+                  color="white"
                   style={{ margin: 0 }}
                   onClick={() => {
                     this.setState({ typeModal: 3 });
@@ -180,7 +191,11 @@ class Echanger extends React.Component {
             onClose={() => {
               this.setState({ modal: false });
             }}
-            style={{ paddingBottom: "0px" }}
+            style={{
+              paddingBottom: "0px",
+              backgroundColor: "#e3f3fd",
+              color: "#332861"
+            }}
           >
             <h3
               style={{
@@ -196,7 +211,13 @@ class Echanger extends React.Component {
           <DialogContent
             id="modal-slide-description"
             className={classes.modalBody}
-            style={{ padding: 0, width: "100%", height: "200px" }}
+            style={{
+              padding: 0,
+              width: "100%",
+              height: "200px",
+              backgroundColor: "#e3f3fd",
+              color: "#332861"
+            }}
             spacing={0}
           >
             <GridContainer
@@ -248,7 +269,7 @@ class Echanger extends React.Component {
               ></GridItem>
               <GridItem xs={4} sm={4} md={4} style={{ textAlign: "center" }}>
                 <Button
-                  color="primary"
+                  color="white"
                   style={{ margin: 0 }}
                   onClick={() => {
                     this.setState({ modal: false });
@@ -259,7 +280,7 @@ class Echanger extends React.Component {
               </GridItem>
               <GridItem xs={4} sm={4} md={4} style={{ textAlign: "center" }}>
                 <Button
-                  color="primary"
+                  color="white"
                   style={{ margin: 0 }}
                   onClick={() => {
                     this.setState({ typeModal: 3 });
@@ -295,6 +316,7 @@ class Echanger extends React.Component {
             onClose={() => {
               this.setState({ modal: false });
             }}
+            style={{ backgroundColor: "#e3f3fd", color: "#332861" }}
           >
             {" "}
             <GridContainer>
@@ -329,7 +351,12 @@ class Echanger extends React.Component {
             dividers
             id="modal-slide-description"
             className={classes.modalBody}
-            style={{ padding: 0, width: "100%", height: "500px" }}
+            style={{
+              padding: 0,
+              width: "100%",
+              height: "500px",
+              color: "#332861"
+            }}
             spacing={0}
           >
             {/* conversation //////////////////////////////////////// */}
@@ -403,7 +430,8 @@ class Echanger extends React.Component {
                           </span>
                         }
                         style={{
-                          background: "#4caf50"
+                          backgroundColor: "#e3f3fd",
+                          color: "#332861"
                         }}
                       />
                     </GridItem>
@@ -452,7 +480,8 @@ class Echanger extends React.Component {
                           </span>
                         }
                         style={{
-                          background: "#999999"
+                          background: "#ebebeb",
+                          color: "#332861"
                         }}
                       />
                     </GridItem>
@@ -515,7 +544,8 @@ class Echanger extends React.Component {
                           </span>
                         }
                         style={{
-                          background: "#4caf50"
+                          backgroundColor: "#e3f3fd",
+                          color: "#332861"
                         }}
                       />
                     </GridItem>
@@ -564,7 +594,8 @@ class Echanger extends React.Component {
                           </span>
                         }
                         style={{
-                          background: "#999999"
+                          background: "#ebebeb",
+                          color: "#332861"
                         }}
                       />
                     </GridItem>
@@ -627,7 +658,8 @@ class Echanger extends React.Component {
                           </span>
                         }
                         style={{
-                          background: "#4caf50"
+                          backgroundColor: "#e3f3fd",
+                          color: "#332861"
                         }}
                       />
                     </GridItem>
@@ -676,7 +708,8 @@ class Echanger extends React.Component {
                           </span>
                         }
                         style={{
-                          background: "#999999"
+                          background: "#ebebeb",
+                          color: "#332861"
                         }}
                       />
                     </GridItem>

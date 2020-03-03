@@ -7,7 +7,7 @@ import { withStyles } from "@material-ui/core/styles";
 import Rating from "@material-ui/lab/Rating";
 
 // core components
-import Tooltip from '@material-ui/core/Tooltip';
+import Tooltip from "@material-ui/core/Tooltip";
 import GridContainer from "components/Grid/GridContainer.js";
 import GridItem from "components/Grid/GridItem.js";
 import Card from "components/Card/Card.js";
@@ -40,7 +40,7 @@ import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
 import InputLabel from "@material-ui/core/InputLabel";
 import moment from "moment";
-
+import { subscriber, messageService } from "./../../../services/messageService";
 class NosHistoires extends React.Component {
   constructor(props) {
     super(props);
@@ -76,6 +76,11 @@ class NosHistoires extends React.Component {
     this.handleChange = this.handleChange.bind(this);
     this.fetchHistoire();
   }
+  componentDidMount() {
+    subscriber.subscribe(v => {
+      if (v == true) this.handleCheckRefresh();
+    });
+  }
   async fetchHistoire() {
     console.log("URL api" + config.API_URL);
     await Axios.get(config.API_URL + "histoires/nbrvue", {}).then(res => {
@@ -87,53 +92,84 @@ class NosHistoires extends React.Component {
     this.setState({ selectedFiltre: e.target.value });
     console.log(this.state.selectedFiltre);
   };
-
+  async handleCheckRefresh() {
+    if (this.state.currentFiltre == 1) {
+      await Axios.get(config.API_URL + "histoires/nbrvue", {}).then(res => {
+        this.setState({ histoires: res.data });
+        this.forceUpdate();
+        console.log(this.state.histoires);
+      });
+    } else if (this.state.currentFiltre == 2) {
+      await Axios.get(config.API_URL + "histoires/populaire", {}).then(res => {
+        this.setState({ histoires: res.data });
+        this.forceUpdate();
+      });
+    } else if (this.state.currentFiltre == 3) {
+      await Axios.get(config.API_URL + "histoires/plusrecent", {}).then(res => {
+        this.setState({ histoires: res.data });
+        this.forceUpdate();
+      });
+    } else if (this.state.currentFiltre == 4) {
+      await Axios.get(config.API_URL + "histoires/plusancient", {}).then(
+        res => {
+          this.setState({ histoires: res.data });
+          this.forceUpdate();
+        }
+      );
+    }
+  }
   async handleCheck(e) {
     if (e.currentTarget.dataset.id == 1) {
       await Axios.get(config.API_URL + "histoires/nbrvue", {}).then(res => {
-        this.setState({ histoires: res.data, currentFiltre:1 });
+        this.setState({ histoires: res.data, currentFiltre: 1 });
         this.forceUpdate();
         console.log(this.state.histoires);
       });
     } else if (e.currentTarget.dataset.id == 2) {
       await Axios.get(config.API_URL + "histoires/populaire", {}).then(res => {
-        this.setState({ histoires: res.data, currentFiltre:2 });
+        this.setState({ histoires: res.data, currentFiltre: 2 });
         this.forceUpdate();
       });
     } else if (e.currentTarget.dataset.id == 3) {
       await Axios.get(config.API_URL + "histoires/plusrecent", {}).then(res => {
-        this.setState({ histoires: res.data, currentFiltre:3 });
+        this.setState({ histoires: res.data, currentFiltre: 3 });
         this.forceUpdate();
       });
     } else if (e.currentTarget.dataset.id == 4) {
-      await Axios.get(config.API_URL + "histoires/plusancient", {}).then(res => {
-        this.setState({ histoires: res.data, currentFiltre:4 });
-        this.forceUpdate();
-      });
+      await Axios.get(config.API_URL + "histoires/plusancient", {}).then(
+        res => {
+          this.setState({ histoires: res.data, currentFiltre: 4 });
+          this.forceUpdate();
+        }
+      );
     }
   }
 
   async fetchPlanche(histoire) {
-    await Axios.get(config.API_URL + "planches/histoire/" + histoire.id, {}).then(
-      res => {
-        this.setState({ planches: res.data });
-        histoire.nombreVue = histoire.nombreVue + 1;
-        console.log(histoire);
-        Axios.put(config.API_URL + "histoires/", histoire).then(res => {
-          this.forceUpdate();
-        });
-      }
-    );
+    await Axios.get(
+      config.API_URL + "planches/histoire/" + histoire.id,
+      {}
+    ).then(res => {
+      this.setState({ planches: res.data });
+      histoire.nombreVue = histoire.nombreVue + 1;
+      console.log(histoire);
+      Axios.put(config.API_URL + "histoires/", histoire).then(res => {
+        this.forceUpdate();
+      });
+    });
   }
   getDay(date) {
     const d = moment(new Date());
     const dHistoire = moment(date);
-    let dt="";
-    if (d.diff(dHistoire, 'days') > 30) {
-      dt = Math.floor(d.diff(dHistoire, 'month'))+" mois "+(d.diff(dHistoire, 'days')-(d.diff(dHistoire, 'month')*30))+" jours ";
-
+    let dt = "";
+    if (d.diff(dHistoire, "days") > 30) {
+      dt =
+        Math.floor(d.diff(dHistoire, "month")) +
+        " mois " +
+        (d.diff(dHistoire, "days") - d.diff(dHistoire, "month") * 30) +
+        " jours ";
     } else {
-      dt = d.diff(dHistoire, 'days')+" jours"
+      dt = d.diff(dHistoire, "days") + " jours";
     }
     return dt;
   }
@@ -166,32 +202,39 @@ class NosHistoires extends React.Component {
       isActive: true
     }).then(async res => {
       if (this.state.currentFiltre == 1) {
-        await Axios.get(config.API_URL + "histoires/nbrvue", {}).then(async res => {
-          this.setState({ histoires: res.data });
-          setTimeout(()=>{ this.forceUpdate(); }, 3000);          
-          console.log("histoire execute nbrvue");
-        });
+        await Axios.get(config.API_URL + "histoires/nbrvue", {}).then(
+          async res => {
+            this.setState({ histoires: res.data });
+            await this.forceUpdate();
+            console.log("histoire execute nbrvue");
+          }
+        );
       } else if (this.state.currentFiltre == 2) {
-        await Axios.get(config.API_URL + "histoires/populaire", {}).then(async res => {
-          this.setState({ histoires: res.data });
-          setTimeout(()=>{ this.forceUpdate(); }, 3000);
-          console.log("histoire execute nbrvue");
-        });
+        await Axios.get(config.API_URL + "histoires/populaire", {}).then(
+          async res => {
+            this.setState({ histoires: res.data });
+            await this.forceUpdate();
+            console.log("histoire execute nbrvue");
+          }
+        );
       } else if (this.state.currentFiltre == 3) {
-        await Axios.get(config.API_URL + "histoires/plusrecent", {}).then(async res => {
-          this.setState({ histoires: res.data });
-          setTimeout(()=>{ this.forceUpdate(); }, 3000);
-          console.log("histoire execute nbrvue");
-        });
+        await Axios.get(config.API_URL + "histoires/plusrecent", {}).then(
+          async res => {
+            this.setState({ histoires: res.data });
+            await this.forceUpdate();
+            console.log("histoire execute nbrvue");
+          }
+        );
       } else if (this.state.currentFiltre == 4) {
-        await Axios.get(config.API_URL + "histoires/plusancient", {}).then(async res => {
-          this.setState({ histoires: res.data });
-          setTimeout(()=>{ this.forceUpdate(); }, 3000);
-          console.log("histoire execute nbrvue");
-        });
+        await Axios.get(config.API_URL + "histoires/plusancient", {}).then(
+          async res => {
+            this.setState({ histoires: res.data });
+            await this.forceUpdate();
+            console.log("histoire execute nbrvue");
+          }
+        );
       }
-    });;
-    
+    });
   }
   //modal - carousel
   render() {
@@ -200,19 +243,32 @@ class NosHistoires extends React.Component {
     if (this.state.histoires !== [])
       return (
         <div className={classes.section}>
+          <h1>{this.props.refreshFromParent + ""}</h1>
           <Dialog
             classes={{
               root: classes.center,
               paper: classes.modal
             }}
             onBackdropClick={() => {
-              this.setState({ modal: false, ratingDessin: 0, ratingText: 0, commentaire: "" });
+              this.setState({
+                modal: false,
+                ratingDessin: 0,
+                ratingText: 0,
+                commentaire: ""
+              });
               this.gotToIndex(1);
             }}
             open={modal}
             TransitionComponent={Transition}
             keepMounted
-            onClose={() => this.setState({ modal: false, ratingDessin: 0, ratingText: 0, commentaire: "" })}
+            onClose={() =>
+              this.setState({
+                modal: false,
+                ratingDessin: 0,
+                ratingText: 0,
+                commentaire: ""
+              })
+            }
             aria-labelledby="modal-slide-title"
             aria-describedby="modal-slide-description"
             maxWidth={"md"}
@@ -223,7 +279,12 @@ class NosHistoires extends React.Component {
             <DialogTitle
               id="customized-dialog-title"
               onClose={() => {
-                this.setState({ modal: false, ratingDessin: 0, ratingText: 0, commentaire: "" });
+                this.setState({
+                  modal: false,
+                  ratingDessin: 0,
+                  ratingText: 0,
+                  commentaire: ""
+                });
                 this.gotToIndex(1);
               }}
               style={{
@@ -254,8 +315,9 @@ class NosHistoires extends React.Component {
                 style={Styles.NextArrow}
                 Color={
                   this.state.counter === this.state.planches.length + 1
-                  ? 'rgba(0, 0, 0, 0.26)'
-                  : '#332861'}
+                    ? "rgba(0, 0, 0, 0.26)"
+                    : "#332861"
+                }
                 disabled={
                   this.state.counter === this.state.planches.length + 1
                     ? true
@@ -544,9 +606,8 @@ class NosHistoires extends React.Component {
               <SamplePrevArrow
                 onClick={() => this.previous()}
                 Color={
-                  this.state.counter === 1
-                  ? 'rgba(0, 0, 0, 0.26)'
-                  : '#332861'}
+                  this.state.counter === 1 ? "rgba(0, 0, 0, 0.26)" : "#332861"
+                }
                 disabled={this.state.counter === 1 ? true : false}
               />
             </DialogContent>
@@ -570,7 +631,12 @@ class NosHistoires extends React.Component {
                     color="white"
                     style={{ margin: 0 }}
                     onClick={() => {
-                      this.setState({ modal: false, ratingDessin: 0, ratingText: 0, commentaire: "" });
+                      this.setState({
+                        modal: false,
+                        ratingDessin: 0,
+                        ratingText: 0,
+                        commentaire: ""
+                      });
                       this.gotToIndex(1);
                       this.submitCommantaire();
                     }}
@@ -583,9 +649,7 @@ class NosHistoires extends React.Component {
           </Dialog>
           <GridContainer justify="center">
             <GridItem xs={12} sm={12} md={8}>
-              <h2 className={classes.title}>
-                NOS HISTOIRES
-              </h2>
+              <h2 className={classes.title}>NOS HISTOIRES</h2>
             </GridItem>
           </GridContainer>
           <GridContainer justify="flex-end">
@@ -696,60 +760,76 @@ class NosHistoires extends React.Component {
                             margin: 0
                           }}
                         >
-                          {histoire.nombreVue ? histoire.nombreVue : 0} vues - {this.getDay(histoire.dateDeCreation)}
+                          {histoire.nombreVue ? histoire.nombreVue : 0} vues -{" "}
+                          {this.getDay(histoire.dateDeCreation)}
                         </h5>
                         <CardBody>
                           <GridContainer>
                             <GridItem xs={12} sm={12} md={12}>
                               <p>{"Text par " + histoire.userText.pseudo}</p>
-                              <Tooltip disableFocusListener disableTouchListener title={
-                                    histoire.noteHistoireMoy
-                                      ? parseFloat(Math.round(histoire.noteHistoireMoy*100)/100).toFixed(2)  + "/5"
-                                      : 0
-                                  }>
-                                <ButtonBase >
-                                <StyledRating
-                                  name="read-only"
-                                  value={
-                                    histoire.noteHistoireMoy
-                                      ? histoire.noteHistoireMoy
-                                      : 0
-                                  }
-                                  emptyIcon={
-                                    <StarBorderIcon fontSize="inherit" />
-                                  }
-                                  precision={0.5}
-                                  readOnly
-                                />
+                              <Tooltip
+                                disableFocusListener
+                                disableTouchListener
+                                title={
+                                  histoire.noteHistoireMoy
+                                    ? parseFloat(
+                                        Math.round(
+                                          histoire.noteHistoireMoy * 100
+                                        ) / 100
+                                      ).toFixed(2) + "/5"
+                                    : 0
+                                }
+                              >
+                                <ButtonBase>
+                                  <StyledRating
+                                    name="read-only"
+                                    value={
+                                      histoire.noteHistoireMoy
+                                        ? histoire.noteHistoireMoy
+                                        : 0
+                                    }
+                                    emptyIcon={
+                                      <StarBorderIcon fontSize="inherit" />
+                                    }
+                                    precision={0.5}
+                                    readOnly
+                                  />
                                 </ButtonBase>
                               </Tooltip>
-                              
                             </GridItem>
                             <GridItem xs={12} sm={12} md={12}>
                               <p>
                                 {" "}
                                 {"Dessin par " + histoire.userDessin.pseudo}
                               </p>
-                              <Tooltip disableFocusListener disableTouchListener title={
-                                    histoire.noteHistoireMoy
-                                      ? parseFloat(Math.round(histoire.noteDessinMoy*100)/100).toFixed(2)  + "/5"
-                                      : 0
-                                  }>
-                                <ButtonBase >
-                              <StyledRating
-                                name="read-only"
-                                value={
-                                  histoire.noteDessinMoy
-                                    ? histoire.noteDessinMoy
+                              <Tooltip
+                                disableFocusListener
+                                disableTouchListener
+                                title={
+                                  histoire.noteHistoireMoy
+                                    ? parseFloat(
+                                        Math.round(
+                                          histoire.noteDessinMoy * 100
+                                        ) / 100
+                                      ).toFixed(2) + "/5"
                                     : 0
                                 }
-                                emptyIcon={
-                                  <StarBorderIcon fontSize="inherit" />
-                                }
-                                precision={0.5}
-                                readOnly
-                              />
-                              </ButtonBase>
+                              >
+                                <ButtonBase>
+                                  <StyledRating
+                                    name="read-only"
+                                    value={
+                                      histoire.noteDessinMoy
+                                        ? histoire.noteDessinMoy
+                                        : 0
+                                    }
+                                    emptyIcon={
+                                      <StarBorderIcon fontSize="inherit" />
+                                    }
+                                    precision={0.5}
+                                    readOnly
+                                  />
+                                </ButtonBase>
                               </Tooltip>
                             </GridItem>
                           </GridContainer>
@@ -778,7 +858,7 @@ class NosHistoires extends React.Component {
   }
 }
 const StyledRating = withStyles({
-  decimal: {display:'flex'},
+  decimal: { display: "flex" },
   iconFilled: {
     color: "#ffb400",
     fontSize: "24px"

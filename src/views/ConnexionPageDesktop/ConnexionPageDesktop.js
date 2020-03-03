@@ -28,6 +28,11 @@ const dashboardRoutes = [];
 const useStyles = makeStyles(styles);
 
 export default function ConnexionPageDesktp(props) {
+  const [refresh, setRefresh] = React.useState(false);
+  let refreshCallBackFunction = publierData => {
+    console.log(publierData);
+    setRefresh(true);
+  };
   const classes = useStyles();
   const { ...rest } = props;
   return (
@@ -60,7 +65,9 @@ export default function ConnexionPageDesktp(props) {
             <GridItem xs={12} sm={12} md={6}>
               <h1 className={classes.title}>Ecris ton histoire !</h1>
               <h4>
-                Ministoriz est un site collaboratif permettant q nos membres (les mini-artostes), passionnes d'ecriture ou de dessin, de publier des histoires et de ravir nos lecteurs!
+                Ministoriz est un site collaboratif permettant q nos membres
+                (les mini-artostes), passionnes d'ecriture ou de dessin, de
+                publier des histoires et de ravir nos lecteurs!
               </h4>
               <br />
               <Button
@@ -77,9 +84,12 @@ export default function ConnexionPageDesktp(props) {
           </GridContainer>
         </div>
       </Parallax>
-      <div className={classNames(classes.main, classes.mainRaised)} id="noshistoire">
+      <div
+        className={classNames(classes.main, classes.mainRaised)}
+        id="noshistoire"
+      >
         <div className={classes.container}>
-          <NosHistoires />
+          <NosHistoires refreshFromParent={refresh} />
         </div>
       </div>
       <br></br>
@@ -89,14 +99,13 @@ export default function ConnexionPageDesktp(props) {
         id="publier"
       >
         <div className={classes.container}>
-          <Publier />
+          <Publier parentCallback={refreshCallBackFunction} />
         </div>
       </div>
       <br></br>
       <div
         className={classNames(classes.main, classes.mainRaised)}
         style={{ marginTop: 20 }}
-        
         id="echanger"
       >
         <div className={classes.container}>
