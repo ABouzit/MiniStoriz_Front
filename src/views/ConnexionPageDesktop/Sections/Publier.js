@@ -170,45 +170,55 @@ class Publier extends React.Component {
     }.bind(this);
     console.log(file[0].name); // Would see a path?
   }
-  async saveHistoireWithPlanche() {
+  saveHistoireWithPlanche() {
     const _this = this;
-    await Axios.post(
+    Axios.post(
       config.API_URL + "images/histoires/",
       this.state.dataImgHistoire
-    ).then(
-      async () =>
-        await Axios.post(config.API_URL + "histoires", {
-          // userText: { id: "3748b6ad-9fcd-4bf5-878a-3ea9aa00952d" },
-          // userDessin: { id: "3748b6ad-9fcd-4bf5-878a-3ea9aa00952d" },//id user serveur 
-          userText: { id: "4305f81f-8e67-45df-80eb-54a646387457" },
-          userDessin: { id: "4305f81f-8e67-45df-80eb-54a646387457" },
-          lienIllustration: this.state.lienImgHistoire,
-          titreHistoire: this.state.titleHistoire
+    ).then(() =>
+      Axios.post(config.API_URL + "histoires", {
+        //userText: { id: "3748b6ad-9fcd-4bf5-878a-3ea9aa00952d" },
+       // userDessin: { id: "3748b6ad-9fcd-4bf5-878a-3ea9aa00952d" }, //id user serveur
+        userText: { id: "4305f81f-8e67-45df-80eb-54a646387457" },
+        userDessin: { id: "4305f81f-8e67-45df-80eb-54a646387457" },
+        lienIllustration: this.state.lienImgHistoire,
+        titreHistoire: this.state.titleHistoire
+      })
+        .then(function(response) {
+          _this.state.planche.map((planch, index) => {
+            if (index > 0) {
+              Axios.post(config.API_URL + "planches", {
+                histoire: response.data.id,
+                lienDessin: planch.lien,
+                text: planch.text,
+                index: index
+              }).then(() =>
+                Axios.post(config.API_URL + "images/planches/", planch.data)
+              );
+              console.log("planche numero : " + index);
+              console.log(planch);
+            }
+          });
+          subscriber.next(true);
+          _this.setState({
+            imgSrc: "",
+            dataImgPlanche: "",
+            lienImgPlanche: "",
+            testNext: 0,
+            testNextText: 0,
+            textHistoire: "",
+            titleHistoire: "",
+            imgHistoire: "",
+            lienImgHistoire: "",
+            dataImgHistoire: "",
+            planche: [{ text: "", img: "", data: "", lien: "" }],
+            lienInputUpload: "",
+            lienInputUploadhistoire:""
+          });
         })
-          .then(async function(response) {
-            _this.state.planche.map(async (planch, index) => {
-              if (index > 0) {
-                await Axios.post(config.API_URL + "planches", {
-                  histoire: response.data.id,
-                  lienDessin: planch.lien,
-                  text: planch.text,
-                  index: index
-                }).then(
-                  async () =>
-                    await Axios.post(
-                      config.API_URL + "images/planches/",
-                      planch.data
-                    )
-                );
-                console.log("planche numero : " + index);
-                console.log(planch);
-              }
-            });
-            subscriber.next(true);
-          })
-          .catch(function(error) {
-            console.log(error);
-          })
+        .catch(function(error) {
+          console.log(error);
+        })
     );
   }
   //exemple sauvgarger planches avec image

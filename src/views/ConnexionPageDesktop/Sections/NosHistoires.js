@@ -194,45 +194,37 @@ class NosHistoires extends React.Component {
     this.setState({ counter: 1 });
   }
   async submitCommantaire() {
-    await Axios.post(config.API_URL + "impressions", {
+    Axios.post(config.API_URL + "impressions", {
       histoire: this.state.selectedHistoire,
       commentaire: this.state.commentaire,
       noteHistoire: this.state.ratingText,
       noteDessin: this.state.ratingDessin,
       isActive: true
-    }).then(async res => {
+    }).then(res => {
       if (this.state.currentFiltre == 1) {
-        await Axios.get(config.API_URL + "histoires/nbrvue", {}).then(
-          async res => {
-            this.setState({ histoires: res.data });
-            await this.forceUpdate();
-            console.log("histoire execute nbrvue");
-          }
-        );
+        Axios.get(config.API_URL + "histoires/nbrvue", {}).then(res => {
+          return this.setState({ histoires: res.data }, () =>
+            this.forceUpdate()
+          );
+        });
       } else if (this.state.currentFiltre == 2) {
-        await Axios.get(config.API_URL + "histoires/populaire", {}).then(
-          async res => {
-            this.setState({ histoires: res.data });
-            await this.forceUpdate();
-            console.log("histoire execute nbrvue");
-          }
-        );
+        Axios.get(config.API_URL + "histoires/populaire", {}).then(res => {
+          return this.setState({ histoires: res.data }, () =>
+            this.forceUpdate()
+          );
+        });
       } else if (this.state.currentFiltre == 3) {
-        await Axios.get(config.API_URL + "histoires/plusrecent", {}).then(
-          async res => {
-            this.setState({ histoires: res.data });
-            await this.forceUpdate();
-            console.log("histoire execute nbrvue");
-          }
-        );
+        Axios.get(config.API_URL + "histoires/plusrecent", {}).then(res => {
+          return this.setState({ histoires: res.data }, () =>
+            this.forceUpdate()
+          );
+        });
       } else if (this.state.currentFiltre == 4) {
-        await Axios.get(config.API_URL + "histoires/plusancient", {}).then(
-          async res => {
-            this.setState({ histoires: res.data });
-            await this.forceUpdate();
-            console.log("histoire execute nbrvue");
-          }
-        );
+        Axios.get(config.API_URL + "histoires/plusancient", {}).then(res => {
+          return this.setState({ histoires: res.data }, () =>
+            this.forceUpdate()
+          );
+        });
       }
     });
   }
@@ -243,7 +235,6 @@ class NosHistoires extends React.Component {
     if (this.state.histoires !== [])
       return (
         <div className={classes.section}>
-          <h1>{this.props.refreshFromParent + ""}</h1>
           <Dialog
             classes={{
               root: classes.center,
