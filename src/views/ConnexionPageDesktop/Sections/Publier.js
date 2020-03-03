@@ -172,55 +172,64 @@ class Publier extends React.Component {
   }
   saveHistoireWithPlanche() {
     const _this = this;
-    Axios.post(
-      config.API_URL + "images/histoires/",
+    return Axios.post(
+      config.API_URL + "sendImage/histoires/",
       this.state.dataImgHistoire
-    ).then(() =>
-      Axios.post(config.API_URL + "histoires", {
-        userText: { id: "3748b6ad-9fcd-4bf5-878a-3ea9aa00952d" },
-        userDessin: { id: "3748b6ad-9fcd-4bf5-878a-3ea9aa00952d" }, //id user serveur
-       // userText: { id: "4305f81f-8e67-45df-80eb-54a646387457" },7
-       // userDessin: { id: "4305f81f-8e67-45df-80eb-54a646387457" },
-        lienIllustration: this.state.lienImgHistoire,
+    ).then(res => {
+      let s = res.data.filePath.replace("\\", "/").replace("\\", "/");
+      return Axios.post(config.API_URL + "histoires", {
+        // userText: { id: "3748b6ad-9fcd-4bf5-878a-3ea9aa00952d" },
+        //userDessin: { id: "3748b6ad-9fcd-4bf5-878a-3ea9aa00952d" }, //id user serveur
+        userText: { id: "4305f81f-8e67-45df-80eb-54a646387457" },
+        userDessin: { id: "4305f81f-8e67-45df-80eb-54a646387457" },
+        //userText: { id: "3c500b25-cb58-4be3-861e-2bb2926bd75f" },//serv2
+        //userDessin: { id: "3c500b25-cb58-4be3-861e-2bb2926bd75f" },
+        lienIllustration: config.API_URL + s,
         titreHistoire: this.state.titleHistoire
       })
         .then(function(response) {
-          _this.state.planche.map((planch, index) => {
-            if (index > 0) {
-              Axios.post(config.API_URL + "planches", {
-                histoire: response.data.id,
-                lienDessin: planch.lien,
-                text: planch.text,
-                index: index
-              }).then(() =>
-                Axios.post(config.API_URL + "images/planches/", planch.data)
-              );
-
-              console.log("planche numero : " + index);
-              console.log(planch);
-            }
-          });
-          subscriber.next(true);
-          _this.setState({
-            imgSrc: "",
-            dataImgPlanche: "",
-            lienImgPlanche: "",
-            testNext: 0,
-            testNextText: 0,
-            textHistoire: "",
-            titleHistoire: "",
-            imgHistoire: "",
-            lienImgHistoire: "",
-            dataImgHistoire: "",
-            planche: [{ text: "", img: "", data: "", lien: "" }],
-            lienInputUpload: "",
-            lienInputUploadhistoire: ""
+          Promise.all(
+            _this.state.planche.map((planch, index) => {
+              if (index > 0) {
+                return Axios.post(
+                  config.API_URL + "sendImage/planches/",
+                  planch.data
+                ).then(res => {
+                  let s = res.data.filePath
+                    .replace("\\", "/")
+                    .replace("\\", "/");
+                  return Axios.post(config.API_URL + "planches", {
+                    histoire: response.data.id,
+                    lienDessin: config.API_URL + s,
+                    text: planch.text,
+                    index: index
+                  });
+                });
+              }
+            })
+          ).then(res => {
+            subscriber.next(true);
+            _this.setState({
+              imgSrc: "",
+              dataImgPlanche: "",
+              lienImgPlanche: "",
+              testNext: 0,
+              testNextText: 0,
+              textHistoire: "",
+              titleHistoire: "",
+              imgHistoire: "",
+              lienImgHistoire: "",
+              dataImgHistoire: "",
+              planche: [{ text: "", img: "", data: "", lien: "" }],
+              lienInputUpload: "",
+              lienInputUploadhistoire: ""
+            });
           });
         })
         .catch(function(error) {
           console.log(error);
-        })
-    );
+        });
+    });
   }
   //exemple sauvgarger planches avec image
   savePlanches(file) {
@@ -400,8 +409,6 @@ class Publier extends React.Component {
                         xs={7}
                         sm={7}
                         md={7}
-                        justify="center"
-                        alignItems="center"
                         style={{ paddingRight: "20px", paddingRight: "10px" }}
                       >
                         <TextField
@@ -470,8 +477,6 @@ class Publier extends React.Component {
                         xs={5}
                         sm={5}
                         md={5}
-                        justify="center"
-                        alignItems="center"
                         style={{ paddingRight: "20px", paddingRight: "10px" }}
                       >
                         <img
@@ -642,8 +647,6 @@ class Publier extends React.Component {
                         xs={7}
                         sm={7}
                         md={7}
-                        justify="center"
-                        alignItems="center"
                         style={{ paddingRight: "20px", paddingRight: "10px" }}
                       >
                         <h5
@@ -687,8 +690,6 @@ class Publier extends React.Component {
                         xs={5}
                         sm={5}
                         md={5}
-                        justify="center"
-                        alignItems="center"
                         style={{ paddingRight: "20px", paddingRight: "10px" }}
                       >
                         <img
@@ -858,8 +859,6 @@ class Publier extends React.Component {
                         xs={10}
                         sm={10}
                         md={10}
-                        justify="center"
-                        alignItems="center"
                         style={{ paddingRight: "20px", paddingRight: "10px" }}
                       >
                         <TextField
@@ -1045,8 +1044,6 @@ class Publier extends React.Component {
                     xs={10}
                     sm={10}
                     md={10}
-                    justify="center"
-                    alignItems="center"
                     style={{ paddingRight: "20px", paddingRight: "10px" }}
                   >
                     <h3
@@ -1120,8 +1117,6 @@ class Publier extends React.Component {
                     xs={10}
                     sm={10}
                     md={4}
-                    justify="center"
-                    alignItems="center"
                     style={{ paddingRight: "20px", paddingRight: "10px" }}
                   >
                     <img
@@ -1211,18 +1206,8 @@ class Publier extends React.Component {
           </GridItem>
         </GridContainer>
         <div>
-          <GridContainer
-            justify="center"
-            spacing={"auto"}
-            style={{ marginTop: 20 }}
-          >
-            <GridItem
-              xs={12}
-              sm={12}
-              md={4}
-              justify="center"
-              style={{ width: "auto" }}
-            >
+          <GridContainer justify="center" style={{ marginTop: 20 }}>
+            <GridItem xs={12} sm={12} md={4} style={{ width: "auto" }}>
               <ButtonBase
                 focusRipple
                 className={classes.image}
@@ -1289,13 +1274,7 @@ class Publier extends React.Component {
                 </Card>
               </ButtonBase>
             </GridItem>
-            <GridItem
-              xs={12}
-              sm={12}
-              md={4}
-              justify="center"
-              style={{ width: "auto" }}
-            >
+            <GridItem xs={12} sm={12} md={4} style={{ width: "auto" }}>
               <ButtonBase
                 focusRipple
                 className={classes.image}
@@ -1352,13 +1331,7 @@ class Publier extends React.Component {
                 </Card>
               </ButtonBase>
             </GridItem>
-            <GridItem
-              xs={12}
-              sm={12}
-              md={4}
-              justify="center"
-              style={{ width: "auto" }}
-            >
+            <GridItem xs={12} sm={12} md={4} style={{ width: "auto" }}>
               <ButtonBase
                 focusRipple
                 className={classes.image}

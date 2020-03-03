@@ -14,63 +14,70 @@ import Tooltip from "@material-ui/core/Tooltip";
 import headerStyle from "assets/jss/material-kit-react/components/headerStyle";
 
 class Contact extends React.Component {
-    constructor(props) {
-        super(props);
-        this.headerClasse = makeStyles(headerStyle);
-        this.state = {
-          nom: "",
-          email: "",
-          objet: "",
-          message: ""
-        };
-        this.valideContact = this.valideContact.bind(this);
+  constructor(props) {
+    super(props);
+    this.headerClasse = makeStyles(headerStyle);
+    this.state = {
+      nom: "",
+      email: "",
+      objet: "",
+      message: ""
+    };
+    this.valideContact = this.valideContact.bind(this);
+  }
+  valideContact() {
+    if (this.state.nom === "") {
+      const nom = document.getElementById("nomContact");
+      nom.setAttribute("error", "error");
+      this.forceUpdate();
+    } else {
+      const nom = document.getElementById("nomContact");
+      nom.removeAttribute("error");
     }
-    valideContact() {
-      if (this.state.nom === "") {
-        const nom = document.getElementById("nomContact");
-        nom.setAttribute("error", "error");
-        this.forceUpdate();
-      } else {
-        const nom = document.getElementById("nomContact");
-        nom.removeAttribute("error");
-      }
-      if (this.state.email === "") {
-        const email = document.getElementById("emailContact");
-        email.setAttribute("error", "error");
-      } else {
-        const email = document.getElementById("emailContact");
-        email.removeAttribute("error");
-        this.forceUpdate();
-      }
-      if (this.state.objet === "") {
-        const objet = document.getElementById("objetContact");
-        objet.setAttribute("error", "error");
-      } else {
-        const objet = document.getElementById("objetContact");
-        objet.removeAttribute("error");
-      }
-      if (this.state.message === "") {
-        const message = document.getElementById("messageContact");
-        message.setAttribute("error", "error");
-      } else {
-        const message = document.getElementById("messageContact");
-        message.removeAttribute("error");
-      }
-      
+    if (this.state.email === "") {
+      const email = document.getElementById("emailContact");
+      email.setAttribute("error", "error");
+    } else {
+      const email = document.getElementById("emailContact");
+      email.removeAttribute("error");
+      this.forceUpdate();
     }
-render() {
-  const { classes } = this.props;
-  return (
-    <div className={classes.section}>
-      <GridContainer justify="center">
-        <GridItem xs={12} sm={12} md={8}>
-          <h2 className={classes.title}>CONTACT</h2>
-        </GridItem>
-      </GridContainer>
-      <GridContainer direction="row"
-        justify="flex-start"
-        alignItems="flex-start" style={{ marginTop: 35 }}>
-      <GridItem xs={12} sm={12} md={6} style={{color: '#212121', textAlign: "justify" }} >
+    if (this.state.objet === "") {
+      const objet = document.getElementById("objetContact");
+      objet.setAttribute("error", "error");
+    } else {
+      const objet = document.getElementById("objetContact");
+      objet.removeAttribute("error");
+    }
+    if (this.state.message === "") {
+      const message = document.getElementById("messageContact");
+      message.setAttribute("error", "error");
+    } else {
+      const message = document.getElementById("messageContact");
+      message.removeAttribute("error");
+    }
+  }
+  render() {
+    const { classes } = this.props;
+    return (
+      <div className={classes.section}>
+        <GridContainer justify="center">
+          <GridItem xs={12} sm={12} md={8}>
+            <h2 className={classes.title}>CONTACT</h2>
+          </GridItem>
+        </GridContainer>
+        <GridContainer
+          direction="row"
+          justify="flex-start"
+          alignItems="flex-start"
+          style={{ marginTop: 35 }}
+        >
+          <GridItem
+            xs={12}
+            sm={12}
+            md={6}
+            style={{ color: "#212121", textAlign: "justify" }}
+          >
             <h4>
               Si tu souhaites nous laisser un commentaire, voici un formulaire
               de contact. Tu peux également nous envoyer un mail ou nous
@@ -81,7 +88,6 @@ render() {
         <GridContainer justify="center" style={{ marginTop: 5 }}>
           <GridItem xs={12} sm={12} md={6}>
             <CustomInput
-            
               labelText="Nom ou pseudo"
               formControlProps={{
                 fullWidth: true,
@@ -93,7 +99,6 @@ render() {
                 this.setState({
                   nom: nom.target.value
                 });
-                
               }}
             />
           </GridItem>
@@ -122,7 +127,6 @@ render() {
                 this.setState({
                   objet: objet.target.value
                 });
-                
               }}
               formControlProps={{
                 fullWidth: true,
@@ -141,7 +145,6 @@ render() {
                 this.setState({
                   message: message.target.value
                 });
-                
               }}
               multiline
               rows="5"
@@ -150,23 +153,13 @@ render() {
           </GridItem>
         </GridContainer>
         <div>
-          <GridContainer
-            justify="center"
-            spacing={"auto"}
-            style={{ marginTop: 20 }}
-          >
-            <GridItem
-              xs={12}
-              sm={12}
-              md={4}
-              justify="center"
-              style={{ width: "auto" }}
-            >
-              <Button 
-                      color="white"
-                      onClick={() => {
-                        this.valideContact()
-                      }}
+          <GridContainer justify="center" style={{ marginTop: 20 }}>
+            <GridItem xs={12} sm={12} md={4} style={{ width: "auto" }}>
+              <Button
+                color="white"
+                onClick={() => {
+                  this.valideContact();
+                }}
               >
                 Envoyer
               </Button>
@@ -200,10 +193,7 @@ render() {
                   />
                 </Button>
               </Tooltip>
-              <h4
-                alignItems="center"
-                style={{ color: "#000000", fontFamily: "monospace" }}
-              >
+              <h4 style={{ color: "#000000", fontFamily: "monospace" }}>
                 Instagram
               </h4>
               <h4 style={{ color: "#9c27b0", fontFamily: "monospace" }}>
@@ -245,6 +235,6 @@ render() {
   }
 }
 Contact.propTypes = {
-    classes: PropTypes.object.isRequired
-  };
+  classes: PropTypes.object.isRequired
+};
 export default withStyles(styles)(Contact);

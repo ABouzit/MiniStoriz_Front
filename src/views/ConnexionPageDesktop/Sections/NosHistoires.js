@@ -217,10 +217,10 @@ class NosHistoires extends React.Component {
           }
         );
       } else if (this.state.currentFiltre == 3) {
-        console.log('Debut de requet');
+        console.log("Debut de requet");
         return Axios.get(config.API_URL + "histoires/plusrecent", {}).then(
           res => {
-            console.log('res2'+res)
+            console.log("res2" + res);
             return this.setState({ histoires: res.data }, () =>
               this.forceUpdate()
             );
@@ -413,7 +413,6 @@ class NosHistoires extends React.Component {
                                 sm={12}
                                 md={12}
                                 justify="center"
-                                alignItems="center"
                               >
                                 <div
                                   style={{
@@ -424,7 +423,7 @@ class NosHistoires extends React.Component {
                                   }}
                                 >
                                   <img
-                                    src={config.API_URL + planche.lienDessin}
+                                    src={planche.lienDessin}
                                     alt="First slide"
                                     style={{
                                       height: "365px",
@@ -446,8 +445,6 @@ class NosHistoires extends React.Component {
                                 xs={12}
                                 sm={12}
                                 md={12}
-                                justify="center"
-                                alignItems="center"
                                 style={{ paddingRight: "20px" }}
                               >
                                 {" "}
@@ -478,8 +475,6 @@ class NosHistoires extends React.Component {
                                 xs={7}
                                 sm={7}
                                 md={7}
-                                justify="center"
-                                alignItems="center"
                                 style={{ paddingRight: "20px" }}
                               >
                                 {" "}
@@ -499,15 +494,9 @@ class NosHistoires extends React.Component {
                                   </h5>
                                 </SimpleBar>
                               </GridItem>
-                              <GridItem
-                                xs={5}
-                                sm={5}
-                                md={5}
-                                justify="center"
-                                alignItems="center"
-                              >
+                              <GridItem xs={5} sm={5} md={5}>
                                 <img
-                                  src={config.API_URL + planche.lienDessin}
+                                  src={planche.lienDessin}
                                   alt="First slide"
                                   className="slick-image"
                                   style={{
@@ -538,8 +527,6 @@ class NosHistoires extends React.Component {
                       xs={12}
                       sm={12}
                       md={12}
-                      justify="center"
-                      alignItems="center"
                       style={{ marginTop: "40px" }}
                     >
                       <p
@@ -571,7 +558,9 @@ class NosHistoires extends React.Component {
                             style={{ fontSize: "20px" }}
                             name="rating-Text"
                             value={this.state.ratingText}
-                            emptyIcon={<StarBorderIcon fontSize="24px" />}
+                            emptyIcon={
+                              <StarBorderIcon style={{ fontSize: "24px" }} />
+                            }
                             onChange={(event, newValue1) => {
                               this.setState({ ratingText: newValue1 });
                             }}
@@ -607,13 +596,7 @@ class NosHistoires extends React.Component {
                         <GridItem xs={1} sm={1} md={1}></GridItem>
                       </GridContainer>
                     </GridItem>
-                    <GridItem
-                      xs={12}
-                      sm={12}
-                      md={12}
-                      justify="center"
-                      alignItems="center"
-                    >
+                    <GridItem xs={12} sm={12} md={12}>
                       <TextField
                         id="standard-multiline-static"
                         placeholder="Laissez un commentaire(facultatif)"
@@ -716,14 +699,13 @@ class NosHistoires extends React.Component {
             </GridItem>
           </GridContainer>
           <div>
-            <GridContainer justify="center" spacing={"auto"}>
+            <GridContainer justify="center">
               {this.state.histoires.map((histoire, index) => {
                 return (
                   <GridItem
                     xs={12}
                     sm={12}
                     md={4}
-                    justify="center"
                     style={{ width: "auto" }}
                     key={index}
                   >
@@ -764,20 +746,24 @@ class NosHistoires extends React.Component {
                             height: "240px",
                             width: "100%",
                             textAlign: "center",
+
                             display: "block"
                           }}
                         >
                           <img
                             style={{
                               height: "240px",
+                              maxWidth: "320px",
                               marginLeft: "auto",
                               marginRight: "auto",
-                              display: "block"
+                              display: "block",
+                              marginTop: "auto",
+                              marginBottom: "auto"
                             }}
                             className={classes.imgCardTop}
                             src={
                               histoire.lienIllustration !== null
-                                ? config.API_URL + histoire.lienIllustration
+                                ? histoire.lienIllustration
                                 : ""
                             }
                             alt={histoire.titreHistoire}
@@ -955,10 +941,7 @@ function SampleNextArrow(props) {
       disabled={disabled}
     >
       <div className={className} style={{ height: "50px", width: "50px" }}>
-        <ArrowRightOutlined
-          color="green"
-          style={{ color: Color, fontSize: "50px" }}
-        />
+        <ArrowRightOutlined style={{ color: Color, fontSize: "50px" }} />
       </div>
     </IconButton>
   );
