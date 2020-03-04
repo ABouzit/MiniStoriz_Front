@@ -171,6 +171,7 @@ class Publier extends React.Component {
     console.log(file[0].name); // Would see a path?
   }
   saveHistoireWithPlanche() {
+    console.log("///////////"+this.state.dataImgHistoire);
     const _this = this;
     return Axios.post(
       config.API_URL + "sendImage/histoires/",
