@@ -171,11 +171,14 @@ class Publier extends React.Component {
     console.log(file[0].name); // Would see a path?
   }
   saveHistoireWithPlanche() {
+    console.log("///////////" + this.state.dataImgHistoire);
     const _this = this;
-    return Axios.post(
-      config.API_URL + "sendImage/histoires/",
-      this.state.dataImgHistoire
-    ).then(res => {
+    return Axios({
+      method: "post",
+      url: config.API_URL + "sendImage/histoires/",
+      data: this.state.dataImgHistoire,
+      headers: { "Content-Type": "multipart/form-data" }
+    }).then(res => {
       let s = res.data.filePath.replace("\\", "/").replace("\\", "/");
       return Axios.post(config.API_URL + "histoires", {
         userText: { id: "5448c755-5085-4652-88fa-ffcac3987071" },
