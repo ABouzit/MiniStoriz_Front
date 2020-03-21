@@ -8,6 +8,7 @@ import Rating from "@material-ui/lab/Rating";
 import CustomInput from "components/CustomInput/CustomInput.js";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import Search from "@material-ui/icons/Search";
+import { Link } from "react-router-dom";
 // core components
 import Tooltip from '@material-ui/core/Tooltip';
 import GridContainer from "components/Grid/GridContainer.js";
@@ -552,10 +553,11 @@ class AllHistoires extends React.Component {
                                 justify="center"
                                 alignItems="center"
                               >
+                                <div style={{textAlign: '-webkit-center'}}>
                                 <img
                                   src={config.API_URL + planche.lienDessin}
                                   alt="First slide"
-                                  className="slick-image"
+                                  className=""
                                   style={{
                                     alignSelf: "center",
                                     maxHeight: "365px",
@@ -564,6 +566,7 @@ class AllHistoires extends React.Component {
                                     paddingRight: "10px"
                                   }}
                                 />
+                                </div>
                               </GridItem>
                             </GridContainer>
                           )}
@@ -1308,6 +1311,7 @@ class AllHistoires extends React.Component {
           )}
           <GridContainer justify="center" style={{ marginTop: 20 }}>
             <GridItem xs={12} sm={12} md={4} style={{ width: "auto" }}>
+            <Link to="/">
               <Button
                 color="white"
                 style={{color:'rgb(89, 79, 118)', fontWeight: 'bold'}}
@@ -1315,6 +1319,7 @@ class AllHistoires extends React.Component {
               >
                 Retour
               </Button>
+            </Link>
             </GridItem>
           </GridContainer>
         </div>

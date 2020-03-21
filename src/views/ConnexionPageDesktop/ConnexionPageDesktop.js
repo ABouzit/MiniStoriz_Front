@@ -38,7 +38,7 @@ export default function ConnexionPageDesktp(props) {
   return (
     <div>
       <Header
-        color="transparent"
+        color="info"
         routes={dashboardRoutes}
         // brand="Mateeeerial Kit React"
         leftLinks={
@@ -54,12 +54,24 @@ export default function ConnexionPageDesktp(props) {
         rightLinks={<HeaderLinks />}
         fixed
         changeColorOnScroll={{
-          height: 400,
+          height: 4,
           color: "info"
         }}
         {...rest}
       />
-      <Parallax filter image={config.API_URL + "images/asset/bg1.jpg"}>
+        <div style={{width: '100%',
+                    backgroundColor: '#e3f3fd',
+                    color: 'rgb(89, 79, 118)',
+                    marginTop: '-9px',
+                    height: 30,
+                    position: 'fixed',
+                    zIndex: '100',
+                    boxShadow: '0 16px 24px 2px rgba(0, 0, 0, 0.14), 0 6px 30px 5px rgba(0, 0, 0, 0.12), 0 8px 10px -5px rgba(0, 0, 0, 0.2)'}}>
+                      <h4 style={{fontFamily: 'cursive', marginTop: 2, marginLeft: '5%', fontWeight: 'bold'}}>
+                        Bienvenue à toi, Azzedine le mini-artiste
+                      </h4>
+        </div>
+      {/* <Parallax filter image={config.API_URL + "images/asset/bg1.jpg"}>
         <div className={classes.container}>
           <GridContainer>
             <GridItem xs={12} sm={12} md={6}>
@@ -83,9 +95,10 @@ export default function ConnexionPageDesktp(props) {
             </GridItem>
           </GridContainer>
         </div>
-      </Parallax>
+      </Parallax> */}
       <div
         className={classNames(classes.main, classes.mainRaised)}
+        style={{ marginTop: 81, backgroundImage:'url("http://localhost:5600/images/asset/bg1.jpg")' }}
         id="noshistoire"
       >
         <div className={classes.container}>
@@ -105,7 +118,7 @@ export default function ConnexionPageDesktp(props) {
       <br></br>
       <div
         className={classNames(classes.main, classes.mainRaised)}
-        style={{ marginTop: 20 }}
+        style={{ marginTop: 20, backgroundImage:'url("http://localhost:5600/images/asset/bg2.jpg")', backgroundPosition: 'center' }}
         id="echanger"
       >
         <div className={classes.container}>

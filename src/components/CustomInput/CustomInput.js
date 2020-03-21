@@ -19,12 +19,17 @@ export default function CustomInput(props) {
     formControlProps,
     labelText,
     id,
+    style,
     labelProps,
     inputProps,
     error,
     white,
+    value,
     inputRootCustomClasses,
     success,
+    defaultValue,
+    readOnly,
+    type,
     onChange
   } = props;
 
@@ -72,7 +77,12 @@ export default function CustomInput(props) {
           disabled: classes.disabled,
           underline: underlineClasses
         }}
+        type={type}
+        defaultValue={defaultValue}
         id={id}
+        value={value}
+        style={style}
+        readOnly={readOnly}
         onChange={onChange}
         {...inputProps}
       />

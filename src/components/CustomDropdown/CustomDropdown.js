@@ -56,7 +56,9 @@ export default function CustomDropdown(props) {
     left,
     rtlActive,
     noLiPadding,
-    onChange
+    onChange,
+    style,
+    iconStyle
   } = props;
   const caretClasses = classNames({
     [classes.caret]: true,
@@ -72,7 +74,7 @@ export default function CustomDropdown(props) {
   let icon = null;
   switch (typeof buttonIcon) {
     case "object":
-      icon = <props.buttonIcon className={classes.buttonIcon} />;
+      icon = <props.buttonIcon className={classes.buttonIcon} style={iconStyle} />;
       break;
     case "string":
       icon = <Icon className={classes.buttonIcon}>{props.buttonIcon}</Icon>;
@@ -90,6 +92,7 @@ export default function CustomDropdown(props) {
           aria-haspopup="true"
           {...buttonProps}
           onClick={handleClick}
+          style={style}
         >
           {icon}
           {buttonText !== undefined ? buttonText : null}

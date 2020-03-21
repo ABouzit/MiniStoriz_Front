@@ -12,12 +12,15 @@ import CustomInput from "components/CustomInput/CustomInput.js";
 import TextField from "@material-ui/core/TextField";
 import Tooltip from "@material-ui/core/Tooltip";
 import headerStyle from "assets/jss/material-kit-react/components/headerStyle";
+import Axios from "axios";
+import config from "config/config";
 
 class Contact extends React.Component {
   constructor(props) {
     super(props);
     this.headerClasse = makeStyles(headerStyle);
     this.state = {
+      submit: false,
       nom: "",
       email: "",
       objet: "",
@@ -26,39 +29,23 @@ class Contact extends React.Component {
     this.valideContact = this.valideContact.bind(this);
   }
   valideContact() {
-    if (this.state.nom === "") {
-      const nom = document.getElementById("nomContact");
-      nom.setAttribute("error", "error");
-      this.forceUpdate();
-    } else {
-      const nom = document.getElementById("nomContact");
-      nom.removeAttribute("error");
-    }
-    if (this.state.email === "") {
-      const email = document.getElementById("emailContact");
-      email.setAttribute("error", "error");
-    } else {
-      const email = document.getElementById("emailContact");
-      email.removeAttribute("error");
-      this.forceUpdate();
-    }
-    if (this.state.objet === "") {
-      const objet = document.getElementById("objetContact");
-      objet.setAttribute("error", "error");
-    } else {
-      const objet = document.getElementById("objetContact");
-      objet.removeAttribute("error");
-    }
-    if (this.state.message === "") {
-      const message = document.getElementById("messageContact");
-      message.setAttribute("error", "error");
-    } else {
-      const message = document.getElementById("messageContact");
-      message.removeAttribute("error");
-    }
+    this.setState({submit: true})
+    if (this.state.nom !== "" && this.state.email !== "" && this.state.objet !== "" && this.state.message !== "") {
+      Axios.post(config.API_URL + "messages/contact", {
+        nom: this.state.nom,
+        objet: this.state.objet,
+        email: this.state.email,
+        message: this.state.message
+      }).then(res => {
+        this.setState({submit: false, nom: "", objet: "", message: "", email: ""})
+        console.log(res.message)
+      });
+    } 
   }
   render() {
     const { classes } = this.props;
+    const {email, nom, objet, message} = this.state;
+    const {submit} = this.state;
     return (
       <div className={classes.section}>
         <GridContainer justify="center">
@@ -87,7 +74,9 @@ class Contact extends React.Component {
         </GridContainer>
         <GridContainer justify="center" style={{ marginTop: 5 }}>
           <GridItem xs={12} sm={12} md={6}>
+          {nom === "" && submit == true ? (
             <CustomInput
+              error
               labelText="Nom ou pseudo"
               formControlProps={{
                 fullWidth: true,
@@ -101,9 +90,26 @@ class Contact extends React.Component {
                 });
               }}
             />
+          ):(
+            <CustomInput
+              labelText="Nom ou pseudo"
+              formControlProps={{
+                fullWidth: true,
+                required: true
+              }}
+              id="nomContact"
+              value={this.state.nom}
+              onChange={(nom, event) => {
+                this.setState({
+                  nom: nom.target.value
+                });
+              }}
+            /> )}
           </GridItem>
           <GridItem xs={12} sm={12} md={6}>
+          {email === "" && submit == true ? (
             <CustomInput
+              error
               labelText="Adresse mail"
               id="emailContact"
               value={this.state.email}
@@ -117,9 +123,26 @@ class Contact extends React.Component {
                 required: true
               }}
             />
+          ):(
+            <CustomInput
+              labelText="Adresse mail"
+              id="emailContact"
+              value={this.state.email}
+              onChange={(email, event) => {
+                this.setState({
+                  email: email.target.value
+                });
+              }}
+              formControlProps={{
+                fullWidth: true,
+                required: true
+              }}
+            />)}
           </GridItem>
           <GridItem xs={12} sm={12} md={12}>
+          {objet === "" && submit == true ? (
             <CustomInput
+            error
               labelText="Objet"
               id="objetContact"
               value={this.state.objet}
@@ -133,9 +156,26 @@ class Contact extends React.Component {
                 required: true
               }}
             />
+          ):(
+            <CustomInput
+              labelText="Objet"
+              id="objetContact"
+              value={this.state.objet}
+              onChange={(objet, event) => {
+                this.setState({
+                  objet: objet.target.value
+                });
+              }}
+              formControlProps={{
+                fullWidth: true,
+                required: true
+              }}
+            />)}
           </GridItem>
           <GridItem xs={12} sm={12} md={12}>
+          {message === "" && submit == true ? (
             <TextField
+            error
               color="primary"
               fullWidth
               label="Votre commentaire"
@@ -150,6 +190,22 @@ class Contact extends React.Component {
               rows="5"
               required
             />
+          ):(
+            <TextField
+              color="primary"
+              fullWidth
+              label="Votre commentaire"
+              id="messageContact"
+              value={this.state.message}
+              onChange={(message, event) => {
+                this.setState({
+                  message: message.target.value
+                });
+              }}
+              multiline
+              rows="5"
+              required
+            />)}
           </GridItem>
         </GridContainer>
         <div>
@@ -160,6 +216,7 @@ class Contact extends React.Component {
                 onClick={() => {
                   this.valideContact();
                 }}
+                style={{color:'rgb(89, 79, 118)', fontWeight: 'bold',margin: 0}}
               >
                 Envoyer
               </Button>

@@ -30,6 +30,7 @@ import ArrowRightOutlined from "@material-ui/icons/ArrowRightOutlined";
 import ArrowLeftOutlined from "@material-ui/icons/ArrowLeftOutlined";
 import StarBorderIcon from "@material-ui/icons/StarBorder";
 //scroll bare text
+import { Link } from "react-router-dom";
 import SimpleBar from "simplebar-react";
 import "simplebar/dist/simplebar.min.css";
 import Axios from "axios";
@@ -46,6 +47,7 @@ class NosHistoires extends React.Component {
     super(props);
     // Don't call this.setState() here!
     this.state = {
+      idUser: "5448c755-5085-4652-88fa-ffcac3987071",
       counter: 1,
       currentFiltre: 1,
       selectedFiltre: "",
@@ -199,6 +201,7 @@ class NosHistoires extends React.Component {
       commentaire: this.state.commentaire,
       noteHistoire: this.state.ratingText,
       noteDessin: this.state.ratingDessin,
+      user: {id: this.state.idUser},
       isActive: true
     }).then(res => {
       console.log(res);
@@ -494,11 +497,12 @@ class NosHistoires extends React.Component {
                                   </h5>
                                 </SimpleBar>
                               </GridItem>
-                              <GridItem xs={5} sm={5} md={5}>
+                              <GridItem xs={5} sm={5} md={5} style={{textAlign: 'center'}}>
+                                <div style={{textAlign: '-webkit-center'}}>
                                 <img
                                   src={planche.lienDessin}
                                   alt="First slide"
-                                  className="slick-image"
+                                  className=""
                                   style={{
                                     alignSelf: "center",
                                     maxHeight: "365px",
@@ -507,6 +511,7 @@ class NosHistoires extends React.Component {
                                     paddingRight: "10px"
                                   }}
                                 />
+                                </div>
                               </GridItem>
                             </GridContainer>
                           )}
@@ -647,7 +652,7 @@ class NosHistoires extends React.Component {
                 ) : (
                   <Button
                     color="white"
-                    style={{ margin: 0 }}
+                    style={{color:'rgb(89, 79, 118)', fontWeight: 'bold',margin: 0}}
                     onClick={() => {
                       this.setState({
                         modal: false,
@@ -677,6 +682,7 @@ class NosHistoires extends React.Component {
                   round: true,
                   color: "white"
                 }}
+                style={{color:'rgb(89, 79, 118)', fontWeight: 'bold'}}
                 color="white"
                 buttonText="Filtre"
                 value={this.state.selectedFiltre}
@@ -725,7 +731,7 @@ class NosHistoires extends React.Component {
                       }}
                     >
                       <Card
-                        style={{ width: "20rem", backgroundColor: "#e3f3fd" }}
+                        style={{  backgroundColor: "#e3f3fd" }}
                       >
                         <h4
                           className={classes.cardTitle}
@@ -864,13 +870,16 @@ class NosHistoires extends React.Component {
           </div>
           <GridContainer justify="flex-end">
             <GridItem xs={4} sm={4} md={4}>
+              <Link to="/LesHistoires">
               <Button
                 color="white"
                 id="buttonSeeAll"
+                style={{color:'rgb(89, 79, 118)', fontWeight: 'bold'}}
                 // onClick={() => this.seeAllHistoire()}
               >
                 Toutes les histoires
               </Button>
+              </Link>
             </GridItem>
           </GridContainer>
         </div>

@@ -7,7 +7,9 @@ import "assets/scss/material-kit-react.scss?v=1.8.0";
 
 // pages for this product
 import Components from "views/Components/Components.js";
-import LandingPage from "views/LandingPage/LandingPage.js";
+import AllHistoiresPage from "views/AllHistoiresPage/AllHistoiresPage.js";
+import MesOeuvresPage from "views/MesOeuvresPage/MesOeuvresPage.js";
+import MonComptePage from "views/MonComptePage/MonComptePage.js";
 import ProfilePage from "views/ProfilePage/ProfilePage.js";
 import LoginPage from "views/LoginPage/LoginPage.js";
 import ConnexionPageDesktop from "views/ConnexionPageDesktop/ConnexionPageDesktop.js";
@@ -18,7 +20,9 @@ ReactDOM.render(
     <Switch>
       <Route path="/material" component={Components} />
       {/* <Route path="/landing-page" component={AllHistoires} /> */}
-      <Route path="/NosHistoires" component={LandingPage} />
+      <Route path="/LesHistoires" component={AllHistoiresPage} />
+      <Route path="/MesOeuvres" component={MesOeuvresPage} />
+      <Route path="/MonProfil" component={MonComptePage} />
       <Route path="/profile-page" component={ProfilePage} />
       <Route path="/login-page" component={LoginPage} />
       <Route path="/" component={ConnexionPageDesktop} />

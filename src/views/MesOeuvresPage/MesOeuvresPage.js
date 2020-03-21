@@ -18,17 +18,13 @@ import config from "config/config";
 import styles from "assets/jss/material-kit-react/views/landingPage.js";
 
 // Sections for this page
-import AllHistoires from "./Sections/AllHistoires";
 import MesOeuvres from "./Sections/MesOeuvres";
-import MonCompte from "./Sections/MonCompte";
-// import NosHistoires from "./Sections/NosHistoires";
-// import Publier from "./Sections/Publier";
 
 const dashboardRoutes = [];
 
 const useStyles = makeStyles(styles);
 
-export default function LandingPage(props) {
+export default function MesOeuvresPage(props) {
   const [refresh, setRefresh] = React.useState(false);
   let refreshCallBackFunction = publierData => {
     console.log(publierData);
@@ -60,6 +56,18 @@ export default function LandingPage(props) {
         }}
         {...rest}
       />
+      <div style={{width: '100%',
+                    backgroundColor: '#e3f3fd',
+                    color: 'rgb(89, 79, 118)',
+                    marginTop: '-9px',
+                    height: 30,
+                    position: 'fixed',
+                    zIndex: '100',
+                    boxShadow: '0 16px 24px 2px rgba(0, 0, 0, 0.14), 0 6px 30px 5px rgba(0, 0, 0, 0.12), 0 8px 10px -5px rgba(0, 0, 0, 0.2)'}}>
+                      <h4 style={{fontFamily: 'cursive', marginTop: 2, marginLeft: '5%', fontWeight: 'bold'}}>
+                        Bienvenue à toi, Azzedine le mini-artiste
+                      </h4>
+        </div>
       {/* <Parallax filter image={config.API_URL + "images/asset/bg1.jpg"}>
         <div className={classes.container}>
           <GridContainer>
@@ -87,10 +95,10 @@ export default function LandingPage(props) {
       </Parallax> */}
       <div
         className={classNames(classes.main, classes.mainRaised)}
-        style={{ marginTop: 110, backgroundImage:'url("http://localhost:5600/images/asset/bg1.jpg")' }}
+        style={{ marginTop: 81, backgroundImage:'url("http://localhost:5600/images/asset/bg1.jpg")' }}
       >
         <div className={classes.container}>
-          <MonCompte />
+          <MesOeuvres />
         </div>
       </div>
       <Footer />

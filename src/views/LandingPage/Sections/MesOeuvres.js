@@ -43,6 +43,12 @@ import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
 import InputLabel from "@material-ui/core/InputLabel";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import Divider from "@material-ui/core/Divider";
+import ListItemText from "@material-ui/core/ListItemText";
+import ListItemAvatar from "@material-ui/core/ListItemAvatar";
+import Avatar from "@material-ui/core/Avatar";
 import moment from "moment";
 // import Pagination from "components/Pagination/Pagination.js";
 import Pagination from '@material-ui/lab/Pagination';
@@ -54,16 +60,15 @@ import Contacts from "@material-ui/icons/Contacts";
 import AccountBoxIcon from '@material-ui/icons/AccountBox';
 import TitleIcon from '@material-ui/icons/Title';
 
-class AllHistoires extends React.Component {
+class MesOeuvres extends React.Component {
   constructor(props) {
     super(props);
     // Don't call this.setState() here!
     this.state = {
+      idUser: "5448c755-5085-4652-88fa-ffcac3987071",
       page: 1,
-      pageUsers: 1,
       counter: 1,
       numberPage: 0,
-      numberPageUsers: 0,
       search: "",
       currentFiltre: 1,
       selectedFiltre: "",
@@ -85,9 +90,9 @@ class AllHistoires extends React.Component {
       ratingText: 0,
       ratingDessin: 0,
       histoires: [],
-      histoireUsers: [],
       selectedHistoire: "",
       planches: [],
+      impressions: [],
       image: ""
     };
     this.next = this.next.bind(this);
@@ -98,29 +103,14 @@ class AllHistoires extends React.Component {
   }
   handleChangePage = (event, value) => {
     this.setState({ page: value });
-    if (this.state.search == "") {
-      Axios.get(config.API_URL + "histoires/take/6/"+(value-1)*6+"/"+this.state.currentFiltre+"/xxxx", {}).then(res => {
+    if (this.state.search === "") {
+      Axios.get(config.API_URL + "histoires/takeByUser/6/"+(value-1)*6+"/"+this.state.currentFiltre+"/xxxx/"+this.state.idUser, {}).then(res => {
         this.setState({ histoires: res.data });
         this.forceUpdate();
       });
     } else {
-      Axios.get(config.API_URL + "histoires/take/6/"+(value-1)*6+"/"+this.state.currentFiltre+"/"+this.state.search, {}).then(res => {
+      Axios.get(config.API_URL + "histoires/takeByUser/6/"+(value-1)*6+"/"+this.state.currentFiltre+"/"+this.state.search+"/"+this.state.idUser, {}).then(res => {
         this.setState({ histoires: res.data });
-        this.forceUpdate();
-      });
-    }
-    
-  }
-  handleChangePageUsers = (event, value) => {
-    this.setState({ pageUsers: value });
-    if (this.state.search == "") {
-      Axios.get(config.API_URL + "histoires/takeUsers/6/"+(value-1)*6+"/"+this.state.currentFiltre+"/xxxx", {}).then(res => {
-        this.setState({ histoireUsers: res.data });
-        this.forceUpdate();
-      });
-    } else {
-      Axios.get(config.API_URL + "histoires/takeUsers/6/"+(value-1)*6+"/"+this.state.currentFiltre+"/"+this.state.search, {}).then(res => {
-        this.setState({ histoireUsers: res.data });
         this.forceUpdate();
       });
     }
@@ -128,10 +118,10 @@ class AllHistoires extends React.Component {
   }
   fetchHistoire() {
     console.log("URL api" + config.API_URL);
-    Axios.get(config.API_URL + "histoires/take/6/"+(this.state.page-1)*6+"/1/xxxx", {}).then(res => {
+    Axios.get(config.API_URL + "histoires/takeByUser/6/"+(this.state.page-1)*6+"/1/xxxx/"+this.state.idUser, {}).then(res => {
       this.setState({ histoires: res.data });
     });
-    Axios.get(config.API_URL + "histoires/numberHistoires", {}).then(res => {
+    Axios.get(config.API_URL + "histoires/numberHistoiresById/"+this.state.idUser, {}).then(res => {
       this.setState({ numberPage: Math.ceil(res.data/6) });
     });
   }
@@ -143,108 +133,81 @@ class AllHistoires extends React.Component {
   searchCheck() {
     if (this.state.currentFiltre == 1) {
       if (this.state.search !== "") {
-        this.setState({ histoireUsers: [] });
-        Axios.get(config.API_URL + "histoires/numberHistoiresSearch/"+this.state.search, {}).then(res => {
+        Axios.get(config.API_URL + "histoires/numberHistoiresSearchById/"+this.state.search+"/"+this.state.idUser, {}).then(res => {
           this.setState({ numberPage: Math.ceil(res.data/6) });
         });
-        Axios.get(config.API_URL + "histoires/numberHistoiresSearchUsers/"+this.state.search, {}).then(res => {
-          this.setState({ numberPageUsers: Math.ceil(res.data/6) });
-        });
-        Axios.get(config.API_URL + "histoires/takeUsers/6/"+(this.state.pageUsers-1)*6+"/1/"+this.state.search, {}).then(res => {
-          this.setState({ histoireUsers: res.data });
-        });
-        Axios.get(config.API_URL + "histoires/take/6/"+(this.state.page-1)+"/"+this.state.currentFiltre+"/"+this.state.search, {}).then(res => {
-          this.setState({ histoires: res.data, currentFiltre:1 });
-          this.forceUpdate();
-          console.log(this.state.histoires);
-        });
+        Axios.get(config.API_URL + "histoires/takeByUser/6/"+(this.state.page-1)+"/"+this.state.currentFiltre+"/"+this.state.search+"/"+this.state.idUser, {}).then(res => {
+        this.setState({ histoires: res.data, currentFiltre:1 });
+        this.forceUpdate();
+        console.log(this.state.histoires);
+      });
       }
+      
       if (this.state.search === "") {
-        Axios.get(config.API_URL + "histoires/take/6/"+(this.state.page-1)+"/"+this.state.currentFiltre+"/xxxx", {}).then(res => {
+        Axios.get(config.API_URL + "histoires/numberHistoiresById/"+this.state.idUser, {}).then(res => {
+          this.setState({ numberPage: Math.ceil(res.data/6) });
+        });
+        Axios.get(config.API_URL + "histoires/takeByUser/6/"+(this.state.page-1)+"/"+this.state.currentFiltre+"/xxxx/"+this.state.idUser, {}).then(res => {
           this.setState({ histoires: res.data, currentFiltre:1 });
           this.forceUpdate();
           console.log(this.state.histoires);
-        });
-        Axios.get(config.API_URL + "histoires/numberHistoires", {}).then(res => {
-          this.setState({ numberPage: Math.ceil(res.data/6), histoireUsers: [] });
         });
       }
     } else if (this.state.currentFiltre == 2) {
       if (this.state.search !== "") {
-        this.setState({ histoireUsers: [] });
-        Axios.get(config.API_URL + "histoires/numberHistoiresSearch/"+this.state.search, {}).then(res => {
+        Axios.get(config.API_URL + "histoires/numberHistoiresSearchById/"+this.state.search+"/"+this.state.idUser, {}).then(res => {
           this.setState({ numberPage: Math.ceil(res.data/6) });
         });
-        Axios.get(config.API_URL + "histoires/numberHistoiresSearchUsers/"+this.state.search, {}).then(res => {
-          this.setState({ numberPageUsers: Math.ceil(res.data/6) });
-        });
-        Axios.get(config.API_URL + "histoires/takeUsers/6/"+(this.state.pageUsers-1)*6+"/2/"+this.state.search, {}).then(res => {
-          this.setState({ histoireUsers: res.data });
-        });
-        Axios.get(config.API_URL + "histoires/take/6/"+(this.state.page-1)*6+"/"+this.state.currentFiltre+"/"+this.state.search, {}).then(res => {
+        Axios.get(config.API_URL + "histoires/takeByUser/6/"+(this.state.page-1)*6+"/"+this.state.currentFiltre+"/"+this.state.search+"/"+this.state.idUser, {}).then(res => {
           this.setState({ histoires: res.data, currentFiltre:2 });
           this.forceUpdate();
         });
       }
       if (this.state.search === "") {
-        Axios.get(config.API_URL + "histoires/take/6/"+(this.state.page-1)*6+"/"+this.state.currentFiltre+"/xxxx", {}).then(res => {
+        Axios.get(config.API_URL + "histoires/takeByUser/6/"+(this.state.page-1)*6+"/"+this.state.currentFiltre+"/xxxx/"+this.state.idUser, {}).then(res => {
           this.setState({ histoires: res.data, currentFiltre:2 });
           this.forceUpdate();
         });
-        Axios.get(config.API_URL + "histoires/numberHistoires", {}).then(res => {
-          this.setState({ numberPage: Math.ceil(res.data/6), histoireUsers: [] });
+        Axios.get(config.API_URL + "histoires/numberHistoiresById/"+this.state.idUser, {}).then(res => {
+          this.setState({ numberPage: Math.ceil(res.data/6) });
         });
       }
     } else if (this.state.currentFiltre == 3) {
       if (this.state.search !== "") {
-        this.setState({ histoireUsers: [] });
-        Axios.get(config.API_URL + "histoires/numberHistoiresSearch/"+this.state.search, {}).then(res => {
+        Axios.get(config.API_URL + "histoires/numberHistoiresSearchById/"+this.state.search+"/"+this.state.idUser, {}).then(res => {
           this.setState({ numberPage: Math.ceil(res.data/6)  });
         });
-        Axios.get(config.API_URL + "histoires/numberHistoiresSearchUsers/"+this.state.search, {}).then(res => {
-          this.setState({ numberPageUsers: Math.ceil(res.data/6) });
-        });
-        Axios.get(config.API_URL + "histoires/takeUsers/6/"+(this.state.pageUsers-1)*6+"/3/"+this.state.search, {}).then(res => {
-          this.setState({ histoireUsers: res.data });
-        });
-        Axios.get(config.API_URL + "histoires/take/6/"+(this.state.page-1)*6+"/"+this.state.currentFiltre+"/"+this.state.search, {}).then(res => {
+        Axios.get(config.API_URL + "histoires/takeByUser/6/"+(this.state.page-1)*6+"/"+this.state.currentFiltre+"/"+this.state.search+"/"+this.state.idUser, {}).then(res => {
           this.setState({ histoires: res.data, currentFiltre:3 });
           this.forceUpdate();
         });
       }
       if (this.state.search === "") {
-        Axios.get(config.API_URL + "histoires/take/6/"+(this.state.page-1)*6+"/"+this.state.currentFiltre+"/xxxx", {}).then(res => {
+        Axios.get(config.API_URL + "histoires/takeByUser/6/"+(this.state.page-1)*6+"/"+this.state.currentFiltre+"/xxxx/"+this.state.idUser, {}).then(res => {
           this.setState({ histoires: res.data, currentFiltre:3 });
           this.forceUpdate();
         });
-        Axios.get(config.API_URL + "histoires/numberHistoires", {}).then(res => {
-          this.setState({ numberPage: Math.ceil(res.data/6), histoireUsers: [] });
+        Axios.get(config.API_URL + "histoires/numberHistoiresById/"+this.state.idUser, {}).then(res => {
+          this.setState({ numberPage: Math.ceil(res.data/6) });
         });
       }
     } else if (this.state.currentFiltre == 4) {
       if (this.state.search !== "") {
-        this.setState({ histoireUsers: [] });
-        Axios.get(config.API_URL + "histoires/numberHistoiresSearch/"+this.state.search, {}).then(res => {
+        Axios.get(config.API_URL + "histoires/numberHistoiresSearchById/"+this.state.search+"/"+this.state.idUser, {}).then(res => {
           this.setState({ numberPage: Math.ceil(res.data/6) });
         });
-        Axios.get(config.API_URL + "histoires/numberHistoiresSearchUsers/"+this.state.search, {}).then(res => {
-          this.setState({ numberPageUsers: Math.ceil(res.data/6) });
-        });
-        Axios.get(config.API_URL + "histoires/takeUsers/6/"+(this.state.pageUsers-1)*6+"/4/"+this.state.search, {}).then(res => {
-          this.setState({ histoireUsers: res.data });
-        });
-        Axios.get(config.API_URL + "histoires/take/6/"+(this.state.page-1)*6+"/"+this.state.currentFiltre+"/"+this.state.search, {}).then(res => {
+        Axios.get(config.API_URL + "histoires/takeUser/6/"+(this.state.page-1)*6+"/"+this.state.currentFiltre+"/"+this.state.search+"/"+this.state.idUser, {}).then(res => {
           this.setState({ histoires: res.data, currentFiltre:4 });
           this.forceUpdate();
         });
       }
       if (this.state.search === "") {
-        Axios.get(config.API_URL + "histoires/take/6/"+(this.state.page-1)*6+"/"+this.state.currentFiltre+"/xxxx", {}).then(res => {
+        Axios.get(config.API_URL + "histoires/takeUser/6/"+(this.state.page-1)*6+"/"+this.state.currentFiltre+"/xxxx/"+this.state.idUser, {}).then(res => {
           this.setState({ histoires: res.data, currentFiltre:4 });
           this.forceUpdate();
         });
-        Axios.get(config.API_URL + "histoires/numberHistoires", {}).then(res => {
-          this.setState({ numberPage: Math.ceil(res.data/6), histoireUsers: [] });
+        Axios.get(config.API_URL + "histoires/numberHistoiresById/"+this.state.idUser, {}).then(res => {
+          this.setState({ numberPage: Math.ceil(res.data/6) });
         });
       }
     }
@@ -252,39 +215,27 @@ class AllHistoires extends React.Component {
 
   handleCheck(e) {
     if (e.currentTarget.dataset.id == 1) {
-        this.setState({ currentFiltre:1 },()=>{this.searchCheck();
-          this.forceUpdate();});
-        
-      if (this.state.search !== "") {
-        Axios.get(config.API_URL + "histoires/takeUsers/6/"+(this.state.pageUsers-1)*6+"/1/"+this.state.search, {}).then(res => {
-          this.setState({ histoireUsers: res.data });
-        });
-      }
+      Axios.get(config.API_URL + "histoires/takeByUser/6/"+(this.state.page-1)+"/"+e.currentTarget.dataset.id+"/"+this.state.search+"/"+this.state.idUser, {}).then(res => {
+        this.setState({ histoires: res.data, currentFiltre:1 });
+        this.forceUpdate();
+        console.log(this.state.histoires);
+      });
       
     } else if (e.currentTarget.dataset.id == 2) {
-        this.setState({ currentFiltre:2 },()=>{this.searchCheck();
-          this.forceUpdate();});
-      if (this.state.search !== "") {
-        Axios.get(config.API_URL + "histoires/takeUsers/6/"+(this.state.pageUsers-1)*6+"/1/"+this.state.search, {}).then(res => {
-          this.setState({ histoireUsers: res.data });
-        });
-      }
+      Axios.get(config.API_URL + "histoires/takeByUser/6/"+(this.state.page-1)+"/"+e.currentTarget.dataset.id+"/"+this.state.search+"/"+this.state.idUser, {}).then(res => {
+        this.setState({ histoires: res.data, currentFiltre:2 });
+        this.forceUpdate();
+      });
     } else if (e.currentTarget.dataset.id == 3) {
-        this.setState({ currentFiltre:3 },()=>{this.searchCheck();
-          this.forceUpdate();});
-      if (this.state.search !== "") {
-        Axios.get(config.API_URL + "histoires/takeUsers/6/"+(this.state.pageUsers-1)*6+"/1/"+this.state.search, {}).then(res => {
-          this.setState({ histoireUsers: res.data });
-        });
-      }
+      Axios.get(config.API_URL + "histoires/takeByUser/6/"+(this.state.page-1)+"/"+e.currentTarget.dataset.id+"/"+this.state.search+"/"+this.state.idUser, {}).then(res => {
+        this.setState({ histoires: res.data, currentFiltre:3 });
+        this.forceUpdate();
+      });
     } else if (e.currentTarget.dataset.id == 4) {
-        this.setState({ currentFiltre:4 },()=>{this.searchCheck();
-          this.forceUpdate();});
-      if (this.state.search !== "") {
-        Axios.get(config.API_URL + "histoires/takeUsers/6/"+(this.state.pageUsers-1)*6+"/1/"+this.state.search, {}).then(res => {
-          this.setState({ histoireUsers: res.data });
-        });
-      }
+      Axios.get(config.API_URL + "histoires/takeByUser/6/"+(this.state.page-1)+"/"+e.currentTarget.dataset.id+"/"+this.state.search+"/"+this.state.idUser, {}).then(res => {
+        this.setState({ histoires: res.data, currentFiltre:4 });
+        this.forceUpdate();
+      });
     }
   }
 
@@ -297,6 +248,11 @@ class AllHistoires extends React.Component {
         Axios.put(config.API_URL + "histoires/", histoire).then(res => {
           this.forceUpdate();
         });
+      }
+    );
+    Axios.get(config.API_URL + "impressions/histoire/" + histoire.id, {}).then(
+      res => {
+        this.setState({ impressions: res.data });
       }
     );
   }
@@ -596,63 +552,10 @@ class AllHistoires extends React.Component {
                           color: "#332861"
                         }}
                       >
-                        L’histoire est terminée. Encourage les auteurs en leur
-                        attribuant une note !
+                        L’histoire est terminée.
                       </p>
                     </GridItem>
 
-                    <GridItem
-                      xs={6}
-                      sm={6}
-                      md={6}
-                      style={{ textAlign: "center", marginTop: "20px" }}
-                    >
-                      <GridContainer>
-                        <GridItem xs={2} sm={2} md={2}></GridItem>
-                        <GridItem xs={3} sm={3} md={3}>
-                          <p style={{ color: "#332861" }}>Text :</p>
-                        </GridItem>
-                        <GridItem xs={5} sm={5} md={5}>
-                          <StyledRating
-                            style={{ fontSize: "20px" }}
-                            name="rating-Text"
-                            value={this.state.ratingText}
-                            emptyIcon={<StarBorderIcon fontSize="24px" />}
-                            onChange={(event, newValue1) => {
-                              this.setState({ ratingText: newValue1 });
-                            }}
-                            precision={0.5}
-                          />
-                        </GridItem>
-                        <GridItem xs={1} sm={1} md={1}></GridItem>
-                      </GridContainer>
-                    </GridItem>
-                    <GridItem
-                      xs={6}
-                      sm={6}
-                      md={6}
-                      style={{ textAlign: "center", marginTop: "20px" }}
-                    >
-                      <GridContainer>
-                        <GridItem xs={2} sm={2} md={2}></GridItem>
-                        <GridItem xs={3} sm={3} md={3}>
-                          <p style={{ color: "#332861" }}>Dessins :</p>
-                        </GridItem>
-                        <GridItem xs={5} sm={5} md={5}>
-                          <StyledRating
-                            name="simple-controlled"
-                            value={this.state.ratingDessin}
-                            emptyIcon={<StarBorderIcon fontSize="24px" />}
-                            size="large"
-                            onChange={(event, newValue) => {
-                              this.setState({ ratingDessin: newValue });
-                            }}
-                            precision={0.5}
-                          />
-                        </GridItem>
-                        <GridItem xs={1} sm={1} md={1}></GridItem>
-                      </GridContainer>
-                    </GridItem>
                     <GridItem
                       xs={12}
                       sm={12}
@@ -660,25 +563,101 @@ class AllHistoires extends React.Component {
                       justify="center"
                       alignItems="center"
                     >
-                      <TextField
-                        id="standard-multiline-static"
-                        placeholder="Laissez un commentaire(facultatif)"
-                        label="commentaire"
-                        multiline
-                        rows="9"
-                        value={this.state.commentaire}
-                        style={{ width: "100%" }}
-                        autoFocus={
-                          this.state.counter !== this.state.planches.length + 1
-                            ? false
-                            : true
-                        }
-                        onChange={(commentaire, event) => {
-                          this.setState({
-                            commentaire: commentaire.target.value
-                          });
-                        }}
-                      />
+                      <SimpleBar
+                            style={{ maxHeight: "325px", width: "100%" }}
+                          >
+                            <List className={classes.root}>
+                              { this.state.impressions.map((imp, index)=> {
+                                console.log(imp)
+                              return(
+                              <div>
+                              <ListItem
+                                alignItems="flex-start"
+                                className={classes.card}
+                                // selected={selectedIndex === 11}
+                                // onClick={event =>
+                                //   this.handleListItemClick(event, 11, 3)
+                                // }
+                                button
+                              >
+                                <ListItemAvatar>
+                                  <Avatar
+                                    alt="Remy Sharp"
+                                    src={config.API_URL+ imp.user.lienPhoto}
+                                  />
+                                </ListItemAvatar>
+                                <ListItemText
+                                  primary={
+                                    <React.Fragment>
+                                      {/* <h4>
+                                        
+                                      </h4> */}
+                                      <GridContainer>
+                                        <GridItem xs={3} sm={3} md={3}>{imp.user.pseudo}</GridItem>
+                                        <GridItem xs={4} sm={4} md={4}>
+                                          <Tooltip disableFocusListener disableTouchListener title={
+                                                imp.noteHistoire
+                                                  ? "Text: "+parseFloat(Math.round(imp.noteHistoire*100)/100).toFixed(2)  + "/5"
+                                                  : "Text: "+0
+                                              }>
+                                            <ButtonBase >
+                                            <StyledRating
+                                              name="read-only"
+                                              value={
+                                                imp.noteHistoire
+                                                  ? imp.noteHistoire
+                                                  : 0
+                                              }
+                                              emptyIcon={
+                                                <StarBorderIcon fontSize="inherit" />
+                                              }
+                                              precision={0.5}
+                                              readOnly
+                                            />
+                                            </ButtonBase>
+                                          </Tooltip>
+                                        </GridItem>
+                                        <GridItem xs={4} sm={4} md={4}>
+                                          <Tooltip disableFocusListener disableTouchListener title={
+                                                imp.noteDessin
+                                                  ? "Dessin: "+parseFloat(Math.round(imp.noteDessin*100)/100).toFixed(2)  + "/5"
+                                                  : "Dessin: "+0
+                                              }>
+                                            <ButtonBase >
+                                            <StyledRating
+                                              name="read-only"
+                                              value={
+                                                imp.noteDessin
+                                                  ? imp.noteDessin
+                                                  : 0
+                                              }
+                                              emptyIcon={
+                                                <StarBorderIcon fontSize="inherit" />
+                                              }
+                                              precision={0.5}
+                                              readOnly
+                                            />
+                                            </ButtonBase>
+                                          </Tooltip>
+                                        </GridItem>
+                                      </GridContainer>
+                                    </React.Fragment>
+                                  }
+                                  secondary={
+                                    <React.Fragment>
+                                      <p className={classes.messageTab}>
+                                        {imp.commentaire}
+                                      </p>
+                                    </React.Fragment>
+                                  }
+                                />
+                              </ListItem>
+                              <Divider variant="inset" component="li" />
+                              </div>
+                              );
+                              })}
+                            </List>
+                        </SimpleBar>
                     </GridItem>
                   </GridContainer>
                 </div>
@@ -715,7 +694,6 @@ class AllHistoires extends React.Component {
                     onClick={() => {
                       this.setState({ modal: false, ratingDessin: 0, ratingText: 0, commentaire: "" });
                       this.gotToIndex(1);
-                      this.submitCommantaire();
                     }}
                   >
                     Terminée
@@ -727,7 +705,7 @@ class AllHistoires extends React.Component {
           <GridContainer justify="center">
             <GridItem xs={12} sm={12} md={8}>
               <h2 className={classes.title}>
-                LES HISTOIRES
+                MES OEUVRES
               </h2>
             </GridItem>
           </GridContainer>
@@ -735,26 +713,26 @@ class AllHistoires extends React.Component {
           <GridContainer justify="flex-end">
             <GridItem xs={7} sm={7} md={7}>
                 <CustomInput
-                    labelText="Recherche"
-                    id="material"
-                    formControlProps={{
-                    fullWidth: true
-                    }}
-                    value={this.state.search}
-                    onChange={(search, event) => {
-                        this.setState({
-                          search: search.target.value
-                        });
-                    }}
-                    inputProps={{
-                    endAdornment: (
-                      <ButtonBase onClick={this.searchCheck.bind(this)}>
-                        <InputAdornment position="end" >
-                          <Search />
-                        </InputAdornment>
-                      </ButtonBase>
-                    )
-                    }}
+                  labelText="Recherche"
+                  id="material"
+                  formControlProps={{
+                  fullWidth: true
+                  }}
+                  value={this.state.search}
+                  onChange={(search, event) => {
+                      this.setState({
+                        search: search.target.value
+                      });
+                  }}
+                  inputProps={{
+                  endAdornment: (
+                    <ButtonBase onClick={this.searchCheck.bind(this)}>
+                      <InputAdornment position="end" >
+                        <Search />
+                      </InputAdornment>
+                    </ButtonBase>
+                  )
+                  }}
                 />
             </GridItem>
             <GridItem xs={4} sm={4} md={4}>
@@ -785,7 +763,6 @@ class AllHistoires extends React.Component {
               />
             </GridItem>
           </GridContainer>
-          { this.state.histoireUsers.length === 0 ? (
           <div>
             <GridContainer justify="center" spacing={"auto"}>
               {this.state.histoires.map((histoire, index) => {
@@ -932,385 +909,17 @@ class AllHistoires extends React.Component {
             </GridContainer>
             <GridContainer justify="center">
               <GridItem xs={4} sm={4} md={4}>
-              <Pagination count={this.state.numberPage} page={this.state.page} onChange={this.handleChangePage} />    
+                { this.state.numberPage > 1 ? (
+              <Pagination count={this.state.numberPage} page={this.state.page} onChange={this.handleChangePage} />  
+                ):(<div></div>)}
               </GridItem>
             </GridContainer>
           </div>
-          ) : (
-            <div>
-            {/* <GridContainer justify="center">
-              <GridItem xs={12} sm={12} md={8}>
-                <h3 className={classes.title}>
-                  LES HISTOIRES PAR TITRE 
-                </h3>
-              </GridItem>
-            </GridContainer> */}
-            <GridContainer justify="center">
-          <GridItem xs={12} sm={12} md={12}>
-            <CustomTabs
-              variant="fullWidth"
-              headerColor="info"
-              value={2}
-              tabs={[
-                {
-                  tabName: "LES HISTOIRES PAR TITRE",
-                  tabIcon: TitleIcon,
-                  tabContent: (
-            <div>
-            <GridContainer justify="center" spacing={"auto"}>
-              { this.state.histoires.length > 0 ? 
-              this.state.histoires.map((histoire, index) => {
-                return (
-                  <GridItem
-                    xs={12}
-                    sm={12}
-                    md={4}
-                    justify="center"
-                    style={{ width: "auto" }}
-                    key={index}
-                  >
-                    <ButtonBase
-                      focusRipple
-                      className={classes.image}
-                      focusVisibleClassName={classes.focusVisible}
-                      style={{
-                        width: "20rem"
-                      }}
-                      onClick={() => {
-                        this.setState({
-                          modal: true,
-                          selectedHistoire: histoire
-                        });
-                        this.fetchPlanche(histoire);
-                      }}
-                    >
-                      <Card
-                        style={{ width: "20rem", backgroundColor: "#e3f3fd" }}
-                      >
-                        <h4
-                          className={classes.cardTitle}
-                          style={{
-                            fontFamily: "monospace",
-                            fontWeight: "bold",
-                            backgroundColor: "#594f76",
-                            color: "white",
-                            paddingTop: "10px",
-                            paddingBottom: "10px",
-                            margin: 0
-                          }}
-                        >
-                          {histoire.titreHistoire}
-                        </h4>
-                        <div
-                          style={{
-                            height: "240px",
-                            width: "100%",
-                            textAlign: "center",
-                            display: "block"
-                          }}
-                        >
-                          <img
-                            style={{
-                              height: "240px",
-                              marginLeft: "auto",
-                              marginRight: "auto",
-                              display: "block"
-                            }}
-                            className={classes.imgCardTop}
-                            src={
-                              histoire.lienIllustration !== null
-                                ? config.API_URL + histoire.lienIllustration
-                                : ""
-                            }
-                            alt={histoire.titreHistoire}
-                          />
-                        </div>
-
-                        <h5
-                          style={{
-                            fontFamily: "monospace",
-                            fontWeight: "bold",
-                            backgroundColor: "#594f76",
-                            color: "white",
-                            paddingTop: "10px",
-                            paddingBottom: "10px",
-                            margin: 0
-                          }}
-                        >
-                          {histoire.nombreVue ? histoire.nombreVue : 0} vues - {this.getDay(histoire.dateDeCreation)}
-                        </h5>
-                        <CardBody>
-                          <GridContainer>
-                            <GridItem xs={12} sm={12} md={12}>
-                              <p>{"Text par " + histoire.userText.pseudo}</p>
-                              <Tooltip disableFocusListener disableTouchListener title={
-                                    histoire.noteHistoireMoy
-                                      ? parseFloat(Math.round(histoire.noteHistoireMoy*100)/100).toFixed(2)  + "/5"
-                                      : 0
-                                  }>
-                                <ButtonBase >
-                                <StyledRating
-                                  name="read-only"
-                                  value={
-                                    histoire.noteHistoireMoy
-                                      ? histoire.noteHistoireMoy
-                                      : 0
-                                  }
-                                  emptyIcon={
-                                    <StarBorderIcon fontSize="inherit" />
-                                  }
-                                  precision={0.5}
-                                  readOnly
-                                />
-                                </ButtonBase>
-                              </Tooltip>
-                              
-                            </GridItem>
-                            <GridItem xs={12} sm={12} md={12}>
-                              <p>
-                                {" "}
-                                {"Dessin par " + histoire.userDessin.pseudo}
-                              </p>
-                              <Tooltip disableFocusListener disableTouchListener title={
-                                    histoire.noteHistoireMoy
-                                      ? parseFloat(Math.round(histoire.noteDessinMoy*100)/100).toFixed(2)  + "/5"
-                                      : 0
-                                  }>
-                                <ButtonBase >
-                              <StyledRating
-                                name="read-only"
-                                value={
-                                  histoire.noteDessinMoy
-                                    ? histoire.noteDessinMoy
-                                    : 0
-                                }
-                                emptyIcon={
-                                  <StarBorderIcon fontSize="inherit" />
-                                }
-                                precision={0.5}
-                                readOnly
-                              />
-                              </ButtonBase>
-                              </Tooltip>
-                            </GridItem>
-                          </GridContainer>
-                        </CardBody>
-                      </Card>
-                    </ButtonBase>
-                  </GridItem>
-                );
-              }): (
-                <GridItem
-                    xs={12}
-                    sm={12}
-                    md={4}
-                    justify="center"
-                    style={{ width: "auto" }}
-                  >
-                    <SnackbarContent
-                        message={
-                          'aucun résultat correspond à votre recherche.'
-                        }
-                      />
-                  </GridItem>
-              )}
-            </GridContainer>
-            <GridContainer justify="center">
-              <GridItem xs={4} sm={4} md={4}>
-                { this.state.histoires.length > 0 ? (
-                  <Pagination count={this.state.numberPage} page={this.state.page} onChange={this.handleChangePage} /> 
-                ) : (<div></div>)}
-              </GridItem>
-            </GridContainer>
-            </div>
-            
-               )
-              },
-              {
-                tabName: "LES HISTOIRES PAR UTILISATEUR",
-                tabIcon: AccountBoxIcon,
-                tabContent: (
-              <div>
-            <GridContainer justify="center" spacing={"auto"}>
-              { this.state.histoireUsers.length > 0 ?
-              this.state.histoireUsers.map((histoire, index) => {
-                return (
-                  <GridItem
-                    xs={12}
-                    sm={12}
-                    md={4}
-                    justify="center"
-                    style={{ width: "auto" }}
-                    key={index}
-                  >
-                    <ButtonBase
-                      focusRipple
-                      className={classes.image}
-                      focusVisibleClassName={classes.focusVisible}
-                      style={{
-                        width: "20rem"
-                      }}
-                      onClick={() => {
-                        this.setState({
-                          modal: true,
-                          selectedHistoire: histoire
-                        });
-                        this.fetchPlanche(histoire);
-                      }}
-                    >
-                      <Card
-                        style={{ width: "20rem", backgroundColor: "#e3f3fd" }}
-                      >
-                        <h4
-                          className={classes.cardTitle}
-                          style={{
-                            fontFamily: "monospace",
-                            fontWeight: "bold",
-                            backgroundColor: "#594f76",
-                            color: "white",
-                            paddingTop: "10px",
-                            paddingBottom: "10px",
-                            margin: 0
-                          }}
-                        >
-                          {histoire.titreHistoire}
-                        </h4>
-                        <div
-                          style={{
-                            height: "240px",
-                            width: "100%",
-                            textAlign: "center",
-                            display: "block"
-                          }}
-                        >
-                          <img
-                            style={{
-                              height: "240px",
-                              marginLeft: "auto",
-                              marginRight: "auto",
-                              display: "block"
-                            }}
-                            className={classes.imgCardTop}
-                            src={
-                              histoire.lienIllustration !== null
-                                ? config.API_URL + histoire.lienIllustration
-                                : ""
-                            }
-                            alt={histoire.titreHistoire}
-                          />
-                        </div>
-
-                        <h5
-                          style={{
-                            fontFamily: "monospace",
-                            fontWeight: "bold",
-                            backgroundColor: "#594f76",
-                            color: "white",
-                            paddingTop: "10px",
-                            paddingBottom: "10px",
-                            margin: 0
-                          }}
-                        >
-                          {histoire.nombreVue ? histoire.nombreVue : 0} vues - {this.getDay(histoire.dateDeCreation)}
-                        </h5>
-                        <CardBody>
-                          <GridContainer>
-                            <GridItem xs={12} sm={12} md={12}>
-                              <p>{"Text par " + histoire.userText.pseudo}</p>
-                              <Tooltip disableFocusListener disableTouchListener title={
-                                    histoire.noteHistoireMoy
-                                      ? parseFloat(Math.round(histoire.noteHistoireMoy*100)/100).toFixed(2)  + "/5"
-                                      : 0
-                                  }>
-                                <ButtonBase >
-                                <StyledRating
-                                  name="read-only"
-                                  value={
-                                    histoire.noteHistoireMoy
-                                      ? histoire.noteHistoireMoy
-                                      : 0
-                                  }
-                                  emptyIcon={
-                                    <StarBorderIcon fontSize="inherit" />
-                                  }
-                                  precision={0.5}
-                                  readOnly
-                                />
-                                </ButtonBase>
-                              </Tooltip>
-                              
-                            </GridItem>
-                            <GridItem xs={12} sm={12} md={12}>
-                              <p>
-                                {" "}
-                                {"Dessin par " + histoire.userDessin.pseudo}
-                              </p>
-                              <Tooltip disableFocusListener disableTouchListener title={
-                                    histoire.noteHistoireMoy
-                                      ? parseFloat(Math.round(histoire.noteDessinMoy*100)/100).toFixed(2)  + "/5"
-                                      : 0
-                                  }>
-                                <ButtonBase >
-                              <StyledRating
-                                name="read-only"
-                                value={
-                                  histoire.noteDessinMoy
-                                    ? histoire.noteDessinMoy
-                                    : 0
-                                }
-                                emptyIcon={
-                                  <StarBorderIcon fontSize="inherit" />
-                                }
-                                precision={0.5}
-                                readOnly
-                              />
-                              </ButtonBase>
-                              </Tooltip>
-                            </GridItem>
-                          </GridContainer>
-                        </CardBody>
-                      </Card>
-                    </ButtonBase>
-                  </GridItem>
-                );
-              }): (
-                <GridItem
-                    xs={12}
-                    sm={12}
-                    md={4}
-                    justify="center"
-                    style={{ width: "auto" }}
-                  >
-                    <SnackbarContent
-                        message={
-                          'aucun résultat correspond à votre recherche.'
-                        }
-                      />
-                  </GridItem>
-              )}
-            </GridContainer>
-            <GridContainer justify="center" spacing={"auto"}>
-              <GridItem xs={4} sm={4} md={4} justify="center" alignItems="center">
-              { this.state.histoireUsers.length > 0 ? (
-                <Pagination count={this.state.numberPageUsers} page={this.state.pageUsers} onChange={this.handleChangePageUsers} />    
-                ) : (<div></div>)}
-              </GridItem>
-            </GridContainer>
-            </div>
-            
-                    )
-                  }
-                ]}
-              />
-            </GridItem>
-          </GridContainer>
-          </div>
-          )}
           <GridContainer justify="center" style={{ marginTop: 20 }}>
             <GridItem xs={12} sm={12} md={4} style={{ width: "auto" }}>
               <Button
                 color="white"
-                style={{color:'rgb(89, 79, 118)', fontWeight: 'bold'}}
+                style={{color:'rgb(89, 79, 118)', fontWeight: 'bold',margin: 0}}
                 href='http://localhost:3000/'
               >
                 Retour
@@ -1416,7 +1025,7 @@ function SamplePrevArrow(props) {
     </IconButton>
   );
 }
-AllHistoires.propTypes = {
+MesOeuvres.propTypes = {
   classes: PropTypes.object.isRequired
 };
-export default withStyles(styles)(AllHistoires);
+export default withStyles(styles)(MesOeuvres);

@@ -798,6 +798,10 @@ class Echanger extends React.Component {
               ECHANGER
             </h2>
           </GridItem>
+          <GridItem xs={10} sm={10} md={10}>
+            <h3 style={{fontWeight: 'bold', fontFamily: 'cursive', color:'#000000', textAlign: 'left'}}>Reste connecté !</h3>
+            <h5 style={{fontFamily: 'cursive', color:'#000000', textAlign: 'left'}}>Entretiens ton réseau de Mini-artist.</h5><br></br><br></br>
+          </GridItem>
           <GridItem xs={12} sm={12} md={12}>
             <CustomTabs
               variant="fullWidth"
