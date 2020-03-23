@@ -9,7 +9,7 @@ import CustomInput from "components/CustomInput/CustomInput.js";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import Search from "@material-ui/icons/Search";
 // core components
-import Tooltip from '@material-ui/core/Tooltip';
+import Tooltip from "@material-ui/core/Tooltip";
 import GridContainer from "components/Grid/GridContainer.js";
 import GridItem from "components/Grid/GridItem.js";
 import Card from "components/Card/Card.js";
@@ -31,7 +31,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import ArrowRightOutlined from "@material-ui/icons/ArrowRightOutlined";
 import ArrowLeftOutlined from "@material-ui/icons/ArrowLeftOutlined";
 import StarBorderIcon from "@material-ui/icons/StarBorder";
-import SnackbarContent from '@material-ui/core/SnackbarContent';
+import SnackbarContent from "@material-ui/core/SnackbarContent";
 import CustomTabs from "components/CustomTabs/CustomTabs.js";
 //scroll bare text
 import SimpleBar from "simplebar-react";
@@ -45,14 +45,14 @@ import Select from "@material-ui/core/Select";
 import InputLabel from "@material-ui/core/InputLabel";
 import moment from "moment";
 // import Pagination from "components/Pagination/Pagination.js";
-import Pagination from '@material-ui/lab/Pagination';
+import Pagination from "@material-ui/lab/Pagination";
 // @material-ui/icons
 import PhotoCamera from "@material-ui/icons/PhotoCamera";
 import PeopleIcon from "@material-ui/icons/People";
 import Chat from "@material-ui/icons/Chat";
 import Contacts from "@material-ui/icons/Contacts";
-import AccountBoxIcon from '@material-ui/icons/AccountBox';
-import TitleIcon from '@material-ui/icons/Title';
+import AccountBoxIcon from "@material-ui/icons/AccountBox";
+import TitleIcon from "@material-ui/icons/Title";
 
 class AllHistoires extends React.Component {
   constructor(props) {
@@ -99,40 +99,78 @@ class AllHistoires extends React.Component {
   handleChangePage = (event, value) => {
     this.setState({ page: value });
     if (this.state.search == "") {
-      Axios.get(config.API_URL + "histoires/take/6/"+(value-1)*6+"/"+this.state.currentFiltre+"/xxxx", {}).then(res => {
+      Axios.get(
+        config.API_URL +
+          "histoires/take/6/" +
+          (value - 1) * 6 +
+          "/" +
+          this.state.currentFiltre +
+          "/xxxx",
+        {}
+      ).then(res => {
         this.setState({ histoires: res.data });
         this.forceUpdate();
       });
     } else {
-      Axios.get(config.API_URL + "histoires/take/6/"+(value-1)*6+"/"+this.state.currentFiltre+"/"+this.state.search, {}).then(res => {
+      Axios.get(
+        config.API_URL +
+          "histoires/take/6/" +
+          (value - 1) * 6 +
+          "/" +
+          this.state.currentFiltre +
+          "/" +
+          this.state.search,
+        {}
+      ).then(res => {
         this.setState({ histoires: res.data });
         this.forceUpdate();
       });
     }
-    
-  }
+  };
   handleChangePageUsers = (event, value) => {
     this.setState({ pageUsers: value });
     if (this.state.search == "") {
-      Axios.get(config.API_URL + "histoires/takeUsers/6/"+(value-1)*6+"/"+this.state.currentFiltre+"/xxxx", {}).then(res => {
+      Axios.get(
+        config.API_URL +
+          "histoires/takeUsers/6/" +
+          (value - 1) * 6 +
+          "/" +
+          this.state.currentFiltre +
+          "/xxxx",
+        {}
+      ).then(res => {
         this.setState({ histoireUsers: res.data });
         this.forceUpdate();
       });
     } else {
-      Axios.get(config.API_URL + "histoires/takeUsers/6/"+(value-1)*6+"/"+this.state.currentFiltre+"/"+this.state.search, {}).then(res => {
+      Axios.get(
+        config.API_URL +
+          "histoires/takeUsers/6/" +
+          (value - 1) * 6 +
+          "/" +
+          this.state.currentFiltre +
+          "/" +
+          this.state.search,
+        {}
+      ).then(res => {
         this.setState({ histoireUsers: res.data });
         this.forceUpdate();
       });
     }
-    
-  }
+  };
   fetchHistoire() {
     console.log("URL api" + config.API_URL);
-    Axios.get(config.API_URL + "histoires/take/6/"+(this.state.page-1)*6+"/1/xxxx", {}).then(res => {
+    Axios.get(
+      config.API_URL +
+        "histoires/take/6/" +
+        (this.state.page - 1) * 6 +
+        "/1/xxxx",
+      {}
+    ).then(res => {
       this.setState({ histoires: res.data });
     });
     Axios.get(config.API_URL + "histoires/numberHistoires", {}).then(res => {
-      this.setState({ numberPage: Math.ceil(res.data/6) });
+      this.setState({ numberPage: Math.ceil(res.data / 6) });
     });
   }
 
@@ -144,144 +182,335 @@ class AllHistoires extends React.Component {
     if (this.state.currentFiltre == 1) {
       if (this.state.search !== "") {
         this.setState({ histoireUsers: [] });
-        Axios.get(config.API_URL + "histoires/numberHistoiresSearch/"+this.state.search, {}).then(res => {
-          this.setState({ numberPage: Math.ceil(res.data/6) });
+        Axios.get(
+          config.API_URL +
+            "histoires/numberHistoiresSearch/" +
+            this.state.search,
+          {}
+        ).then(res => {
+          this.setState({ numberPage: Math.ceil(res.data / 6) });
         });
-        Axios.get(config.API_URL + "histoires/numberHistoiresSearchUsers/"+this.state.search, {}).then(res => {
-          this.setState({ numberPageUsers: Math.ceil(res.data/6) });
+        Axios.get(
+          config.API_URL +
+            "histoires/numberHistoiresSearchUsers/" +
+            this.state.search,
+          {}
+        ).then(res => {
+          this.setState({ numberPageUsers: Math.ceil(res.data / 6) });
         });
-        Axios.get(config.API_URL + "histoires/takeUsers/6/"+(this.state.pageUsers-1)*6+"/1/"+this.state.search, {}).then(res => {
+        Axios.get(
+          config.API_URL +
+            "histoires/takeUsers/6/" +
+            (this.state.pageUsers - 1) * 6 +
+            "/1/" +
+            this.state.search,
+          {}
+        ).then(res => {
           this.setState({ histoireUsers: res.data });
         });
-        Axios.get(config.API_URL + "histoires/take/6/"+(this.state.page-1)+"/"+this.state.currentFiltre+"/"+this.state.search, {}).then(res => {
-          this.setState({ histoires: res.data, currentFiltre:1 });
+        Axios.get(
+          config.API_URL +
+            "histoires/take/6/" +
+            (this.state.page - 1) +
+            "/" +
+            this.state.currentFiltre +
+            "/" +
+            this.state.search,
+          {}
+        ).then(res => {
+          this.setState({ histoires: res.data, currentFiltre: 1 });
           this.forceUpdate();
           console.log(this.state.histoires);
         });
       }
       if (this.state.search === "") {
-        Axios.get(config.API_URL + "histoires/take/6/"+(this.state.page-1)+"/"+this.state.currentFiltre+"/xxxx", {}).then(res => {
-          this.setState({ histoires: res.data, currentFiltre:1 });
+        Axios.get(
+          config.API_URL +
+            "histoires/take/6/" +
+            (this.state.page - 1) +
+            "/" +
+            this.state.currentFiltre +
+            "/xxxx",
+          {}
+        ).then(res => {
+          this.setState({ histoires: res.data, currentFiltre: 1 });
           this.forceUpdate();
           console.log(this.state.histoires);
         });
-        Axios.get(config.API_URL + "histoires/numberHistoires", {}).then(res => {
-          this.setState({ numberPage: Math.ceil(res.data/6), histoireUsers: [] });
-        });
+        Axios.get(config.API_URL + "histoires/numberHistoires", {}).then(
+          res => {
+            this.setState({
+              numberPage: Math.ceil(res.data / 6),
+              histoireUsers: []
+            });
+          }
+        );
       }
     } else if (this.state.currentFiltre == 2) {
       if (this.state.search !== "") {
         this.setState({ histoireUsers: [] });
-        Axios.get(config.API_URL + "histoires/numberHistoiresSearch/"+this.state.search, {}).then(res => {
-          this.setState({ numberPage: Math.ceil(res.data/6) });
+        Axios.get(
+          config.API_URL +
+            "histoires/numberHistoiresSearch/" +
+            this.state.search,
+          {}
+        ).then(res => {
+          this.setState({ numberPage: Math.ceil(res.data / 6) });
         });
-        Axios.get(config.API_URL + "histoires/numberHistoiresSearchUsers/"+this.state.search, {}).then(res => {
-          this.setState({ numberPageUsers: Math.ceil(res.data/6) });
+        Axios.get(
+          config.API_URL +
+            "histoires/numberHistoiresSearchUsers/" +
+            this.state.search,
+          {}
+        ).then(res => {
+          this.setState({ numberPageUsers: Math.ceil(res.data / 6) });
         });
-        Axios.get(config.API_URL + "histoires/takeUsers/6/"+(this.state.pageUsers-1)*6+"/2/"+this.state.search, {}).then(res => {
+        Axios.get(
+          config.API_URL +
+            "histoires/takeUsers/6/" +
+            (this.state.pageUsers - 1) * 6 +
+            "/2/" +
+            this.state.search,
+          {}
+        ).then(res => {
           this.setState({ histoireUsers: res.data });
         });
-        Axios.get(config.API_URL + "histoires/take/6/"+(this.state.page-1)*6+"/"+this.state.currentFiltre+"/"+this.state.search, {}).then(res => {
-          this.setState({ histoires: res.data, currentFiltre:2 });
+        Axios.get(
+          config.API_URL +
+            "histoires/take/6/" +
+            (this.state.page - 1) * 6 +
+            "/" +
+            this.state.currentFiltre +
+            "/" +
+            this.state.search,
+          {}
+        ).then(res => {
+          this.setState({ histoires: res.data, currentFiltre: 2 });
           this.forceUpdate();
         });
       }
       if (this.state.search === "") {
-        Axios.get(config.API_URL + "histoires/take/6/"+(this.state.page-1)*6+"/"+this.state.currentFiltre+"/xxxx", {}).then(res => {
-          this.setState({ histoires: res.data, currentFiltre:2 });
+        Axios.get(
+          config.API_URL +
+            "histoires/take/6/" +
+            (this.state.page - 1) * 6 +
+            "/" +
+            this.state.currentFiltre +
+            "/xxxx",
+          {}
+        ).then(res => {
+          this.setState({ histoires: res.data, currentFiltre: 2 });
           this.forceUpdate();
         });
-        Axios.get(config.API_URL + "histoires/numberHistoires", {}).then(res => {
-          this.setState({ numberPage: Math.ceil(res.data/6), histoireUsers: [] });
-        });
+        Axios.get(config.API_URL + "histoires/numberHistoires", {}).then(
+          res => {
+            this.setState({
+              numberPage: Math.ceil(res.data / 6),
+              histoireUsers: []
+            });
+          }
+        );
       }
     } else if (this.state.currentFiltre == 3) {
       if (this.state.search !== "") {
         this.setState({ histoireUsers: [] });
-        Axios.get(config.API_URL + "histoires/numberHistoiresSearch/"+this.state.search, {}).then(res => {
-          this.setState({ numberPage: Math.ceil(res.data/6)  });
+        Axios.get(
+          config.API_URL +
+            "histoires/numberHistoiresSearch/" +
+            this.state.search,
+          {}
+        ).then(res => {
+          this.setState({ numberPage: Math.ceil(res.data / 6) });
         });
-        Axios.get(config.API_URL + "histoires/numberHistoiresSearchUsers/"+this.state.search, {}).then(res => {
-          this.setState({ numberPageUsers: Math.ceil(res.data/6) });
+        Axios.get(
+          config.API_URL +
+            "histoires/numberHistoiresSearchUsers/" +
+            this.state.search,
+          {}
+        ).then(res => {
+          this.setState({ numberPageUsers: Math.ceil(res.data / 6) });
         });
-        Axios.get(config.API_URL + "histoires/takeUsers/6/"+(this.state.pageUsers-1)*6+"/3/"+this.state.search, {}).then(res => {
+        Axios.get(
+          config.API_URL +
+            "histoires/takeUsers/6/" +
+            (this.state.pageUsers - 1) * 6 +
+            "/3/" +
+            this.state.search,
+          {}
+        ).then(res => {
           this.setState({ histoireUsers: res.data });
         });
-        Axios.get(config.API_URL + "histoires/take/6/"+(this.state.page-1)*6+"/"+this.state.currentFiltre+"/"+this.state.search, {}).then(res => {
-          this.setState({ histoires: res.data, currentFiltre:3 });
+        Axios.get(
+          config.API_URL +
+            "histoires/take/6/" +
+            (this.state.page - 1) * 6 +
+            "/" +
+            this.state.currentFiltre +
+            "/" +
+            this.state.search,
+          {}
+        ).then(res => {
+          this.setState({ histoires: res.data, currentFiltre: 3 });
           this.forceUpdate();
         });
       }
       if (this.state.search === "") {
-        Axios.get(config.API_URL + "histoires/take/6/"+(this.state.page-1)*6+"/"+this.state.currentFiltre+"/xxxx", {}).then(res => {
-          this.setState({ histoires: res.data, currentFiltre:3 });
+        Axios.get(
+          config.API_URL +
+            "histoires/take/6/" +
+            (this.state.page - 1) * 6 +
+            "/" +
+            this.state.currentFiltre +
+            "/xxxx",
+          {}
+        ).then(res => {
+          this.setState({ histoires: res.data, currentFiltre: 3 });
           this.forceUpdate();
         });
-        Axios.get(config.API_URL + "histoires/numberHistoires", {}).then(res => {
-          this.setState({ numberPage: Math.ceil(res.data/6), histoireUsers: [] });
-        });
+        Axios.get(config.API_URL + "histoires/numberHistoires", {}).then(
+          res => {
+            this.setState({
+              numberPage: Math.ceil(res.data / 6),
+              histoireUsers: []
+            });
+          }
+        );
       }
     } else if (this.state.currentFiltre == 4) {
       if (this.state.search !== "") {
         this.setState({ histoireUsers: [] });
-        Axios.get(config.API_URL + "histoires/numberHistoiresSearch/"+this.state.search, {}).then(res => {
-          this.setState({ numberPage: Math.ceil(res.data/6) });
+        Axios.get(
+          config.API_URL +
+            "histoires/numberHistoiresSearch/" +
+            this.state.search,
+          {}
+        ).then(res => {
+          this.setState({ numberPage: Math.ceil(res.data / 6) });
         });
-        Axios.get(config.API_URL + "histoires/numberHistoiresSearchUsers/"+this.state.search, {}).then(res => {
-          this.setState({ numberPageUsers: Math.ceil(res.data/6) });
+        Axios.get(
+          config.API_URL +
+            "histoires/numberHistoiresSearchUsers/" +
+            this.state.search,
+          {}
+        ).then(res => {
+          this.setState({ numberPageUsers: Math.ceil(res.data / 6) });
         });
-        Axios.get(config.API_URL + "histoires/takeUsers/6/"+(this.state.pageUsers-1)*6+"/4/"+this.state.search, {}).then(res => {
+        Axios.get(
+          config.API_URL +
+            "histoires/takeUsers/6/" +
+            (this.state.pageUsers - 1) * 6 +
+            "/4/" +
+            this.state.search,
+          {}
+        ).then(res => {
           this.setState({ histoireUsers: res.data });
         });
-        Axios.get(config.API_URL + "histoires/take/6/"+(this.state.page-1)*6+"/"+this.state.currentFiltre+"/"+this.state.search, {}).then(res => {
-          this.setState({ histoires: res.data, currentFiltre:4 });
+        Axios.get(
+          config.API_URL +
+            "histoires/take/6/" +
+            (this.state.page - 1) * 6 +
+            "/" +
+            this.state.currentFiltre +
+            "/" +
+            this.state.search,
+          {}
+        ).then(res => {
+          this.setState({ histoires: res.data, currentFiltre: 4 });
           this.forceUpdate();
         });
       }
       if (this.state.search === "") {
-        Axios.get(config.API_URL + "histoires/take/6/"+(this.state.page-1)*6+"/"+this.state.currentFiltre+"/xxxx", {}).then(res => {
-          this.setState({ histoires: res.data, currentFiltre:4 });
+        Axios.get(
+          config.API_URL +
+            "histoires/take/6/" +
+            (this.state.page - 1) * 6 +
+            "/" +
+            this.state.currentFiltre +
+            "/xxxx",
+          {}
+        ).then(res => {
+          this.setState({ histoires: res.data, currentFiltre: 4 });
           this.forceUpdate();
         });
-        Axios.get(config.API_URL + "histoires/numberHistoires", {}).then(res => {
-          this.setState({ numberPage: Math.ceil(res.data/6), histoireUsers: [] });
-        });
+        Axios.get(config.API_URL + "histoires/numberHistoires", {}).then(
+          res => {
+            this.setState({
+              numberPage: Math.ceil(res.data / 6),
+              histoireUsers: []
+            });
+          }
+        );
       }
     }
-  };
+  }
 
   handleCheck(e) {
     if (e.currentTarget.dataset.id == 1) {
-        this.setState({ currentFiltre:1 },()=>{this.searchCheck();
-          this.forceUpdate();});
-        
+      this.setState({ currentFiltre: 1 }, () => {
+        this.searchCheck();
+        this.forceUpdate();
+      });
+
       if (this.state.search !== "") {
-        Axios.get(config.API_URL + "histoires/takeUsers/6/"+(this.state.pageUsers-1)*6+"/1/"+this.state.search, {}).then(res => {
+        Axios.get(
+          config.API_URL +
+            "histoires/takeUsers/6/" +
+            (this.state.pageUsers - 1) * 6 +
+            "/1/" +
+            this.state.search,
+          {}
+        ).then(res => {
           this.setState({ histoireUsers: res.data });
         });
       }
-      
     } else if (e.currentTarget.dataset.id == 2) {
-        this.setState({ currentFiltre:2 },()=>{this.searchCheck();
-          this.forceUpdate();});
+      this.setState({ currentFiltre: 2 }, () => {
+        this.searchCheck();
+        this.forceUpdate();
+      });
       if (this.state.search !== "") {
-        Axios.get(config.API_URL + "histoires/takeUsers/6/"+(this.state.pageUsers-1)*6+"/1/"+this.state.search, {}).then(res => {
+        Axios.get(
+          config.API_URL +
+            "histoires/takeUsers/6/" +
+            (this.state.pageUsers - 1) * 6 +
+            "/1/" +
+            this.state.search,
+          {}
+        ).then(res => {
           this.setState({ histoireUsers: res.data });
         });
       }
     } else if (e.currentTarget.dataset.id == 3) {
-        this.setState({ currentFiltre:3 },()=>{this.searchCheck();
-          this.forceUpdate();});
+      this.setState({ currentFiltre: 3 }, () => {
+        this.searchCheck();
+        this.forceUpdate();
+      });
       if (this.state.search !== "") {
-        Axios.get(config.API_URL + "histoires/takeUsers/6/"+(this.state.pageUsers-1)*6+"/1/"+this.state.search, {}).then(res => {
+        Axios.get(
+          config.API_URL +
+            "histoires/takeUsers/6/" +
+            (this.state.pageUsers - 1) * 6 +
+            "/1/" +
+            this.state.search,
+          {}
+        ).then(res => {
           this.setState({ histoireUsers: res.data });
         });
       }
     } else if (e.currentTarget.dataset.id == 4) {
-        this.setState({ currentFiltre:4 },()=>{this.searchCheck();
-          this.forceUpdate();});
+      this.setState({ currentFiltre: 4 }, () => {
+        this.searchCheck();
+        this.forceUpdate();
+      });
       if (this.state.search !== "") {
-        Axios.get(config.API_URL + "histoires/takeUsers/6/"+(this.state.pageUsers-1)*6+"/1/"+this.state.search, {}).then(res => {
+        Axios.get(
+          config.API_URL +
+            "histoires/takeUsers/6/" +
+            (this.state.pageUsers - 1) * 6 +
+            "/1/" +
+            this.state.search,
+          {}
+        ).then(res => {
           this.setState({ histoireUsers: res.data });
         });
       }
@@ -303,15 +532,19 @@ class AllHistoires extends React.Component {
   getDay(date) {
     const d = moment(new Date());
     const dHistoire = moment(date);
-    let dt="";
-    if (d.diff(dHistoire, 'days') > 30) {
-      dt = Math.floor(d.diff(dHistoire, 'month'))+" mois "+(d.diff(dHistoire, 'days')-(d.diff(dHistoire, 'month')*30))+" jours ";
+    let dt = "";
+    if (d.diff(dHistoire, "days") > 30) {
+      dt =
+        Math.floor(d.diff(dHistoire, "month")) +
+        " mois " +
+        (d.diff(dHistoire, "days") - d.diff(dHistoire, "month") * 30) +
+        " jours ";
     } else {
-      dt = d.diff(dHistoire, 'days')+" jours"
+      dt = d.diff(dHistoire, "days") + " jours";
     }
     return dt;
   }
-  
+
   next() {
     console.log(this.slider);
     this.slider.slickNext();
@@ -331,10 +564,9 @@ class AllHistoires extends React.Component {
       noteDessin: this.state.ratingDessin,
       isActive: true
     }).then(res => {
-      this.searchCheck()
-      this.forceUpdate()
+      this.searchCheck();
+      this.forceUpdate();
     });
-    
   }
   //modal - carousel
   render() {
@@ -349,13 +581,25 @@ class AllHistoires extends React.Component {
               paper: classes.modal
             }}
             onBackdropClick={() => {
-              this.setState({ modal: false, ratingDessin: 0, ratingText: 0, commentaire: "" });
+              this.setState({
+                modal: false,
+                ratingDessin: 0,
+                ratingText: 0,
+                commentaire: ""
+              });
               this.gotToIndex(1);
             }}
             open={modal}
             TransitionComponent={Transition}
             keepMounted
-            onClose={() => this.setState({ modal: false, ratingDessin: 0, ratingText: 0, commentaire: "" })}
+            onClose={() =>
+              this.setState({
+                modal: false,
+                ratingDessin: 0,
+                ratingText: 0,
+                commentaire: ""
+              })
+            }
             aria-labelledby="modal-slide-title"
             aria-describedby="modal-slide-description"
             maxWidth={"md"}
@@ -366,7 +610,12 @@ class AllHistoires extends React.Component {
             <DialogTitle
               id="customized-dialog-title"
               onClose={() => {
-                this.setState({ modal: false, ratingDessin: 0, ratingText: 0, commentaire: "" });
+                this.setState({
+                  modal: false,
+                  ratingDessin: 0,
+                  ratingText: 0,
+                  commentaire: ""
+                });
                 this.gotToIndex(1);
               }}
               style={{
@@ -397,8 +646,9 @@ class AllHistoires extends React.Component {
                 style={Styles.NextArrow}
                 Color={
                   this.state.counter === this.state.planches.length + 1
-                  ? 'rgba(0, 0, 0, 0.26)'
-                  : '#332861'}
+                    ? "rgba(0, 0, 0, 0.26)"
+                    : "#332861"
+                }
                 disabled={
                   this.state.counter === this.state.planches.length + 1
                     ? true
@@ -470,7 +720,7 @@ class AllHistoires extends React.Component {
                                   }}
                                 >
                                   <img
-                                    src={config.API_URL + planche.lienDessin}
+                                    src={planche.lienDessin}
                                     alt="First slide"
                                     style={{
                                       height: "365px",
@@ -482,7 +732,8 @@ class AllHistoires extends React.Component {
                                 </div>
                               </GridItem>
                             </GridContainer>
-                          ) : planche.lienDessin === "" ? (
+                          ) : planche.lienDessin === null ||
+                            planche.lienDessin === "" ? (
                             <GridContainer
                               style={{ height: "365px" }}
                               justify="center"
@@ -553,14 +804,15 @@ class AllHistoires extends React.Component {
                                 alignItems="center"
                               >
                                 <img
-                                  src={config.API_URL + planche.lienDessin}
+                                  src={planche.lienDessin}
                                   alt="First slide"
                                   className="slick-image"
                                   style={{
                                     alignSelf: "center",
                                     maxHeight: "365px",
                                     height: "auto",
-                                    maxWidth: "auto",
+                                    maxWidth: "330px",
+                                    width: "auto",
                                     paddingRight: "10px"
                                   }}
                                 />
@@ -687,9 +939,8 @@ class AllHistoires extends React.Component {
               <SamplePrevArrow
                 onClick={() => this.previous()}
                 Color={
-                  this.state.counter === 1
-                  ? 'rgba(0, 0, 0, 0.26)'
-                  : '#332861'}
+                  this.state.counter === 1 ? "rgba(0, 0, 0, 0.26)" : "#332861"
+                }
                 disabled={this.state.counter === 1 ? true : false}
               />
             </DialogContent>
@@ -711,9 +962,18 @@ class AllHistoires extends React.Component {
                 ) : (
                   <Button
                     color="white"
-                    style={{color:'rgb(89, 79, 118)', fontWeight: 'bold',margin: 0}}
+                    style={{
+                      color: "rgb(89, 79, 118)",
+                      fontWeight: "bold",
+                      margin: 0
+                    }}
                     onClick={() => {
-                      this.setState({ modal: false, ratingDessin: 0, ratingText: 0, commentaire: "" });
+                      this.setState({
+                        modal: false,
+                        ratingDessin: 0,
+                        ratingText: 0,
+                        commentaire: ""
+                      });
                       this.gotToIndex(1);
                       this.submitCommantaire();
                     }}
@@ -726,36 +986,34 @@ class AllHistoires extends React.Component {
           </Dialog>
           <GridContainer justify="center">
             <GridItem xs={12} sm={12} md={8}>
-              <h2 className={classes.title}>
-                LES HISTOIRES
-              </h2>
+              <h2 className={classes.title}>LES HISTOIRES</h2>
             </GridItem>
           </GridContainer>
-          
+
           <GridContainer justify="flex-end">
             <GridItem xs={7} sm={7} md={7}>
-                <CustomInput
-                    labelText="Recherche"
-                    id="material"
-                    formControlProps={{
-                    fullWidth: true
-                    }}
-                    value={this.state.search}
-                    onChange={(search, event) => {
-                        this.setState({
-                          search: search.target.value
-                        });
-                    }}
-                    inputProps={{
-                    endAdornment: (
-                      <ButtonBase onClick={this.searchCheck.bind(this)}>
-                        <InputAdornment position="end" >
-                          <Search />
-                        </InputAdornment>
-                      </ButtonBase>
-                    )
-                    }}
-                />
+              <CustomInput
+                labelText="Recherche"
+                id="material"
+                formControlProps={{
+                  fullWidth: true
+                }}
+                value={this.state.search}
+                onChange={(search, event) => {
+                  this.setState({
+                    search: search.target.value
+                  });
+                }}
+                inputProps={{
+                  endAdornment: (
+                    <ButtonBase onClick={this.searchCheck.bind(this)}>
+                      <InputAdornment position="end">
+                        <Search />
+                      </InputAdornment>
+                    </ButtonBase>
+                  )
+                }}
+              />
             </GridItem>
             <GridItem xs={4} sm={4} md={4}>
               <CustomDropdown
@@ -764,7 +1022,7 @@ class AllHistoires extends React.Component {
                   color: "white"
                 }}
                 color="white"
-                style={{color:'rgb(89, 79, 118)', fontWeight: 'bold'}}
+                style={{ color: "rgb(89, 79, 118)", fontWeight: "bold" }}
                 buttonText="Filtre"
                 value={this.state.selectedFiltre}
                 onChange={this.handleChange}
@@ -785,533 +1043,651 @@ class AllHistoires extends React.Component {
               />
             </GridItem>
           </GridContainer>
-          { this.state.histoireUsers.length === 0 ? (
-          <div>
-            <GridContainer justify="center" spacing={"auto"}>
-              {this.state.histoires.map((histoire, index) => {
-                return (
-                  <GridItem
-                    xs={12}
-                    sm={12}
-                    md={4}
-                    justify="center"
-                    style={{ width: "auto" }}
-                    key={index}
-                  >
-                    <ButtonBase
-                      focusRipple
-                      className={classes.image}
-                      focusVisibleClassName={classes.focusVisible}
-                      style={{
-                        width: "20rem"
-                      }}
-                      onClick={() => {
-                        this.setState({
-                          modal: true,
-                          selectedHistoire: histoire
-                        });
-                        this.fetchPlanche(histoire);
-                      }}
+          {this.state.histoireUsers.length === 0 ? (
+            <div>
+              <GridContainer justify="center" spacing={"auto"}>
+                {this.state.histoires.map((histoire, index) => {
+                  return (
+                    <GridItem
+                      xs={12}
+                      sm={12}
+                      md={4}
+                      justify="center"
+                      style={{ width: "auto" }}
+                      key={index}
                     >
-                      <Card
-                        style={{ width: "20rem", backgroundColor: "#e3f3fd" }}
+                      <ButtonBase
+                        focusRipple
+                        className={classes.image}
+                        focusVisibleClassName={classes.focusVisible}
+                        style={{
+                          width: "20rem"
+                        }}
+                        onClick={() => {
+                          this.setState({
+                            modal: true,
+                            selectedHistoire: histoire
+                          });
+                          this.fetchPlanche(histoire);
+                        }}
                       >
-                        <h4
-                          className={classes.cardTitle}
-                          style={{
-                            fontFamily: "monospace",
-                            fontWeight: "bold",
-                            backgroundColor: "#594f76",
-                            color: "white",
-                            paddingTop: "10px",
-                            paddingBottom: "10px",
-                            margin: 0
-                          }}
+                        <Card
+                          style={{ width: "20rem", backgroundColor: "#e3f3fd" }}
                         >
-                          {histoire.titreHistoire}
-                        </h4>
-                        <div
-                          style={{
-                            height: "240px",
-                            width: "100%",
-                            textAlign: "center",
-                            display: "block"
-                          }}
-                        >
-                          <img
+                          <h4
+                            className={classes.cardTitle}
+                            style={{
+                              fontFamily: "monospace",
+                              fontWeight: "bold",
+                              backgroundColor: "#594f76",
+                              color: "white",
+                              paddingTop: "10px",
+                              paddingBottom: "10px",
+                              margin: 0
+                            }}
+                          >
+                            {histoire.titreHistoire}
+                          </h4>
+                          <div
                             style={{
                               height: "240px",
-                              marginLeft: "auto",
-                              marginRight: "auto",
+                              width: "100%",
+                              textAlign: "center",
                               display: "block"
                             }}
-                            className={classes.imgCardTop}
-                            src={
-                              histoire.lienIllustration !== null
-                                ? config.API_URL + histoire.lienIllustration
-                                : ""
-                            }
-                            alt={histoire.titreHistoire}
-                          />
-                        </div>
+                          >
+                            <img
+                              style={{
+                                height: "240px",
+                                maxWidth: "320px",
+                                marginLeft: "auto",
+                                marginRight: "auto",
+                                display: "block"
+                              }}
+                              className={classes.imgCardTop}
+                              src={
+                                histoire.lienIllustration !== null
+                                  ? histoire.lienIllustration
+                                  : ""
+                              }
+                              alt={histoire.titreHistoire}
+                            />
+                          </div>
 
-                        <h5
-                          style={{
-                            fontFamily: "monospace",
-                            fontWeight: "bold",
-                            backgroundColor: "#594f76",
-                            color: "white",
-                            paddingTop: "10px",
-                            paddingBottom: "10px",
-                            margin: 0
-                          }}
-                        >
-                          {histoire.nombreVue ? histoire.nombreVue : 0} vues - {this.getDay(histoire.dateDeCreation)}
-                        </h5>
-                        <CardBody>
-                          <GridContainer>
-                            <GridItem xs={12} sm={12} md={12}>
-                              <p>{"Text par " + histoire.userText.pseudo}</p>
-                              <Tooltip disableFocusListener disableTouchListener title={
+                          <h5
+                            style={{
+                              fontFamily: "monospace",
+                              fontWeight: "bold",
+                              backgroundColor: "#594f76",
+                              color: "white",
+                              paddingTop: "10px",
+                              paddingBottom: "10px",
+                              margin: 0
+                            }}
+                          >
+                            {histoire.nombreVue ? histoire.nombreVue : 0} vues -{" "}
+                            {this.getDay(histoire.dateDeCreation)}
+                          </h5>
+                          <CardBody>
+                            <GridContainer>
+                              <GridItem xs={12} sm={12} md={12}>
+                                <p>{"Text par " + histoire.userText.pseudo}</p>
+                                <Tooltip
+                                  disableFocusListener
+                                  disableTouchListener
+                                  title={
                                     histoire.noteHistoireMoy
-                                      ? parseFloat(Math.round(histoire.noteHistoireMoy*100)/100).toFixed(2)  + "/5"
-                                      : 0
-                                  }>
-                                <ButtonBase >
-                                <StyledRating
-                                  name="read-only"
-                                  value={
-                                    histoire.noteHistoireMoy
-                                      ? histoire.noteHistoireMoy
+                                      ? parseFloat(
+                                          Math.round(
+                                            histoire.noteHistoireMoy * 100
+                                          ) / 100
+                                        ).toFixed(2) + "/5"
                                       : 0
                                   }
-                                  emptyIcon={
-                                    <StarBorderIcon fontSize="inherit" />
-                                  }
-                                  precision={0.5}
-                                  readOnly
-                                />
-                                </ButtonBase>
-                              </Tooltip>
-                              
-                            </GridItem>
-                            <GridItem xs={12} sm={12} md={12}>
-                              <p>
-                                {" "}
-                                {"Dessin par " + histoire.userDessin.pseudo}
-                              </p>
-                              <Tooltip disableFocusListener disableTouchListener title={
+                                >
+                                  <ButtonBase>
+                                    <StyledRating
+                                      name="read-only"
+                                      value={
+                                        histoire.noteHistoireMoy
+                                          ? histoire.noteHistoireMoy
+                                          : 0
+                                      }
+                                      emptyIcon={
+                                        <StarBorderIcon fontSize="inherit" />
+                                      }
+                                      precision={0.5}
+                                      readOnly
+                                    />
+                                  </ButtonBase>
+                                </Tooltip>
+                              </GridItem>
+                              <GridItem xs={12} sm={12} md={12}>
+                                <p>
+                                  {" "}
+                                  {"Dessin par " + histoire.userDessin.pseudo}
+                                </p>
+                                <Tooltip
+                                  disableFocusListener
+                                  disableTouchListener
+                                  title={
                                     histoire.noteHistoireMoy
-                                      ? parseFloat(Math.round(histoire.noteDessinMoy*100)/100).toFixed(2)  + "/5"
+                                      ? parseFloat(
+                                          Math.round(
+                                            histoire.noteDessinMoy * 100
+                                          ) / 100
+                                        ).toFixed(2) + "/5"
                                       : 0
-                                  }>
-                                <ButtonBase >
-                              <StyledRating
-                                name="read-only"
-                                value={
-                                  histoire.noteDessinMoy
-                                    ? histoire.noteDessinMoy
-                                    : 0
-                                }
-                                emptyIcon={
-                                  <StarBorderIcon fontSize="inherit" />
-                                }
-                                precision={0.5}
-                                readOnly
-                              />
-                              </ButtonBase>
-                              </Tooltip>
-                            </GridItem>
-                          </GridContainer>
-                        </CardBody>
-                      </Card>
-                    </ButtonBase>
-                  </GridItem>
-                );
-              })}
-            </GridContainer>
-            <GridContainer justify="center">
-              <GridItem xs={4} sm={4} md={4}>
-              <Pagination count={this.state.numberPage} page={this.state.page} onChange={this.handleChangePage} />    
-              </GridItem>
-            </GridContainer>
-          </div>
+                                  }
+                                >
+                                  <ButtonBase>
+                                    <StyledRating
+                                      name="read-only"
+                                      value={
+                                        histoire.noteDessinMoy
+                                          ? histoire.noteDessinMoy
+                                          : 0
+                                      }
+                                      emptyIcon={
+                                        <StarBorderIcon fontSize="inherit" />
+                                      }
+                                      precision={0.5}
+                                      readOnly
+                                    />
+                                  </ButtonBase>
+                                </Tooltip>
+                              </GridItem>
+                            </GridContainer>
+                          </CardBody>
+                        </Card>
+                      </ButtonBase>
+                    </GridItem>
+                  );
+                })}
+              </GridContainer>
+              <GridContainer justify="center">
+                <GridItem xs={4} sm={4} md={4}>
+                  <Pagination
+                    count={this.state.numberPage}
+                    page={this.state.page}
+                    onChange={this.handleChangePage}
+                  />
+                </GridItem>
+              </GridContainer>
+            </div>
           ) : (
             <div>
-            {/* <GridContainer justify="center">
+              {/* <GridContainer justify="center">
               <GridItem xs={12} sm={12} md={8}>
                 <h3 className={classes.title}>
                   LES HISTOIRES PAR TITRE 
                 </h3>
               </GridItem>
             </GridContainer> */}
-            <GridContainer justify="center">
-          <GridItem xs={12} sm={12} md={12}>
-            <CustomTabs
-              variant="fullWidth"
-              headerColor="info"
-              value={2}
-              tabs={[
-                {
-                  tabName: "LES HISTOIRES PAR TITRE",
-                  tabIcon: TitleIcon,
-                  tabContent: (
-            <div>
-            <GridContainer justify="center" spacing={"auto"}>
-              { this.state.histoires.length > 0 ? 
-              this.state.histoires.map((histoire, index) => {
-                return (
-                  <GridItem
-                    xs={12}
-                    sm={12}
-                    md={4}
-                    justify="center"
-                    style={{ width: "auto" }}
-                    key={index}
-                  >
-                    <ButtonBase
-                      focusRipple
-                      className={classes.image}
-                      focusVisibleClassName={classes.focusVisible}
-                      style={{
-                        width: "20rem"
-                      }}
-                      onClick={() => {
-                        this.setState({
-                          modal: true,
-                          selectedHistoire: histoire
-                        });
-                        this.fetchPlanche(histoire);
-                      }}
-                    >
-                      <Card
-                        style={{ width: "20rem", backgroundColor: "#e3f3fd" }}
-                      >
-                        <h4
-                          className={classes.cardTitle}
-                          style={{
-                            fontFamily: "monospace",
-                            fontWeight: "bold",
-                            backgroundColor: "#594f76",
-                            color: "white",
-                            paddingTop: "10px",
-                            paddingBottom: "10px",
-                            margin: 0
-                          }}
-                        >
-                          {histoire.titreHistoire}
-                        </h4>
-                        <div
-                          style={{
-                            height: "240px",
-                            width: "100%",
-                            textAlign: "center",
-                            display: "block"
-                          }}
-                        >
-                          <img
-                            style={{
-                              height: "240px",
-                              marginLeft: "auto",
-                              marginRight: "auto",
-                              display: "block"
-                            }}
-                            className={classes.imgCardTop}
-                            src={
-                              histoire.lienIllustration !== null
-                                ? config.API_URL + histoire.lienIllustration
-                                : ""
-                            }
-                            alt={histoire.titreHistoire}
-                          />
-                        </div>
+              <GridContainer justify="center">
+                <GridItem xs={12} sm={12} md={12}>
+                  <CustomTabs
+                    variant="fullWidth"
+                    headerColor="info"
+                    value={2}
+                    tabs={[
+                      {
+                        tabName: "LES HISTOIRES PAR TITRE",
+                        tabIcon: TitleIcon,
+                        tabContent: (
+                          <div>
+                            <GridContainer justify="center" spacing={"auto"}>
+                              {this.state.histoires.length > 0 ? (
+                                this.state.histoires.map((histoire, index) => {
+                                  return (
+                                    <GridItem
+                                      xs={12}
+                                      sm={12}
+                                      md={4}
+                                      justify="center"
+                                      style={{ width: "auto" }}
+                                      key={index}
+                                    >
+                                      <ButtonBase
+                                        focusRipple
+                                        className={classes.image}
+                                        focusVisibleClassName={
+                                          classes.focusVisible
+                                        }
+                                        style={{
+                                          width: "20rem"
+                                        }}
+                                        onClick={() => {
+                                          this.setState({
+                                            modal: true,
+                                            selectedHistoire: histoire
+                                          });
+                                          this.fetchPlanche(histoire);
+                                        }}
+                                      >
+                                        <Card
+                                          style={{
+                                            width: "20rem",
+                                            backgroundColor: "#e3f3fd"
+                                          }}
+                                        >
+                                          <h4
+                                            className={classes.cardTitle}
+                                            style={{
+                                              fontFamily: "monospace",
+                                              fontWeight: "bold",
+                                              backgroundColor: "#594f76",
+                                              color: "white",
+                                              paddingTop: "10px",
+                                              paddingBottom: "10px",
+                                              margin: 0
+                                            }}
+                                          >
+                                            {histoire.titreHistoire}
+                                          </h4>
+                                          <div
+                                            style={{
+                                              height: "240px",
+                                              width: "100%",
+                                              textAlign: "center",
+                                              display: "block"
+                                            }}
+                                          >
+                                            <img
+                                              style={{
+                                                height: "240px",
+                                                maxWidth: "320px",
+                                                marginLeft: "auto",
+                                                marginRight: "auto",
+                                                display: "block"
+                                              }}
+                                              className={classes.imgCardTop}
+                                              src={
+                                                histoire.lienIllustration !==
+                                                null
+                                                  ? histoire.lienIllustration
+                                                  : ""
+                                              }
+                                              alt={histoire.titreHistoire}
+                                            />
+                                          </div>
 
-                        <h5
-                          style={{
-                            fontFamily: "monospace",
-                            fontWeight: "bold",
-                            backgroundColor: "#594f76",
-                            color: "white",
-                            paddingTop: "10px",
-                            paddingBottom: "10px",
-                            margin: 0
-                          }}
-                        >
-                          {histoire.nombreVue ? histoire.nombreVue : 0} vues - {this.getDay(histoire.dateDeCreation)}
-                        </h5>
-                        <CardBody>
-                          <GridContainer>
-                            <GridItem xs={12} sm={12} md={12}>
-                              <p>{"Text par " + histoire.userText.pseudo}</p>
-                              <Tooltip disableFocusListener disableTouchListener title={
-                                    histoire.noteHistoireMoy
-                                      ? parseFloat(Math.round(histoire.noteHistoireMoy*100)/100).toFixed(2)  + "/5"
-                                      : 0
-                                  }>
-                                <ButtonBase >
-                                <StyledRating
-                                  name="read-only"
-                                  value={
-                                    histoire.noteHistoireMoy
-                                      ? histoire.noteHistoireMoy
-                                      : 0
-                                  }
-                                  emptyIcon={
-                                    <StarBorderIcon fontSize="inherit" />
-                                  }
-                                  precision={0.5}
-                                  readOnly
-                                />
-                                </ButtonBase>
-                              </Tooltip>
-                              
-                            </GridItem>
-                            <GridItem xs={12} sm={12} md={12}>
-                              <p>
-                                {" "}
-                                {"Dessin par " + histoire.userDessin.pseudo}
-                              </p>
-                              <Tooltip disableFocusListener disableTouchListener title={
-                                    histoire.noteHistoireMoy
-                                      ? parseFloat(Math.round(histoire.noteDessinMoy*100)/100).toFixed(2)  + "/5"
-                                      : 0
-                                  }>
-                                <ButtonBase >
-                              <StyledRating
-                                name="read-only"
-                                value={
-                                  histoire.noteDessinMoy
-                                    ? histoire.noteDessinMoy
-                                    : 0
-                                }
-                                emptyIcon={
-                                  <StarBorderIcon fontSize="inherit" />
-                                }
-                                precision={0.5}
-                                readOnly
-                              />
-                              </ButtonBase>
-                              </Tooltip>
-                            </GridItem>
-                          </GridContainer>
-                        </CardBody>
-                      </Card>
-                    </ButtonBase>
-                  </GridItem>
-                );
-              }): (
-                <GridItem
-                    xs={12}
-                    sm={12}
-                    md={4}
-                    justify="center"
-                    style={{ width: "auto" }}
-                  >
-                    <SnackbarContent
-                        message={
-                          'aucun résultat correspond à votre recherche.'
-                        }
-                      />
-                  </GridItem>
-              )}
-            </GridContainer>
-            <GridContainer justify="center">
-              <GridItem xs={4} sm={4} md={4}>
-                { this.state.histoires.length > 0 ? (
-                  <Pagination count={this.state.numberPage} page={this.state.page} onChange={this.handleChangePage} /> 
-                ) : (<div></div>)}
-              </GridItem>
-            </GridContainer>
-            </div>
-            
-               )
-              },
-              {
-                tabName: "LES HISTOIRES PAR UTILISATEUR",
-                tabIcon: AccountBoxIcon,
-                tabContent: (
-              <div>
-            <GridContainer justify="center" spacing={"auto"}>
-              { this.state.histoireUsers.length > 0 ?
-              this.state.histoireUsers.map((histoire, index) => {
-                return (
-                  <GridItem
-                    xs={12}
-                    sm={12}
-                    md={4}
-                    justify="center"
-                    style={{ width: "auto" }}
-                    key={index}
-                  >
-                    <ButtonBase
-                      focusRipple
-                      className={classes.image}
-                      focusVisibleClassName={classes.focusVisible}
-                      style={{
-                        width: "20rem"
-                      }}
-                      onClick={() => {
-                        this.setState({
-                          modal: true,
-                          selectedHistoire: histoire
-                        });
-                        this.fetchPlanche(histoire);
-                      }}
-                    >
-                      <Card
-                        style={{ width: "20rem", backgroundColor: "#e3f3fd" }}
-                      >
-                        <h4
-                          className={classes.cardTitle}
-                          style={{
-                            fontFamily: "monospace",
-                            fontWeight: "bold",
-                            backgroundColor: "#594f76",
-                            color: "white",
-                            paddingTop: "10px",
-                            paddingBottom: "10px",
-                            margin: 0
-                          }}
-                        >
-                          {histoire.titreHistoire}
-                        </h4>
-                        <div
-                          style={{
-                            height: "240px",
-                            width: "100%",
-                            textAlign: "center",
-                            display: "block"
-                          }}
-                        >
-                          <img
-                            style={{
-                              height: "240px",
-                              marginLeft: "auto",
-                              marginRight: "auto",
-                              display: "block"
-                            }}
-                            className={classes.imgCardTop}
-                            src={
-                              histoire.lienIllustration !== null
-                                ? config.API_URL + histoire.lienIllustration
-                                : ""
-                            }
-                            alt={histoire.titreHistoire}
-                          />
-                        </div>
+                                          <h5
+                                            style={{
+                                              fontFamily: "monospace",
+                                              fontWeight: "bold",
+                                              backgroundColor: "#594f76",
+                                              color: "white",
+                                              paddingTop: "10px",
+                                              paddingBottom: "10px",
+                                              margin: 0
+                                            }}
+                                          >
+                                            {histoire.nombreVue
+                                              ? histoire.nombreVue
+                                              : 0}{" "}
+                                            vues -{" "}
+                                            {this.getDay(
+                                              histoire.dateDeCreation
+                                            )}
+                                          </h5>
+                                          <CardBody>
+                                            <GridContainer>
+                                              <GridItem xs={12} sm={12} md={12}>
+                                                <p>
+                                                  {"Text par " +
+                                                    histoire.userText.pseudo}
+                                                </p>
+                                                <Tooltip
+                                                  disableFocusListener
+                                                  disableTouchListener
+                                                  title={
+                                                    histoire.noteHistoireMoy
+                                                      ? parseFloat(
+                                                          Math.round(
+                                                            histoire.noteHistoireMoy *
+                                                              100
+                                                          ) / 100
+                                                        ).toFixed(2) + "/5"
+                                                      : 0
+                                                  }
+                                                >
+                                                  <ButtonBase>
+                                                    <StyledRating
+                                                      name="read-only"
+                                                      value={
+                                                        histoire.noteHistoireMoy
+                                                          ? histoire.noteHistoireMoy
+                                                          : 0
+                                                      }
+                                                      emptyIcon={
+                                                        <StarBorderIcon fontSize="inherit" />
+                                                      }
+                                                      precision={0.5}
+                                                      readOnly
+                                                    />
+                                                  </ButtonBase>
+                                                </Tooltip>
+                                              </GridItem>
+                                              <GridItem xs={12} sm={12} md={12}>
+                                                <p>
+                                                  {" "}
+                                                  {"Dessin par " +
+                                                    histoire.userDessin.pseudo}
+                                                </p>
+                                                <Tooltip
+                                                  disableFocusListener
+                                                  disableTouchListener
+                                                  title={
+                                                    histoire.noteHistoireMoy
+                                                      ? parseFloat(
+                                                          Math.round(
+                                                            histoire.noteDessinMoy *
+                                                              100
+                                                          ) / 100
+                                                        ).toFixed(2) + "/5"
+                                                      : 0
+                                                  }
+                                                >
+                                                  <ButtonBase>
+                                                    <StyledRating
+                                                      name="read-only"
+                                                      value={
+                                                        histoire.noteDessinMoy
+                                                          ? histoire.noteDessinMoy
+                                                          : 0
+                                                      }
+                                                      emptyIcon={
+                                                        <StarBorderIcon fontSize="inherit" />
+                                                      }
+                                                      precision={0.5}
+                                                      readOnly
+                                                    />
+                                                  </ButtonBase>
+                                                </Tooltip>
+                                              </GridItem>
+                                            </GridContainer>
+                                          </CardBody>
+                                        </Card>
+                                      </ButtonBase>
+                                    </GridItem>
+                                  );
+                                })
+                              ) : (
+                                <GridItem
+                                  xs={12}
+                                  sm={12}
+                                  md={4}
+                                  justify="center"
+                                  style={{ width: "auto" }}
+                                >
+                                  <SnackbarContent
+                                    message={
+                                      "aucun résultat correspond à votre recherche."
+                                    }
+                                  />
+                                </GridItem>
+                              )}
+                            </GridContainer>
+                            <GridContainer justify="center">
+                              <GridItem xs={4} sm={4} md={4}>
+                                {this.state.histoires.length > 0 ? (
+                                  <Pagination
+                                    count={this.state.numberPage}
+                                    page={this.state.page}
+                                    onChange={this.handleChangePage}
+                                  />
+                                ) : (
+                                  <div></div>
+                                )}
+                              </GridItem>
+                            </GridContainer>
+                          </div>
+                        )
+                      },
+                      {
+                        tabName: "LES HISTOIRES PAR UTILISATEUR",
+                        tabIcon: AccountBoxIcon,
+                        tabContent: (
+                          <div>
+                            <GridContainer justify="center" spacing={"auto"}>
+                              {this.state.histoireUsers.length > 0 ? (
+                                this.state.histoireUsers.map(
+                                  (histoire, index) => {
+                                    return (
+                                      <GridItem
+                                        xs={12}
+                                        sm={12}
+                                        md={4}
+                                        justify="center"
+                                        style={{ width: "auto" }}
+                                        key={index}
+                                      >
+                                        <ButtonBase
+                                          focusRipple
+                                          className={classes.image}
+                                          focusVisibleClassName={
+                                            classes.focusVisible
+                                          }
+                                          style={{
+                                            width: "20rem"
+                                          }}
+                                          onClick={() => {
+                                            this.setState({
+                                              modal: true,
+                                              selectedHistoire: histoire
+                                            });
+                                            this.fetchPlanche(histoire);
+                                          }}
+                                        >
+                                          <Card
+                                            style={{
+                                              width: "20rem",
+                                              backgroundColor: "#e3f3fd"
+                                            }}
+                                          >
+                                            <h4
+                                              className={classes.cardTitle}
+                                              style={{
+                                                fontFamily: "monospace",
+                                                fontWeight: "bold",
+                                                backgroundColor: "#594f76",
+                                                color: "white",
+                                                paddingTop: "10px",
+                                                paddingBottom: "10px",
+                                                margin: 0
+                                              }}
+                                            >
+                                              {histoire.titreHistoire}
+                                            </h4>
+                                            <div
+                                              style={{
+                                                height: "240px",
+                                                width: "100%",
+                                                textAlign: "center",
+                                                display: "block"
+                                              }}
+                                            >
+                                              <img
+                                                style={{
+                                                  height: "240px",
+                                                  maxWidth: "320px",
+                                                  marginLeft: "auto",
+                                                  marginRight: "auto",
+                                                  display: "block"
+                                                }}
+                                                className={classes.imgCardTop}
+                                                src={
+                                                  histoire.lienIllustration !==
+                                                  null
+                                                    ? histoire.lienIllustration
+                                                    : ""
+                                                }
+                                                alt={histoire.titreHistoire}
+                                              />
+                                            </div>
 
-                        <h5
-                          style={{
-                            fontFamily: "monospace",
-                            fontWeight: "bold",
-                            backgroundColor: "#594f76",
-                            color: "white",
-                            paddingTop: "10px",
-                            paddingBottom: "10px",
-                            margin: 0
-                          }}
-                        >
-                          {histoire.nombreVue ? histoire.nombreVue : 0} vues - {this.getDay(histoire.dateDeCreation)}
-                        </h5>
-                        <CardBody>
-                          <GridContainer>
-                            <GridItem xs={12} sm={12} md={12}>
-                              <p>{"Text par " + histoire.userText.pseudo}</p>
-                              <Tooltip disableFocusListener disableTouchListener title={
-                                    histoire.noteHistoireMoy
-                                      ? parseFloat(Math.round(histoire.noteHistoireMoy*100)/100).toFixed(2)  + "/5"
-                                      : 0
-                                  }>
-                                <ButtonBase >
-                                <StyledRating
-                                  name="read-only"
-                                  value={
-                                    histoire.noteHistoireMoy
-                                      ? histoire.noteHistoireMoy
-                                      : 0
+                                            <h5
+                                              style={{
+                                                fontFamily: "monospace",
+                                                fontWeight: "bold",
+                                                backgroundColor: "#594f76",
+                                                color: "white",
+                                                paddingTop: "10px",
+                                                paddingBottom: "10px",
+                                                margin: 0
+                                              }}
+                                            >
+                                              {histoire.nombreVue
+                                                ? histoire.nombreVue
+                                                : 0}{" "}
+                                              vues -{" "}
+                                              {this.getDay(
+                                                histoire.dateDeCreation
+                                              )}
+                                            </h5>
+                                            <CardBody>
+                                              <GridContainer>
+                                                <GridItem
+                                                  xs={12}
+                                                  sm={12}
+                                                  md={12}
+                                                >
+                                                  <p>
+                                                    {"Text par " +
+                                                      histoire.userText.pseudo}
+                                                  </p>
+                                                  <Tooltip
+                                                    disableFocusListener
+                                                    disableTouchListener
+                                                    title={
+                                                      histoire.noteHistoireMoy
+                                                        ? parseFloat(
+                                                            Math.round(
+                                                              histoire.noteHistoireMoy *
+                                                                100
+                                                            ) / 100
+                                                          ).toFixed(2) + "/5"
+                                                        : 0
+                                                    }
+                                                  >
+                                                    <ButtonBase>
+                                                      <StyledRating
+                                                        name="read-only"
+                                                        value={
+                                                          histoire.noteHistoireMoy
+                                                            ? histoire.noteHistoireMoy
+                                                            : 0
+                                                        }
+                                                        emptyIcon={
+                                                          <StarBorderIcon fontSize="inherit" />
+                                                        }
+                                                        precision={0.5}
+                                                        readOnly
+                                                      />
+                                                    </ButtonBase>
+                                                  </Tooltip>
+                                                </GridItem>
+                                                <GridItem
+                                                  xs={12}
+                                                  sm={12}
+                                                  md={12}
+                                                >
+                                                  <p>
+                                                    {" "}
+                                                    {"Dessin par " +
+                                                      histoire.userDessin
+                                                        .pseudo}
+                                                  </p>
+                                                  <Tooltip
+                                                    disableFocusListener
+                                                    disableTouchListener
+                                                    title={
+                                                      histoire.noteHistoireMoy
+                                                        ? parseFloat(
+                                                            Math.round(
+                                                              histoire.noteDessinMoy *
+                                                                100
+                                                            ) / 100
+                                                          ).toFixed(2) + "/5"
+                                                        : 0
+                                                    }
+                                                  >
+                                                    <ButtonBase>
+                                                      <StyledRating
+                                                        name="read-only"
+                                                        value={
+                                                          histoire.noteDessinMoy
+                                                            ? histoire.noteDessinMoy
+                                                            : 0
+                                                        }
+                                                        emptyIcon={
+                                                          <StarBorderIcon fontSize="inherit" />
+                                                        }
+                                                        precision={0.5}
+                                                        readOnly
+                                                      />
+                                                    </ButtonBase>
+                                                  </Tooltip>
+                                                </GridItem>
+                                              </GridContainer>
+                                            </CardBody>
+                                          </Card>
+                                        </ButtonBase>
+                                      </GridItem>
+                                    );
                                   }
-                                  emptyIcon={
-                                    <StarBorderIcon fontSize="inherit" />
-                                  }
-                                  precision={0.5}
-                                  readOnly
-                                />
-                                </ButtonBase>
-                              </Tooltip>
-                              
-                            </GridItem>
-                            <GridItem xs={12} sm={12} md={12}>
-                              <p>
-                                {" "}
-                                {"Dessin par " + histoire.userDessin.pseudo}
-                              </p>
-                              <Tooltip disableFocusListener disableTouchListener title={
-                                    histoire.noteHistoireMoy
-                                      ? parseFloat(Math.round(histoire.noteDessinMoy*100)/100).toFixed(2)  + "/5"
-                                      : 0
-                                  }>
-                                <ButtonBase >
-                              <StyledRating
-                                name="read-only"
-                                value={
-                                  histoire.noteDessinMoy
-                                    ? histoire.noteDessinMoy
-                                    : 0
-                                }
-                                emptyIcon={
-                                  <StarBorderIcon fontSize="inherit" />
-                                }
-                                precision={0.5}
-                                readOnly
-                              />
-                              </ButtonBase>
-                              </Tooltip>
-                            </GridItem>
-                          </GridContainer>
-                        </CardBody>
-                      </Card>
-                    </ButtonBase>
-                  </GridItem>
-                );
-              }): (
-                <GridItem
-                    xs={12}
-                    sm={12}
-                    md={4}
-                    justify="center"
-                    style={{ width: "auto" }}
-                  >
-                    <SnackbarContent
-                        message={
-                          'aucun résultat correspond à votre recherche.'
-                        }
-                      />
-                  </GridItem>
-              )}
-            </GridContainer>
-            <GridContainer justify="center" spacing={"auto"}>
-              <GridItem xs={4} sm={4} md={4} justify="center" alignItems="center">
-              { this.state.histoireUsers.length > 0 ? (
-                <Pagination count={this.state.numberPageUsers} page={this.state.pageUsers} onChange={this.handleChangePageUsers} />    
-                ) : (<div></div>)}
-              </GridItem>
-            </GridContainer>
+                                )
+                              ) : (
+                                <GridItem
+                                  xs={12}
+                                  sm={12}
+                                  md={4}
+                                  justify="center"
+                                  style={{ width: "auto" }}
+                                >
+                                  <SnackbarContent
+                                    message={
+                                      "aucun résultat correspond à votre recherche."
+                                    }
+                                  />
+                                </GridItem>
+                              )}
+                            </GridContainer>
+                            <GridContainer justify="center" spacing={"auto"}>
+                              <GridItem
+                                xs={4}
+                                sm={4}
+                                md={4}
+                                justify="center"
+                                alignItems="center"
+                              >
+                                {this.state.histoireUsers.length > 0 ? (
+                                  <Pagination
+                                    count={this.state.numberPageUsers}
+                                    page={this.state.pageUsers}
+                                    onChange={this.handleChangePageUsers}
+                                  />
+                                ) : (
+                                  <div></div>
+                                )}
+                              </GridItem>
+                            </GridContainer>
+                          </div>
+                        )
+                      }
+                    ]}
+                  />
+                </GridItem>
+              </GridContainer>
             </div>
-            
-                    )
-                  }
-                ]}
-              />
-            </GridItem>
-          </GridContainer>
-          </div>
           )}
           <GridContainer justify="center" style={{ marginTop: 20 }}>
             <GridItem xs={12} sm={12} md={4} style={{ width: "auto" }}>
               <Button
                 color="white"
-                style={{color:'rgb(89, 79, 118)', fontWeight: 'bold'}}
-                href='http://localhost:3000/'
+                style={{ color: "rgb(89, 79, 118)", fontWeight: "bold" }}
+                href="http://localhost:3000/"
               >
                 Retour
               </Button>
@@ -1323,7 +1699,7 @@ class AllHistoires extends React.Component {
   }
 }
 const StyledRating = withStyles({
-  decimal: {display:'flex'},
+  decimal: { display: "flex" },
   iconFilled: {
     color: "#ffb400",
     fontSize: "24px"

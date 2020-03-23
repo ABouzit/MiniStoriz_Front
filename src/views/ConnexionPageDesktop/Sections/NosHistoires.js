@@ -47,7 +47,7 @@ class NosHistoires extends React.Component {
     super(props);
     // Don't call this.setState() here!
     this.state = {
-      idUser: "5448c755-5085-4652-88fa-ffcac3987071",
+      idUser: "3c500b25-cb58-4be3-861e-2bb2926bd75f",
       counter: 1,
       currentFiltre: 1,
       selectedFiltre: "",
@@ -201,7 +201,7 @@ class NosHistoires extends React.Component {
       commentaire: this.state.commentaire,
       noteHistoire: this.state.ratingText,
       noteDessin: this.state.ratingDessin,
-      user: {id: this.state.idUser},
+      user: { id: this.state.idUser },
       isActive: true
     }).then(res => {
       console.log(res);
@@ -438,7 +438,8 @@ class NosHistoires extends React.Component {
                                 </div>
                               </GridItem>
                             </GridContainer>
-                          ) : planche.lienDessin === "" ? (
+                          ) : planche.lienDessin === null ||
+                            planche.lienDessin === "" ? (
                             <GridContainer
                               style={{ height: "365px" }}
                               justify="center"
@@ -450,7 +451,6 @@ class NosHistoires extends React.Component {
                                 md={12}
                                 style={{ paddingRight: "20px" }}
                               >
-                                {" "}
                                 <SimpleBar style={{ maxHeight: "365px" }}>
                                   <h5
                                     style={{
@@ -497,20 +497,26 @@ class NosHistoires extends React.Component {
                                   </h5>
                                 </SimpleBar>
                               </GridItem>
-                              <GridItem xs={5} sm={5} md={5} style={{textAlign: 'center'}}>
-                                <div style={{textAlign: '-webkit-center'}}>
-                                <img
-                                  src={planche.lienDessin}
-                                  alt="First slide"
-                                  className=""
-                                  style={{
-                                    alignSelf: "center",
-                                    maxHeight: "365px",
-                                    height: "auto",
-                                    maxWidth: "auto",
-                                    paddingRight: "10px"
-                                  }}
-                                />
+                              <GridItem
+                                xs={5}
+                                sm={5}
+                                md={5}
+                                style={{ textAlign: "center" }}
+                              >
+                                <div style={{ textAlign: "-webkit-center" }}>
+                                  <img
+                                    src={planche.lienDessin}
+                                    alt="First slide"
+                                    className=""
+                                    style={{
+                                      alignSelf: "center",
+                                      maxHeight: "365px",
+                                      height: "auto",
+                                      maxWidth: "330px",
+                                      width: "auto",
+                                      paddingRight: "10px"
+                                    }}
+                                  />
                                 </div>
                               </GridItem>
                             </GridContainer>
@@ -652,7 +658,11 @@ class NosHistoires extends React.Component {
                 ) : (
                   <Button
                     color="white"
-                    style={{color:'rgb(89, 79, 118)', fontWeight: 'bold',margin: 0}}
+                    style={{
+                      color: "rgb(89, 79, 118)",
+                      fontWeight: "bold",
+                      margin: 0
+                    }}
                     onClick={() => {
                       this.setState({
                         modal: false,
@@ -682,7 +692,7 @@ class NosHistoires extends React.Component {
                   round: true,
                   color: "white"
                 }}
-                style={{color:'rgb(89, 79, 118)', fontWeight: 'bold'}}
+                style={{ color: "rgb(89, 79, 118)", fontWeight: "bold" }}
                 color="white"
                 buttonText="Filtre"
                 value={this.state.selectedFiltre}
@@ -730,9 +740,7 @@ class NosHistoires extends React.Component {
                         this.fetchPlanche(histoire);
                       }}
                     >
-                      <Card
-                        style={{  backgroundColor: "#e3f3fd" }}
-                      >
+                      <Card style={{ backgroundColor: "#e3f3fd" }}>
                         <h4
                           className={classes.cardTitle}
                           style={{
@@ -871,14 +879,14 @@ class NosHistoires extends React.Component {
           <GridContainer justify="flex-end">
             <GridItem xs={4} sm={4} md={4}>
               <Link to="/LesHistoires">
-              <Button
-                color="white"
-                id="buttonSeeAll"
-                style={{color:'rgb(89, 79, 118)', fontWeight: 'bold'}}
-                // onClick={() => this.seeAllHistoire()}
-              >
-                Toutes les histoires
-              </Button>
+                <Button
+                  color="white"
+                  id="buttonSeeAll"
+                  style={{ color: "rgb(89, 79, 118)", fontWeight: "bold" }}
+                  // onClick={() => this.seeAllHistoire()}
+                >
+                  Toutes les histoires
+                </Button>
               </Link>
             </GridItem>
           </GridContainer>

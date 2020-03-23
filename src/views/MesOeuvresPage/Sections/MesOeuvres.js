@@ -66,7 +66,7 @@ class MesOeuvres extends React.Component {
     super(props);
     // Don't call this.setState() here!
     this.state = {
-      idUser: "5448c755-5085-4652-88fa-ffcac3987071",
+      idUser: "3c500b25-cb58-4be3-861e-2bb2926bd75f",
       page: 1,
       counter: 1,
       numberPage: 0,
@@ -105,25 +105,54 @@ class MesOeuvres extends React.Component {
   handleChangePage = (event, value) => {
     this.setState({ page: value });
     if (this.state.search === "") {
-      Axios.get(config.API_URL + "histoires/takeByUser/6/"+(value-1)*6+"/"+this.state.currentFiltre+"/xxxx/"+this.state.idUser, {}).then(res => {
+      Axios.get(
+        config.API_URL +
+          "histoires/takeByUser/6/" +
+          (value - 1) * 6 +
+          "/" +
+          this.state.currentFiltre +
+          "/xxxx/" +
+          this.state.idUser,
+        {}
+      ).then(res => {
         this.setState({ histoires: res.data });
         this.forceUpdate();
       });
     } else {
-      Axios.get(config.API_URL + "histoires/takeByUser/6/"+(value-1)*6+"/"+this.state.currentFiltre+"/"+this.state.search+"/"+this.state.idUser, {}).then(res => {
+      Axios.get(
+        config.API_URL +
+          "histoires/takeByUser/6/" +
+          (value - 1) * 6 +
+          "/" +
+          this.state.currentFiltre +
+          "/" +
+          this.state.search +
+          "/" +
+          this.state.idUser,
+        {}
+      ).then(res => {
         this.setState({ histoires: res.data });
         this.forceUpdate();
       });
     }
-    
-  }
+  };
   fetchHistoire() {
     console.log("URL api" + config.API_URL);
-    Axios.get(config.API_URL + "histoires/takeByUser/6/"+(this.state.page-1)*6+"/1/xxxx/"+this.state.idUser, {}).then(res => {
+    Axios.get(
+      config.API_URL +
+        "histoires/takeByUser/6/" +
+        (this.state.page - 1) * 6 +
+        "/1/xxxx/" +
+        this.state.idUser,
+      {}
+    ).then(res => {
       this.setState({ histoires: res.data });
     });
-    Axios.get(config.API_URL + "histoires/numberHistoiresById/"+this.state.idUser, {}).then(res => {
-      this.setState({ numberPage: Math.ceil(res.data/6) });
+    Axios.get(
+      config.API_URL + "histoires/numberHistoiresById/" + this.state.idUser,
+      {}
+    ).then(res => {
+      this.setState({ numberPage: Math.ceil(res.data / 6) });
     });
   }
 
@@ -134,112 +163,229 @@ class MesOeuvres extends React.Component {
   searchCheck() {
     if (this.state.currentFiltre == 1) {
       if (this.state.search !== "") {
-        Axios.get(config.API_URL + "histoires/numberHistoiresSearchById/"+this.state.search+"/"+this.state.idUser, {}).then(res => {
-          this.setState({ numberPage: Math.ceil(res.data/6) });
+        Axios.get(
+          config.API_URL +
+            "histoires/numberHistoiresSearchById/" +
+            this.state.search +
+            "/" +
+            this.state.idUser,
+          {}
+        ).then(res => {
+          this.setState({ numberPage: Math.ceil(res.data / 6) });
         });
-        Axios.get(config.API_URL + "histoires/takeByUser/6/"+(this.state.page-1)+"/"+this.state.currentFiltre+"/"+this.state.search+"/"+this.state.idUser, {}).then(res => {
-        this.setState({ histoires: res.data, currentFiltre:1 });
-        this.forceUpdate();
-        console.log(this.state.histoires);
-      });
+        Axios.get(
+          config.API_URL +
+            "histoires/takeByUser/6/" +
+            (this.state.page - 1) +
+            "/" +
+            this.state.currentFiltre +
+            "/" +
+            this.state.search +
+            "/" +
+            this.state.idUser,
+          {}
+        ).then(res => {
+          this.setState({ histoires: res.data, currentFiltre: 1 });
+          this.forceUpdate();
+          console.log(this.state.histoires);
+        });
       }
-      
+
       if (this.state.search === "") {
-        Axios.get(config.API_URL + "histoires/numberHistoiresById/"+this.state.idUser, {}).then(res => {
-          this.setState({ numberPage: Math.ceil(res.data/6) });
+        Axios.get(
+          config.API_URL + "histoires/numberHistoiresById/" + this.state.idUser,
+          {}
+        ).then(res => {
+          this.setState({ numberPage: Math.ceil(res.data / 6) });
         });
-        Axios.get(config.API_URL + "histoires/takeByUser/6/"+(this.state.page-1)+"/"+this.state.currentFiltre+"/xxxx/"+this.state.idUser, {}).then(res => {
-          this.setState({ histoires: res.data, currentFiltre:1 });
+        Axios.get(
+          config.API_URL +
+            "histoires/takeByUser/6/" +
+            (this.state.page - 1) +
+            "/" +
+            this.state.currentFiltre +
+            "/xxxx/" +
+            this.state.idUser,
+          {}
+        ).then(res => {
+          this.setState({ histoires: res.data, currentFiltre: 1 });
           this.forceUpdate();
           console.log(this.state.histoires);
         });
       }
     } else if (this.state.currentFiltre == 2) {
       if (this.state.search !== "") {
-        Axios.get(config.API_URL + "histoires/numberHistoiresSearchById/"+this.state.search+"/"+this.state.idUser, {}).then(res => {
-          this.setState({ numberPage: Math.ceil(res.data/6) });
+        Axios.get(
+          config.API_URL +
+            "histoires/numberHistoiresSearchById/" +
+            this.state.search +
+            "/" +
+            this.state.idUser,
+          {}
+        ).then(res => {
+          this.setState({ numberPage: Math.ceil(res.data / 6) });
         });
-        Axios.get(config.API_URL + "histoires/takeByUser/6/"+(this.state.page-1)*6+"/"+this.state.currentFiltre+"/"+this.state.search+"/"+this.state.idUser, {}).then(res => {
-          this.setState({ histoires: res.data, currentFiltre:2 });
+        Axios.get(
+          config.API_URL +
+            "histoires/takeByUser/6/" +
+            (this.state.page - 1) * 6 +
+            "/" +
+            this.state.currentFiltre +
+            "/" +
+            this.state.search +
+            "/" +
+            this.state.idUser,
+          {}
+        ).then(res => {
+          this.setState({ histoires: res.data, currentFiltre: 2 });
           this.forceUpdate();
         });
       }
       if (this.state.search === "") {
-        Axios.get(config.API_URL + "histoires/takeByUser/6/"+(this.state.page-1)*6+"/"+this.state.currentFiltre+"/xxxx/"+this.state.idUser, {}).then(res => {
-          this.setState({ histoires: res.data, currentFiltre:2 });
+        Axios.get(
+          config.API_URL +
+            "histoires/takeByUser/6/" +
+            (this.state.page - 1) * 6 +
+            "/" +
+            this.state.currentFiltre +
+            "/xxxx/" +
+            this.state.idUser,
+          {}
+        ).then(res => {
+          this.setState({ histoires: res.data, currentFiltre: 2 });
           this.forceUpdate();
         });
-        Axios.get(config.API_URL + "histoires/numberHistoiresById/"+this.state.idUser, {}).then(res => {
-          this.setState({ numberPage: Math.ceil(res.data/6) });
+        Axios.get(
+          config.API_URL + "histoires/numberHistoiresById/" + this.state.idUser,
+          {}
+        ).then(res => {
+          this.setState({ numberPage: Math.ceil(res.data / 6) });
         });
       }
     } else if (this.state.currentFiltre == 3) {
       if (this.state.search !== "") {
-        Axios.get(config.API_URL + "histoires/numberHistoiresSearchById/"+this.state.search+"/"+this.state.idUser, {}).then(res => {
-          this.setState({ numberPage: Math.ceil(res.data/6)  });
+        Axios.get(
+          config.API_URL +
+            "histoires/numberHistoiresSearchById/" +
+            this.state.search +
+            "/" +
+            this.state.idUser,
+          {}
+        ).then(res => {
+          this.setState({ numberPage: Math.ceil(res.data / 6) });
         });
-        Axios.get(config.API_URL + "histoires/takeByUser/6/"+(this.state.page-1)*6+"/"+this.state.currentFiltre+"/"+this.state.search+"/"+this.state.idUser, {}).then(res => {
-          this.setState({ histoires: res.data, currentFiltre:3 });
+        Axios.get(
+          config.API_URL +
+            "histoires/takeByUser/6/" +
+            (this.state.page - 1) * 6 +
+            "/" +
+            this.state.currentFiltre +
+            "/" +
+            this.state.search +
+            "/" +
+            this.state.idUser,
+          {}
+        ).then(res => {
+          this.setState({ histoires: res.data, currentFiltre: 3 });
           this.forceUpdate();
         });
       }
       if (this.state.search === "") {
-        Axios.get(config.API_URL + "histoires/takeByUser/6/"+(this.state.page-1)*6+"/"+this.state.currentFiltre+"/xxxx/"+this.state.idUser, {}).then(res => {
-          this.setState({ histoires: res.data, currentFiltre:3 });
+        Axios.get(
+          config.API_URL +
+            "histoires/takeByUser/6/" +
+            (this.state.page - 1) * 6 +
+            "/" +
+            this.state.currentFiltre +
+            "/xxxx/" +
+            this.state.idUser,
+          {}
+        ).then(res => {
+          this.setState({ histoires: res.data, currentFiltre: 3 });
           this.forceUpdate();
         });
-        Axios.get(config.API_URL + "histoires/numberHistoiresById/"+this.state.idUser, {}).then(res => {
-          this.setState({ numberPage: Math.ceil(res.data/6) });
+        Axios.get(
+          config.API_URL + "histoires/numberHistoiresById/" + this.state.idUser,
+          {}
+        ).then(res => {
+          this.setState({ numberPage: Math.ceil(res.data / 6) });
         });
       }
     } else if (this.state.currentFiltre == 4) {
       if (this.state.search !== "") {
-        Axios.get(config.API_URL + "histoires/numberHistoiresSearchById/"+this.state.search+"/"+this.state.idUser, {}).then(res => {
-          this.setState({ numberPage: Math.ceil(res.data/6) });
+        Axios.get(
+          config.API_URL +
+            "histoires/numberHistoiresSearchById/" +
+            this.state.search +
+            "/" +
+            this.state.idUser,
+          {}
+        ).then(res => {
+          this.setState({ numberPage: Math.ceil(res.data / 6) });
         });
-        Axios.get(config.API_URL + "histoires/takeUser/6/"+(this.state.page-1)*6+"/"+this.state.currentFiltre+"/"+this.state.search+"/"+this.state.idUser, {}).then(res => {
-          this.setState({ histoires: res.data, currentFiltre:4 });
+        Axios.get(
+          config.API_URL +
+            "histoires/takeUser/6/" +
+            (this.state.page - 1) * 6 +
+            "/" +
+            this.state.currentFiltre +
+            "/" +
+            this.state.search +
+            "/" +
+            this.state.idUser,
+          {}
+        ).then(res => {
+          this.setState({ histoires: res.data, currentFiltre: 4 });
           this.forceUpdate();
         });
       }
       if (this.state.search === "") {
-        Axios.get(config.API_URL + "histoires/takeUser/6/"+(this.state.page-1)*6+"/"+this.state.currentFiltre+"/xxxx/"+this.state.idUser, {}).then(res => {
-          this.setState({ histoires: res.data, currentFiltre:4 });
+        Axios.get(
+          config.API_URL +
+            "histoires/takeUser/6/" +
+            (this.state.page - 1) * 6 +
+            "/" +
+            this.state.currentFiltre +
+            "/xxxx/" +
+            this.state.idUser,
+          {}
+        ).then(res => {
+          this.setState({ histoires: res.data, currentFiltre: 4 });
           this.forceUpdate();
         });
-        Axios.get(config.API_URL + "histoires/numberHistoiresById/"+this.state.idUser, {}).then(res => {
-          this.setState({ numberPage: Math.ceil(res.data/6) });
+        Axios.get(
+          config.API_URL + "histoires/numberHistoiresById/" + this.state.idUser,
+          {}
+        ).then(res => {
+          this.setState({ numberPage: Math.ceil(res.data / 6) });
         });
       }
     }
-  };
+  }
 
   handleCheck(e) {
     if (e.currentTarget.dataset.id == 1) {
-      Axios.get(config.API_URL + "histoires/takeByUser/6/"+(this.state.page-1)+"/"+e.currentTarget.dataset.id+"/"+this.state.search+"/"+this.state.idUser, {}).then(res => {
-        this.setState({ histoires: res.data, currentFiltre:1 });
+      this.setState({ currentFiltre: 1 }, () => {
+        this.searchCheck();
         this.forceUpdate();
-        console.log(this.state.histoires);
       });
-      
     } else if (e.currentTarget.dataset.id == 2) {
-      Axios.get(config.API_URL + "histoires/takeByUser/6/"+(this.state.page-1)+"/"+e.currentTarget.dataset.id+"/"+this.state.search+"/"+this.state.idUser, {}).then(res => {
-        this.setState({ histoires: res.data, currentFiltre:2 });
+      this.setState({ currentFiltre: 2 }, () => {
+        this.searchCheck();
         this.forceUpdate();
       });
     } else if (e.currentTarget.dataset.id == 3) {
-      Axios.get(config.API_URL + "histoires/takeByUser/6/"+(this.state.page-1)+"/"+e.currentTarget.dataset.id+"/"+this.state.search+"/"+this.state.idUser, {}).then(res => {
-        this.setState({ histoires: res.data, currentFiltre:3 });
+      this.setState({ currentFiltre: 3 }, () => {
+        this.searchCheck();
         this.forceUpdate();
       });
     } else if (e.currentTarget.dataset.id == 4) {
-      Axios.get(config.API_URL + "histoires/takeByUser/6/"+(this.state.page-1)+"/"+e.currentTarget.dataset.id+"/"+this.state.search+"/"+this.state.idUser, {}).then(res => {
-        this.setState({ histoires: res.data, currentFiltre:4 });
+      this.setState({ currentFiltre: 4 }, () => {
+        this.searchCheck();
         this.forceUpdate();
       });
     }
   }
-
   fetchPlanche(histoire) {
     Axios.get(config.API_URL + "planches/histoire/" + histoire.id, {}).then(
       res => {
@@ -260,15 +406,19 @@ class MesOeuvres extends React.Component {
   getDay(date) {
     const d = moment(new Date());
     const dHistoire = moment(date);
-    let dt="";
-    if (d.diff(dHistoire, 'days') > 30) {
-      dt = Math.floor(d.diff(dHistoire, 'month'))+" mois "+(d.diff(dHistoire, 'days')-(d.diff(dHistoire, 'month')*30))+" jours ";
+    let dt = "";
+    if (d.diff(dHistoire, "days") > 30) {
+      dt =
+        Math.floor(d.diff(dHistoire, "month")) +
+        " mois " +
+        (d.diff(dHistoire, "days") - d.diff(dHistoire, "month") * 30) +
+        " jours ";
     } else {
-      dt = d.diff(dHistoire, 'days')+" jours"
+      dt = d.diff(dHistoire, "days") + " jours";
     }
     return dt;
   }
-  
+
   next() {
     console.log(this.slider);
     this.slider.slickNext();
@@ -288,10 +438,9 @@ class MesOeuvres extends React.Component {
       noteDessin: this.state.ratingDessin,
       isActive: true
     }).then(res => {
-      this.searchCheck()
-      this.forceUpdate()
+      this.searchCheck();
+      this.forceUpdate();
     });
-    
   }
   //modal - carousel
   render() {
@@ -306,13 +455,25 @@ class MesOeuvres extends React.Component {
               paper: classes.modal
             }}
             onBackdropClick={() => {
-              this.setState({ modal: false, ratingDessin: 0, ratingText: 0, commentaire: "" });
+              this.setState({
+                modal: false,
+                ratingDessin: 0,
+                ratingText: 0,
+                commentaire: ""
+              });
               this.gotToIndex(1);
             }}
             open={modal}
             TransitionComponent={Transition}
             keepMounted
-            onClose={() => this.setState({ modal: false, ratingDessin: 0, ratingText: 0, commentaire: "" })}
+            onClose={() =>
+              this.setState({
+                modal: false,
+                ratingDessin: 0,
+                ratingText: 0,
+                commentaire: ""
+              })
+            }
             aria-labelledby="modal-slide-title"
             aria-describedby="modal-slide-description"
             maxWidth={"md"}
@@ -323,7 +484,12 @@ class MesOeuvres extends React.Component {
             <DialogTitle
               id="customized-dialog-title"
               onClose={() => {
-                this.setState({ modal: false, ratingDessin: 0, ratingText: 0, commentaire: "" });
+                this.setState({
+                  modal: false,
+                  ratingDessin: 0,
+                  ratingText: 0,
+                  commentaire: ""
+                });
                 this.gotToIndex(1);
               }}
               style={{
@@ -354,8 +520,9 @@ class MesOeuvres extends React.Component {
                 style={Styles.NextArrow}
                 Color={
                   this.state.counter === this.state.planches.length + 1
-                  ? 'rgba(0, 0, 0, 0.26)'
-                  : '#332861'}
+                    ? "rgba(0, 0, 0, 0.26)"
+                    : "#332861"
+                }
                 disabled={
                   this.state.counter === this.state.planches.length + 1
                     ? true
@@ -427,7 +594,7 @@ class MesOeuvres extends React.Component {
                                   }}
                                 >
                                   <img
-                                    src={config.API_URL + planche.lienDessin}
+                                    src={planche.lienDessin}
                                     alt="First slide"
                                     style={{
                                       height: "365px",
@@ -439,7 +606,8 @@ class MesOeuvres extends React.Component {
                                 </div>
                               </GridItem>
                             </GridContainer>
-                          ) : planche.lienDessin === "" ? (
+                          ) : planche.lienDessin === null ||
+                            planche.lienDessin === "" ? (
                             <GridContainer
                               style={{ height: "365px" }}
                               justify="center"
@@ -509,19 +677,19 @@ class MesOeuvres extends React.Component {
                                 justify="center"
                                 alignItems="center"
                               >
-                                <div style={{textAlign: '-webkit-center'}}>
-                                <img
-                                  src={config.API_URL + planche.lienDessin}
-                                  alt="First slide"
-                                  className=""
-                                  style={{
-                                    alignSelf: "center",
-                                    maxHeight: "365px",
-                                    height: "auto",
-                                    maxWidth: "auto",
-                                    paddingRight: "10px"
-                                  }}
-                                />
+                                <div style={{ textAlign: "-webkit-center" }}>
+                                  <img
+                                    src={planche.lienDessin}
+                                    alt="First slide"
+                                    className=""
+                                    style={{
+                                      alignSelf: "center",
+                                      maxHeight: "365px",
+                                      height: "auto",
+                                      maxWidth: "auto",
+                                      paddingRight: "10px"
+                                    }}
+                                  />
                                 </div>
                               </GridItem>
                             </GridContainer>
@@ -566,101 +734,121 @@ class MesOeuvres extends React.Component {
                       justify="center"
                       alignItems="center"
                     >
-                      <SimpleBar
-                            style={{ maxHeight: "325px", width: "100%" }}
-                          >
-                            <List className={classes.root}>
-                              { this.state.impressions.map((imp, index)=> {
-                                console.log(imp)
-                              return(
+                      <SimpleBar style={{ maxHeight: "325px", width: "100%" }}>
+                        <List className={classes.root}>
+                          {this.state.impressions.map((imp, index) => {
+                            console.log(imp);
+                            return (
                               <div>
-                              <ListItem
-                                alignItems="flex-start"
-                                className={classes.card}
-                                // selected={selectedIndex === 11}
-                                // onClick={event =>
-                                //   this.handleListItemClick(event, 11, 3)
-                                // }
-                                button
-                              >
-                                <ListItemAvatar>
-                                  <Avatar
-                                    alt="Remy Sharp"
-                                    src={config.API_URL+ imp.user.lienPhoto}
-                                  />
-                                </ListItemAvatar>
-                                <ListItemText
-                                  primary={
-                                    <React.Fragment>
-                                      {/* <h4>
+                                <ListItem
+                                  alignItems="flex-start"
+                                  className={classes.card}
+                                  // selected={selectedIndex === 11}
+                                  // onClick={event =>
+                                  //   this.handleListItemClick(event, 11, 3)
+                                  // }
+                                  button
+                                >
+                                  <ListItemAvatar>
+                                    <Avatar
+                                      alt="Remy Sharp"
+                                      src={config.API_URL + imp.user.lienPhoto}
+                                    />
+                                  </ListItemAvatar>
+                                  <ListItemText
+                                    primary={
+                                      <React.Fragment>
+                                        {/* <h4>
                                         
                                       </h4> */}
-                                      <GridContainer>
-                                        <GridItem xs={3} sm={3} md={3}>{imp.user.pseudo}</GridItem>
-                                        <GridItem xs={4} sm={4} md={4}>
-                                          <Tooltip disableFocusListener disableTouchListener title={
+                                        <GridContainer>
+                                          <GridItem xs={3} sm={3} md={3}>
+                                            {imp.user.pseudo}
+                                          </GridItem>
+                                          <GridItem xs={4} sm={4} md={4}>
+                                            <Tooltip
+                                              disableFocusListener
+                                              disableTouchListener
+                                              title={
                                                 imp.noteHistoire
-                                                  ? "Text: "+parseFloat(Math.round(imp.noteHistoire*100)/100).toFixed(2)  + "/5"
-                                                  : "Text: "+0
-                                              }>
-                                            <ButtonBase >
-                                            <StyledRating
-                                              name="read-only"
-                                              value={
-                                                imp.noteHistoire
-                                                  ? imp.noteHistoire
-                                                  : 0
+                                                  ? "Text: " +
+                                                    parseFloat(
+                                                      Math.round(
+                                                        imp.noteHistoire * 100
+                                                      ) / 100
+                                                    ).toFixed(2) +
+                                                    "/5"
+                                                  : "Text: " + 0
                                               }
-                                              emptyIcon={
-                                                <StarBorderIcon fontSize="inherit" />
-                                              }
-                                              precision={0.5}
-                                              readOnly
-                                            />
-                                            </ButtonBase>
-                                          </Tooltip>
-                                        </GridItem>
-                                        <GridItem xs={4} sm={4} md={4}>
-                                          <Tooltip disableFocusListener disableTouchListener title={
+                                            >
+                                              <ButtonBase>
+                                                <StyledRating
+                                                  name="read-only"
+                                                  value={
+                                                    imp.noteHistoire
+                                                      ? imp.noteHistoire
+                                                      : 0
+                                                  }
+                                                  emptyIcon={
+                                                    <StarBorderIcon fontSize="inherit" />
+                                                  }
+                                                  precision={0.5}
+                                                  readOnly
+                                                />
+                                              </ButtonBase>
+                                            </Tooltip>
+                                          </GridItem>
+                                          <GridItem xs={4} sm={4} md={4}>
+                                            <Tooltip
+                                              disableFocusListener
+                                              disableTouchListener
+                                              title={
                                                 imp.noteDessin
-                                                  ? "Dessin: "+parseFloat(Math.round(imp.noteDessin*100)/100).toFixed(2)  + "/5"
-                                                  : "Dessin: "+0
-                                              }>
-                                            <ButtonBase >
-                                            <StyledRating
-                                              name="read-only"
-                                              value={
-                                                imp.noteDessin
-                                                  ? imp.noteDessin
-                                                  : 0
+                                                  ? "Dessin: " +
+                                                    parseFloat(
+                                                      Math.round(
+                                                        imp.noteDessin * 100
+                                                      ) / 100
+                                                    ).toFixed(2) +
+                                                    "/5"
+                                                  : "Dessin: " + 0
                                               }
-                                              emptyIcon={
-                                                <StarBorderIcon fontSize="inherit" />
-                                              }
-                                              precision={0.5}
-                                              readOnly
-                                            />
-                                            </ButtonBase>
-                                          </Tooltip>
-                                        </GridItem>
-                                      </GridContainer>
-                                    </React.Fragment>
-                                  }
-                                  secondary={
-                                    <React.Fragment>
-                                      <p className={classes.messageTab}>
-                                        {imp.commentaire}
-                                      </p>
-                                    </React.Fragment>
-                                  }
-                                />
-                              </ListItem>
-                              <Divider variant="inset" component="li" />
+                                            >
+                                              <ButtonBase>
+                                                <StyledRating
+                                                  name="read-only"
+                                                  value={
+                                                    imp.noteDessin
+                                                      ? imp.noteDessin
+                                                      : 0
+                                                  }
+                                                  emptyIcon={
+                                                    <StarBorderIcon fontSize="inherit" />
+                                                  }
+                                                  precision={0.5}
+                                                  readOnly
+                                                />
+                                              </ButtonBase>
+                                            </Tooltip>
+                                          </GridItem>
+                                        </GridContainer>
+                                      </React.Fragment>
+                                    }
+                                    secondary={
+                                      <React.Fragment>
+                                        <p className={classes.messageTab}>
+                                          {imp.commentaire}
+                                        </p>
+                                      </React.Fragment>
+                                    }
+                                  />
+                                </ListItem>
+                                <Divider variant="inset" component="li" />
                               </div>
-                              );
-                              })}
-                            </List>
-                        </SimpleBar>
+                            );
+                          })}
+                        </List>
+                      </SimpleBar>
                     </GridItem>
                   </GridContainer>
                 </div>
@@ -669,9 +857,8 @@ class MesOeuvres extends React.Component {
               <SamplePrevArrow
                 onClick={() => this.previous()}
                 Color={
-                  this.state.counter === 1
-                  ? 'rgba(0, 0, 0, 0.26)'
-                  : '#332861'}
+                  this.state.counter === 1 ? "rgba(0, 0, 0, 0.26)" : "#332861"
+                }
                 disabled={this.state.counter === 1 ? true : false}
               />
             </DialogContent>
@@ -693,9 +880,18 @@ class MesOeuvres extends React.Component {
                 ) : (
                   <Button
                     color="white"
-                    style={{color:'rgb(89, 79, 118)', fontWeight: 'bold',margin: 0}}
+                    style={{
+                      color: "rgb(89, 79, 118)",
+                      fontWeight: "bold",
+                      margin: 0
+                    }}
                     onClick={() => {
-                      this.setState({ modal: false, ratingDessin: 0, ratingText: 0, commentaire: "" });
+                      this.setState({
+                        modal: false,
+                        ratingDessin: 0,
+                        ratingText: 0,
+                        commentaire: ""
+                      });
                       this.gotToIndex(1);
                     }}
                   >
@@ -707,36 +903,34 @@ class MesOeuvres extends React.Component {
           </Dialog>
           <GridContainer justify="center">
             <GridItem xs={12} sm={12} md={8}>
-              <h2 className={classes.title}>
-                MES OEUVRES
-              </h2>
+              <h2 className={classes.title}>MES OEUVRES</h2>
             </GridItem>
           </GridContainer>
-          
+
           <GridContainer justify="flex-end">
             <GridItem xs={7} sm={7} md={7}>
-                <CustomInput
-                  labelText="Recherche"
-                  id="material"
-                  formControlProps={{
+              <CustomInput
+                labelText="Recherche"
+                id="material"
+                formControlProps={{
                   fullWidth: true
-                  }}
-                  value={this.state.search}
-                  onChange={(search, event) => {
-                      this.setState({
-                        search: search.target.value
-                      });
-                  }}
-                  inputProps={{
+                }}
+                value={this.state.search}
+                onChange={(search, event) => {
+                  this.setState({
+                    search: search.target.value
+                  });
+                }}
+                inputProps={{
                   endAdornment: (
                     <ButtonBase onClick={this.searchCheck.bind(this)}>
-                      <InputAdornment position="end" >
+                      <InputAdornment position="end">
                         <Search />
                       </InputAdornment>
                     </ButtonBase>
                   )
-                  }}
-                />
+                }}
+              />
             </GridItem>
             <GridItem xs={4} sm={4} md={4}>
               <CustomDropdown
@@ -745,7 +939,7 @@ class MesOeuvres extends React.Component {
                   color: "white"
                 }}
                 color="white"
-                style={{color:'rgb(89, 79, 118)', fontWeight: 'bold'}}
+                style={{ color: "rgb(89, 79, 118)", fontWeight: "bold" }}
                 buttonText="Filtre"
                 value={this.state.selectedFiltre}
                 onChange={this.handleChange}
@@ -821,6 +1015,7 @@ class MesOeuvres extends React.Component {
                           <img
                             style={{
                               height: "240px",
+                              maxWidth: "320px",
                               marginLeft: "auto",
                               marginRight: "auto",
                               display: "block"
@@ -828,7 +1023,7 @@ class MesOeuvres extends React.Component {
                             className={classes.imgCardTop}
                             src={
                               histoire.lienIllustration !== null
-                                ? config.API_URL + histoire.lienIllustration
+                                ? histoire.lienIllustration
                                 : ""
                             }
                             alt={histoire.titreHistoire}
@@ -846,60 +1041,76 @@ class MesOeuvres extends React.Component {
                             margin: 0
                           }}
                         >
-                          {histoire.nombreVue ? histoire.nombreVue : 0} vues - {this.getDay(histoire.dateDeCreation)}
+                          {histoire.nombreVue ? histoire.nombreVue : 0} vues -{" "}
+                          {this.getDay(histoire.dateDeCreation)}
                         </h5>
                         <CardBody>
                           <GridContainer>
                             <GridItem xs={12} sm={12} md={12}>
                               <p>{"Text par " + histoire.userText.pseudo}</p>
-                              <Tooltip disableFocusListener disableTouchListener title={
-                                    histoire.noteHistoireMoy
-                                      ? parseFloat(Math.round(histoire.noteHistoireMoy*100)/100).toFixed(2)  + "/5"
-                                      : 0
-                                  }>
-                                <ButtonBase >
-                                <StyledRating
-                                  name="read-only"
-                                  value={
-                                    histoire.noteHistoireMoy
-                                      ? histoire.noteHistoireMoy
-                                      : 0
-                                  }
-                                  emptyIcon={
-                                    <StarBorderIcon fontSize="inherit" />
-                                  }
-                                  precision={0.5}
-                                  readOnly
-                                />
+                              <Tooltip
+                                disableFocusListener
+                                disableTouchListener
+                                title={
+                                  histoire.noteHistoireMoy
+                                    ? parseFloat(
+                                        Math.round(
+                                          histoire.noteHistoireMoy * 100
+                                        ) / 100
+                                      ).toFixed(2) + "/5"
+                                    : 0
+                                }
+                              >
+                                <ButtonBase>
+                                  <StyledRating
+                                    name="read-only"
+                                    value={
+                                      histoire.noteHistoireMoy
+                                        ? histoire.noteHistoireMoy
+                                        : 0
+                                    }
+                                    emptyIcon={
+                                      <StarBorderIcon fontSize="inherit" />
+                                    }
+                                    precision={0.5}
+                                    readOnly
+                                  />
                                 </ButtonBase>
                               </Tooltip>
-                              
                             </GridItem>
                             <GridItem xs={12} sm={12} md={12}>
                               <p>
                                 {" "}
                                 {"Dessin par " + histoire.userDessin.pseudo}
                               </p>
-                              <Tooltip disableFocusListener disableTouchListener title={
-                                    histoire.noteHistoireMoy
-                                      ? parseFloat(Math.round(histoire.noteDessinMoy*100)/100).toFixed(2)  + "/5"
-                                      : 0
-                                  }>
-                                <ButtonBase >
-                              <StyledRating
-                                name="read-only"
-                                value={
-                                  histoire.noteDessinMoy
-                                    ? histoire.noteDessinMoy
+                              <Tooltip
+                                disableFocusListener
+                                disableTouchListener
+                                title={
+                                  histoire.noteHistoireMoy
+                                    ? parseFloat(
+                                        Math.round(
+                                          histoire.noteDessinMoy * 100
+                                        ) / 100
+                                      ).toFixed(2) + "/5"
                                     : 0
                                 }
-                                emptyIcon={
-                                  <StarBorderIcon fontSize="inherit" />
-                                }
-                                precision={0.5}
-                                readOnly
-                              />
-                              </ButtonBase>
+                              >
+                                <ButtonBase>
+                                  <StyledRating
+                                    name="read-only"
+                                    value={
+                                      histoire.noteDessinMoy
+                                        ? histoire.noteDessinMoy
+                                        : 0
+                                    }
+                                    emptyIcon={
+                                      <StarBorderIcon fontSize="inherit" />
+                                    }
+                                    precision={0.5}
+                                    readOnly
+                                  />
+                                </ButtonBase>
                               </Tooltip>
                             </GridItem>
                           </GridContainer>
@@ -912,21 +1123,31 @@ class MesOeuvres extends React.Component {
             </GridContainer>
             <GridContainer justify="center">
               <GridItem xs={4} sm={4} md={4}>
-                { this.state.numberPage > 1 ? (
-              <Pagination count={this.state.numberPage} page={this.state.page} onChange={this.handleChangePage} />  
-                ):(<div></div>)}
+                {this.state.numberPage > 1 ? (
+                  <Pagination
+                    count={this.state.numberPage}
+                    page={this.state.page}
+                    onChange={this.handleChangePage}
+                  />
+                ) : (
+                  <div></div>
+                )}
               </GridItem>
             </GridContainer>
           </div>
           <GridContainer justify="center" style={{ marginTop: 20 }}>
             <GridItem xs={12} sm={12} md={4} style={{ width: "auto" }}>
-            <Link to="/">
-              <Button
-                color="white"
-                style={{color:'rgb(89, 79, 118)', fontWeight: 'bold',margin: 0}}
-              >
-                Retour
-              </Button>
+              <Link to="/">
+                <Button
+                  color="white"
+                  style={{
+                    color: "rgb(89, 79, 118)",
+                    fontWeight: "bold",
+                    margin: 0
+                  }}
+                >
+                  Retour
+                </Button>
               </Link>
             </GridItem>
           </GridContainer>

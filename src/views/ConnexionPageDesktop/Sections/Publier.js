@@ -181,8 +181,10 @@ class Publier extends React.Component {
     }).then(res => {
       let s = res.data.filePath.replace("\\", "/").replace("\\", "/");
       return Axios.post(config.API_URL + "histoires", {
-        userText: { id: "5448c755-5085-4652-88fa-ffcac3987071" },
-        userDessin: { id: "5448c755-5085-4652-88fa-ffcac3987071" },
+        // userText: { id: "5448c755-5085-4652-88fa-ffcac3987071" },
+        // userDessin: { id: "5448c755-5085-4652-88fa-ffcac3987071" },
+        userText: { id: "3c500b25-cb58-4be3-861e-2bb2926bd75f" },
+        userDessin: { id: "3c500b25-cb58-4be3-861e-2bb2926bd75f" },
         lienIllustration: config.API_URL + s,
         titreHistoire: this.state.titleHistoire
       })
@@ -190,20 +192,29 @@ class Publier extends React.Component {
           Promise.all(
             _this.state.planche.map((planch, index) => {
               if (index > 0) {
-                return Axios.post(
-                  config.API_URL + "sendImage/planches/",
-                  planch.data
-                ).then(res => {
-                  let s = res.data.filePath
-                    .replace("\\", "/")
-                    .replace("\\", "/");
+                console.log(planch);
+                if (planch.data !== "") {
+                  return Axios.post(
+                    config.API_URL + "sendImage/planches/",
+                    planch.data
+                  ).then(res => {
+                    let s = res.data.filePath
+                      .replace("\\", "/")
+                      .replace("\\", "/");
+                    return Axios.post(config.API_URL + "planches", {
+                      histoire: response.data.id,
+                      lienDessin: config.API_URL + s,
+                      text: planch.text,
+                      index: index
+                    });
+                  });
+                } else {
                   return Axios.post(config.API_URL + "planches", {
                     histoire: response.data.id,
-                    lienDessin: config.API_URL + s,
                     text: planch.text,
                     index: index
                   });
-                });
+                }
               }
             })
           ).then(res => {
@@ -335,7 +346,7 @@ class Publier extends React.Component {
                 marginTop: "0px",
                 marginBottom: "0px",
                 fontWeight: "600",
-                marginRight: '4%' 
+                marginRight: "4%"
               }}
             >
               Texte & Dessins
@@ -412,14 +423,14 @@ class Publier extends React.Component {
                         // style={{ textAlign: '-webkit-center' }}
                       >
                         <TextField
-                        primary
+                          primary
                           id="standard-multiline-static"
                           placeholder="Ecrire votre texte"
                           variant="outlined"
                           label="Texte"
                           multiline
                           rows="12"
-                          style={{ width: "100%", backgroundColor: 'white' }}
+                          style={{ width: "100%", backgroundColor: "white" }}
                           value={this.state.textHistoire}
                           autoFocus={
                             this.state.counter !==
@@ -479,7 +490,7 @@ class Publier extends React.Component {
                         xs={5}
                         sm={5}
                         md={5}
-                        style={{ textAlign: '-webkit-center' }}
+                        style={{ textAlign: "-webkit-center" }}
                       >
                         {/* <img
                           src={this.state.imgSrc}
@@ -489,7 +500,7 @@ class Publier extends React.Component {
                             marginLeft: "10%"
                           }}
                         /> */}
-                      <Input
+                        <Input
                           accept="image/*"
                           className={classes.input}
                           id="contained-button-file"
@@ -502,28 +513,30 @@ class Publier extends React.Component {
                         ></Input>
                         <label htmlFor="contained-button-file">
                           {this.state.imgSrc == "" ? (
-                          //   <div>
-                          //   <i
-                          //   className={
-                          //     this.headerClasse.socialIcons + " far fa-image"
-                          //   }
-                          //   style={{ color: "#000000", fontSize: 60 }}
-                          // />
-                          // <i
-                          //   className={
-                          //     this.headerClasse.socialIcons + " fas fa-plus"
-                          //   }
-                          //   style={{ color: "#000000", fontSize: 20,position: 'absolute' }}
-                          // />
-                          // </div>
-                          <img
-                            src={config.API_URL + "images/asset/imageUpload.png"}
-                            style={{
-                              maxWidth: 270,
-                              maxHeight: 360,
-                              marginLeft: "10%"
-                            }}
-                          />
+                            //   <div>
+                            //   <i
+                            //   className={
+                            //     this.headerClasse.socialIcons + " far fa-image"
+                            //   }
+                            //   style={{ color: "#000000", fontSize: 60 }}
+                            // />
+                            // <i
+                            //   className={
+                            //     this.headerClasse.socialIcons + " fas fa-plus"
+                            //   }
+                            //   style={{ color: "#000000", fontSize: 20,position: 'absolute' }}
+                            // />
+                            // </div>
+                            <img
+                              src={
+                                config.API_URL + "images/asset/imageUpload.png"
+                              }
+                              style={{
+                                maxWidth: 270,
+                                maxHeight: 360,
+                                marginLeft: "10%"
+                              }}
+                            />
                           ) : (
                             <img
                               src={this.state.imgSrc}
@@ -564,7 +577,11 @@ class Publier extends React.Component {
             >
               <Button
                 color="white"
-                style={{color:'rgb(89, 79, 118)', fontWeight: 'bold',margin: 0}}
+                style={{
+                  color: "rgb(89, 79, 118)",
+                  fontWeight: "bold",
+                  margin: 0
+                }}
                 onClick={event => {
                   // this.setState({ modal: false });
                   this.handleListItemValide(event, 1, 2);
@@ -635,7 +652,7 @@ class Publier extends React.Component {
                 marginTop: "0px",
                 marginBottom: "0px",
                 fontWeight: "600",
-                marginRight: '3.5%'
+                marginRight: "3.5%"
               }}
             >
               Dessins uniquement
@@ -739,7 +756,7 @@ class Publier extends React.Component {
                         xs={10}
                         sm={10}
                         md={10}
-                        style={{ textAlign: '-webkit-center' }}
+                        style={{ textAlign: "-webkit-center" }}
                       >
                         {/* <img
                           src={this.state.imgSrc}
@@ -763,22 +780,24 @@ class Publier extends React.Component {
                         <label htmlFor="contained-button-file">
                           {this.state.imgSrc == "" ? (
                             <img
-                            src={config.API_URL + "images/asset/imageUpload.png"}
-                            style={{
-                              maxWidth: 270,
-                              maxHeight: 360,
-                              marginLeft: "10%"
-                            }}
-                          />
+                              src={
+                                config.API_URL + "images/asset/imageUpload.png"
+                              }
+                              style={{
+                                maxWidth: 270,
+                                maxHeight: 360,
+                                marginLeft: "10%"
+                              }}
+                            />
                           ) : (
                             <img
-                            src={this.state.imgSrc}
-                            style={{
-                              maxWidth: 270,
-                              maxHeight: 360,
-                              marginLeft: "10%"
-                            }}
-                          />
+                              src={this.state.imgSrc}
+                              style={{
+                                maxWidth: 270,
+                                maxHeight: 360,
+                                marginLeft: "10%"
+                              }}
+                            />
                           )}
                         </label>
                       </GridItem>
@@ -810,7 +829,11 @@ class Publier extends React.Component {
             >
               <Button
                 color="white"
-                style={{color:'rgb(89, 79, 118)', fontWeight: 'bold',margin: 0}}
+                style={{
+                  color: "rgb(89, 79, 118)",
+                  fontWeight: "bold",
+                  margin: 0
+                }}
                 onClick={event => {
                   // this.setState({ modal: false });
                   this.handleListItemValide(event, 1, 2);
@@ -880,7 +903,7 @@ class Publier extends React.Component {
                 marginTop: "0px",
                 marginBottom: "0px",
                 fontWeight: "600",
-                marginRight: '3.5%'
+                marginRight: "3.5%"
               }}
             >
               Texte uniquement
@@ -944,14 +967,14 @@ class Publier extends React.Component {
                         style={{ paddingRight: "20px", paddingRight: "10px" }}
                       >
                         <TextField
-                        primary
+                          primary
                           id="standard-multiline-static"
                           placeholder="Ecrire votre texte"
                           variant="outlined"
                           label="Texte"
                           multiline
                           rows="13"
-                          style={{ width: "100%", backgroundColor: 'white' }}
+                          style={{ width: "100%", backgroundColor: "white" }}
                           value={this.state.textHistoire}
                           autoFocus={
                             this.state.counter !==
@@ -995,7 +1018,11 @@ class Publier extends React.Component {
             >
               <Button
                 color="white"
-                style={{color:'rgb(89, 79, 118)', fontWeight: 'bold',margin: 0}}
+                style={{
+                  color: "rgb(89, 79, 118)",
+                  fontWeight: "bold",
+                  margin: 0
+                }}
                 onClick={event => {
                   this.handleListItemValide(event, 1, 2);
                 }}
@@ -1213,26 +1240,25 @@ class Publier extends React.Component {
                       onChange={file => this.saveHistoire(file.target.files)}
                     ></Input>
                     <label htmlFor="contained-button-file">
-                    
-                    {this.state.imgHistoire == "" ? (
-                      <img
-                      src={config.API_URL + "images/asset/imageUpload.png"}
-                      style={{
-                        maxWidth: 200,
-                        maxHeight: 300,
-                        marginLeft: "auto"
-                      }}
-                    />
-                    ) : (
-                    <img
-                      src={this.state.imgHistoire}
-                      style={{
-                        maxWidth: 200,
-                        maxHeight: 300,
-                        marginLeft: "auto"
-                      }}
-                    />
-                    )}
+                      {this.state.imgHistoire == "" ? (
+                        <img
+                          src={config.API_URL + "images/asset/imageUpload.png"}
+                          style={{
+                            maxWidth: 200,
+                            maxHeight: 300,
+                            marginLeft: "auto"
+                          }}
+                        />
+                      ) : (
+                        <img
+                          src={this.state.imgHistoire}
+                          style={{
+                            maxWidth: 200,
+                            maxHeight: 300,
+                            marginLeft: "auto"
+                          }}
+                        />
+                      )}
                     </label>
                   </GridItem>
                 </GridContainer>
@@ -1258,7 +1284,11 @@ class Publier extends React.Component {
             >
               <Button
                 color="white"
-                style={{color:'rgb(89, 79, 118)', fontWeight: 'bold',margin: 0}}
+                style={{
+                  color: "rgb(89, 79, 118)",
+                  fontWeight: "bold",
+                  margin: 0
+                }}
                 onClick={() => {
                   this.saveHistoireWithPlanche();
                   this.setState({ modal: false });
@@ -1375,7 +1405,7 @@ class Publier extends React.Component {
                       />
                     </Button>
                   </Tooltip>
-                  <h5 style={{ fontWeight: "bold", fontFamily: "monospace"}}>
+                  <h5 style={{ fontWeight: "bold", fontFamily: "monospace" }}>
                     Texte & dessins
                   </h5>
                 </Card>

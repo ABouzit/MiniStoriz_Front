@@ -63,102 +63,126 @@ export default function HeaderUser(props) {
   return (
     <div>
       <Dialog
-          classes={{
-            root: classes.center,
-            paper: classes.modal
+        classes={{
+          root: classes.center,
+          paper: classes.modal
+        }}
+        open={modal}
+        keepMounted
+        onClose={() => setModal(false)}
+        aria-labelledby="modal-slide-title"
+        aria-describedby="modal-slide-description"
+        maxWidth={"md"}
+        fullWidth={true}
+        scroll="paper"
+        style={{ backgroundColor: "#e3f3fd" }}
+      >
+        <DialogTitle
+          id="customized-dialog-title"
+          onClose={() => {
+            setModal(false);
           }}
-          open={modal}
-          keepMounted
-          onClose={() => setModal(false )}
-          aria-labelledby="modal-slide-title"
-          aria-describedby="modal-slide-description"
-          maxWidth={"md"}
-          fullWidth={true}
-          scroll="paper"
-          style={{ backgroundColor: "#e3f3fd" }}
+          style={{
+            paddingBottom: "0px",
+            backgroundColor: "#fff",
+            color: "#332861"
+          }}
         >
-          <DialogTitle
-            id="customized-dialog-title"
-            onClose={() => {
-              setModal(false );
-            }}
+          <div
             style={{
-              paddingBottom: "0px",
+              textAlign: "-webkit-center"
+            }}
+          >
+            <img
+              src={"http://localhost:5600/images/asset/logo.png"}
+              alt="Logo"
+              style={{
+                display: "block",
+                width: "200px"
+              }}
+            />
+            <h4
+              style={{
+                fontWeight: "bold",
+                fontFamily: "cursive",
+                marginLeft: 20
+              }}
+            >
+              NOTRE CHARTE
+            </h4>
+          </div>
+        </DialogTitle>
+        <DialogContent
+          id="modal-slide-description"
+          className={classes.modalBody}
+          style={{
+            padding: 0,
+            width: "100%",
+            backgroundColor: "#fff",
+            color: "#332861",
+            marginTop: "2%",
+            fontFamily: "cursive"
+          }}
+          spacing={0}
+        >
+          <h4 style={{ marginLeft: "5%", fontFamily: "cursive" }}>
+            En devenant mini-artiste, je m’engage à respecter les consignes
+            suivantes :
+          </h4>
+          <br></br>
+          <h4 style={{ marginLeft: "7%", fontFamily: "cursive" }}>
+            Je ne communique pas de fausses informations
+            <br></br>
+            <br></br>
+            Je respecte tous les membres de la communauté Ministoriz
+            <br></br>
+            <br></br>
+            Je ne publie pas de textes vulgaires, racistes, discriminatoires,
+            xénophobes ou homophobes
+            <br></br>
+            <br></br>
+            Je ne publie pas de dessins pouvant être interprétés comme étant
+            vulgaires, racistes, discriminatoires,<br></br> xénophobes ou
+            homophobes
+            <br></br>
+            <br></br>
+            Je ne publie pas de dessins à caractère pornographiques
+          </h4>
+          <br></br>
+          <br></br>
+        </DialogContent>
+        <MuiDialogActions style={{ padding: 0 }}>
+          <h3
+            style={{
+              height: "49px",
+              textAlign: "center",
+              marginTop: "0px",
+              marginBottom: "0px",
+              width: "100%",
+              fontWeight: "400",
               backgroundColor: "#fff",
               color: "#332861"
             }}
           >
-            <div
+            <Button
+              color="white"
               style={{
-                textAlign: "-webkit-center"
+                color: "rgb(89, 79, 118)",
+                fontWeight: "bold",
+                margin: 0,
+                backgroundColor: "#e3f3fd"
+              }}
+              onClick={() => {
+                setModal(false);
               }}
             >
-              <img
-                src={"http://localhost:5600/images/asset/logo.png"}
-                alt="Logo"
-                style={{
-                  display: "block",
-                  width: "200px"
-                }}
-              />
-              <h4 style={{fontWeight: 'bold',
-                      fontFamily: 'cursive',
-                      marginLeft: 20}}>
-                        NOTRE CHARTE
-              </h4>
-            </div>
-          </DialogTitle>
-          <DialogContent
-            id="modal-slide-description"
-            className={classes.modalBody}
-            style={{
-              padding: 0,
-              width: "100%",
-              backgroundColor: "#fff",
-              color: "#332861",
-              marginTop: '2%',
-              fontFamily: 'cursive'
-            }}
-            spacing={0}
-          >
-            <h4 style={{marginLeft: '5%',
-              fontFamily: 'cursive'}}>En devenant mini-artiste, je m’engage à respecter les consignes suivantes :</h4><br></br>
-            <h4 style={{marginLeft: '7%',
-              fontFamily: 'cursive'}}>Je ne communique pas de fausses informations
-            <br></br><br></br>
-            Je respecte tous les membres de la communauté Ministoriz
-            <br></br><br></br>
-            Je ne publie pas de textes vulgaires, racistes, discriminatoires, xénophobes ou homophobes
-            <br></br><br></br>
-            Je ne publie pas de dessins pouvant être interprétés comme étant vulgaires, racistes, discriminatoires,<br></br> xénophobes ou homophobes
-            <br></br><br></br>
-            Je ne publie pas de dessins à caractère pornographiques</h4><br></br><br></br>
-          </DialogContent>
-          <MuiDialogActions style={{ padding: 0 }}>
-            <h3
-              style={{
-                height: "49px",
-                textAlign: "center",
-                marginTop: "0px",
-                marginBottom: "0px",
-                width: "100%",
-                fontWeight: "400",
-                backgroundColor: "#fff",
-                color: "#332861"
-              }}
-            >
-              <Button
-                color="white"
-                style={{color:'rgb(89, 79, 118)', fontWeight: 'bold',margin: 0,backgroundColor: "#e3f3fd"}}
-                onClick={() => {setModal(false )}}
-              >
-                J’ai compris !
-              </Button>
-            </h3>
-          </MuiDialogActions>
-        </Dialog>
-    <List className={classes.list}>
-      {/* <ListItem className={classes.listItem}>
+              J’ai compris !
+            </Button>
+          </h3>
+        </MuiDialogActions>
+      </Dialog>
+      <List className={classes.list}>
+        {/* <ListItem className={classes.listItem}>
         <CustomDropdown
           noLiPadding
           buttonText="Components"
@@ -191,7 +215,7 @@ export default function HeaderUser(props) {
           <CloudDownload className={classes.icons} /> Download
         </Button>
       </ListItem> */}
-      {/* <ListItem className={classes.listItem}>
+        {/* <ListItem className={classes.listItem}>
       <Link
           color="transparent"
           style={{color:"white"}}
@@ -266,24 +290,22 @@ export default function HeaderUser(props) {
         </Button>
         </Link>
       </ListItem> */}
-      <ListItem className={classes.listItem}>
-        <Link to="/" className={classes.dropdownLink}>
-        <Button
-          color="transparent"
-          className={classes.navLink}
-          style={{ padding: 0 }}
-        >
-          <i
-            className={
-              headerClasse.socialIcons + " fas fa-home"
-            }
-            style={{  fontSize: 25 }}
-          /> Retour a l'accueil
-        </Button>
-        </Link>
-        
-      </ListItem>
-      {/* <ListItem className={classes.listItem}>
+        <ListItem className={classes.listItem}>
+          <Link to="/" className={classes.dropdownLink}>
+            <Button
+              color="transparent"
+              className={classes.navLink}
+              style={{ padding: 0 }}
+            >
+              <i
+                className={headerClasse.socialIcons + " fas fa-home"}
+                style={{ fontSize: 25 }}
+              />{" "}
+              Retour a l'accueil
+            </Button>
+          </Link>
+        </ListItem>
+        {/* <ListItem className={classes.listItem}>
         <Tooltip title="Delete">
           <IconButton aria-label="Delete">
             <DeleteIcon />
@@ -305,7 +327,7 @@ export default function HeaderUser(props) {
           </Button>
         </Tooltip>
       </ListItem> */}
-      {/* <ListItem className={classes.listItem}>
+        {/* <ListItem className={classes.listItem}>
         <Tooltip
           id="instagram-facebook"
           title="Follow us on facebook"
@@ -322,53 +344,56 @@ export default function HeaderUser(props) {
           </Button>
         </Tooltip>
       </ListItem> */}
-      <ListItem className={classes.listItem}>
-      <Link className={classes.dropdownLink}>
-      
-        <Tooltip
-          id="instagram-tooltip"
-          title="Mon Compte"
-          placement={window.innerWidth > 959 ? "top" : "left"}
-          classes={{ tooltip: classes.tooltip }}
-          style={{  marginLeft: 30, padding: 0 }}
-        >
-            <CustomDropdown
+        <ListItem className={classes.listItem}>
+          <Link className={classes.dropdownLink}>
+            <Tooltip
+              id="instagram-tooltip"
+              title="Mon Compte"
+              placement={window.innerWidth > 959 ? "top" : "left"}
+              classes={{ tooltip: classes.tooltip }}
+              style={{ marginLeft: 30, padding: 0 }}
+            >
+              <CustomDropdown
                 noLiPadding
                 buttonText=""
                 buttonProps={{
-                    className: classes.navLink,
-                    color: "transparent"
+                  className: classes.navLink,
+                  color: "transparent"
                 }}
-                iconStyle={{width: 30,
-                    height: 30}}
+                iconStyle={{ width: 30, height: 30 }}
                 buttonIcon={PersonIcon}
                 dropdownList={[
                   <Link to="/LesHistoires" className={classes.dropdownLink}>
                     NOS HISTOIRES
                   </Link>,
                   <Link to="/MonProfil" className={classes.dropdownLink}>
-                      MON PROFIL
+                    MON PROFIL
                   </Link>,
                   <Link to="/MesOeuvres" className={classes.dropdownLink}>
                     MES OEUVRES
                   </Link>,
                   <ButtonBase
                     className={classes.dropdownLink}
+                    style={{
+                      fontSize: "13px",
+                      fontFamily: "Roboto",
+                      fontWeight: 400
+                    }}
                     onClick={() => {
-                      setModal(true)
+                      setModal(true);
                     }}
                   >
                     NOTRE CHARTE
                   </ButtonBase>,
-                    <Link to="/Logout" className={classes.dropdownLink} divider>
-                        DÉCONNEXION
-                    </Link>,
+                  <Link to="/Logout" className={classes.dropdownLink} divider>
+                    DÉCONNEXION
+                  </Link>
                 ]}
-                />
-        </Tooltip>
-        </Link>
-      </ListItem>
-    </List>
+              />
+            </Tooltip>
+          </Link>
+        </ListItem>
+      </List>
     </div>
   );
 }
