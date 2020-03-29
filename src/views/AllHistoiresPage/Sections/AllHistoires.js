@@ -34,6 +34,7 @@ import ArrowLeftOutlined from "@material-ui/icons/ArrowLeftOutlined";
 import StarBorderIcon from "@material-ui/icons/StarBorder";
 import SnackbarContent from "@material-ui/core/SnackbarContent";
 import CustomTabs from "components/CustomTabs/CustomTabs.js";
+import Parallax from "components/Parallax/Parallax.js";
 //scroll bare text
 import SimpleBar from "simplebar-react";
 import "simplebar/dist/simplebar.min.css";
@@ -54,6 +55,10 @@ import Chat from "@material-ui/icons/Chat";
 import Contacts from "@material-ui/icons/Contacts";
 import AccountBoxIcon from "@material-ui/icons/AccountBox";
 import TitleIcon from "@material-ui/icons/Title";
+import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
+import Fab from '@material-ui/core/Fab';
+
+import { subscriber, messageService } from "./../../../services/messageService";
 
 class AllHistoires extends React.Component {
   constructor(props) {
@@ -69,6 +74,8 @@ class AllHistoires extends React.Component {
       currentFiltre: 1,
       selectedFiltre: "",
       modal: false,
+      showMore: true,
+      showMoreUsers: true,
       settings: {
         beforeChange: (current, next) => {
           this.setState({ counter: next + 1 });
@@ -97,68 +104,91 @@ class AllHistoires extends React.Component {
     this.handleChangePage = this.handleChangePage.bind(this);
     this.fetchHistoire();
   }
-  handleChangePage = (event, value) => {
-    this.setState({ page: value });
+  componentDidMount() {
+    subscriber.subscribe(v => {
+      this.setState({search: v.search, currentFiltre: v.filtre},() => {
+        this.searchCheck();
+      })
+    });
+  }
+  handleChangePage() {
+    // this.setState({ page: this.state.page + 1 });
+    if(this.state.numberPage == this.state.page){
+      this.setState({showMore: false})
+    }
+    
     if (this.state.search == "") {
       Axios.get(
         config.API_URL +
           "histoires/take/6/" +
-          (value - 1) * 6 +
+          (this.state.page - 1) * 6 +
           "/" +
           this.state.currentFiltre +
           "/xxxx",
         {}
       ).then(res => {
-        this.setState({ histoires: res.data });
+          this.setState({
+            histoires: this.state.histoires.concat(res.data )
+            });
+          
         this.forceUpdate();
       });
     } else {
       Axios.get(
         config.API_URL +
           "histoires/take/6/" +
-          (value - 1) * 6 +
+          (this.state.page - 1) * 6 +
           "/" +
           this.state.currentFiltre +
           "/" +
           this.state.search,
         {}
       ).then(res => {
-        this.setState({ histoires: res.data });
+        this.setState({
+          histoires: this.state.histoires.concat(res.data )
+          });
         this.forceUpdate();
       });
     }
-  };
-  handleChangePageUsers = (event, value) => {
-    this.setState({ pageUsers: value });
+    
+  }
+  handleChangePageUsers() {
+    if(this.state.numberPageUsers == this.state.pageUsers){
+      this.setState({showMoreUsers: false})
+    }
     if (this.state.search == "") {
       Axios.get(
         config.API_URL +
           "histoires/takeUsers/6/" +
-          (value - 1) * 6 +
+          (this.state.pageUsers - 1) * 6 +
           "/" +
           this.state.currentFiltre +
           "/xxxx",
         {}
       ).then(res => {
-        this.setState({ histoireUsers: res.data });
+        this.setState({
+          histoireUsers: this.state.histoireUsers.concat(res.data )
+          });
         this.forceUpdate();
       });
     } else {
       Axios.get(
         config.API_URL +
           "histoires/takeUsers/6/" +
-          (value - 1) * 6 +
+          (this.state.pageUsers - 1) * 6 +
           "/" +
           this.state.currentFiltre +
           "/" +
           this.state.search,
         {}
       ).then(res => {
-        this.setState({ histoireUsers: res.data });
+        this.setState({
+          histoireUsers: this.state.histoireUsers.concat(res.data )
+          });
         this.forceUpdate();
       });
     }
-  };
+  }
   fetchHistoire() {
     console.log("URL api" + config.API_URL);
     Axios.get(
@@ -171,8 +201,13 @@ class AllHistoires extends React.Component {
       this.setState({ histoires: res.data });
     });
     Axios.get(config.API_URL + "histoires/numberHistoires", {}).then(res => {
-      this.setState({ numberPage: Math.ceil(res.data / 6) });
+      this.setState({ numberPage: Math.ceil(res.data / 6) }, ()=> {
+        if(res.data <= 6){
+          this.setState({showMore: false})
+        }
+      });
     });
+    
   }
 
   handleChange = e => {
@@ -180,6 +215,7 @@ class AllHistoires extends React.Component {
     console.log(this.state.selectedFiltre);
   };
   searchCheck() {
+    this.setState({page: 1, showMore: true}, ()=>{
     if (this.state.currentFiltre == 1) {
       if (this.state.search !== "") {
         this.setState({ histoireUsers: [] });
@@ -189,7 +225,11 @@ class AllHistoires extends React.Component {
             this.state.search,
           {}
         ).then(res => {
-          this.setState({ numberPage: Math.ceil(res.data / 6) });
+          this.setState({ numberPage: Math.ceil(res.data / 6) }, ()=> {
+            if(res.data <= 6){
+              this.setState({showMore: false})
+            }
+          });
         });
         Axios.get(
           config.API_URL +
@@ -197,7 +237,11 @@ class AllHistoires extends React.Component {
             this.state.search,
           {}
         ).then(res => {
-          this.setState({ numberPageUsers: Math.ceil(res.data / 6) });
+          this.setState({ numberPageUsers: Math.ceil(res.data / 6) }, ()=> {
+            if(res.data <= 6){
+              this.setState({showMoreUsers: false})
+            }
+          });
         });
         Axios.get(
           config.API_URL +
@@ -243,6 +287,10 @@ class AllHistoires extends React.Component {
             this.setState({
               numberPage: Math.ceil(res.data / 6),
               histoireUsers: []
+            }, ()=> {
+              if(res.data <= 6){
+                this.setState({showMore: false})
+              }
             });
           }
         );
@@ -256,7 +304,11 @@ class AllHistoires extends React.Component {
             this.state.search,
           {}
         ).then(res => {
-          this.setState({ numberPage: Math.ceil(res.data / 6) });
+          this.setState({ numberPage: Math.ceil(res.data / 6) }, ()=> {
+            if(res.data <= 6){
+              this.setState({showMore: false})
+            }
+          });
         });
         Axios.get(
           config.API_URL +
@@ -264,7 +316,11 @@ class AllHistoires extends React.Component {
             this.state.search,
           {}
         ).then(res => {
-          this.setState({ numberPageUsers: Math.ceil(res.data / 6) });
+          this.setState({ numberPageUsers: Math.ceil(res.data / 6) }, ()=> {
+            if(res.data <= 6){
+              this.setState({showMoreUsers: false})
+            }
+          });
         });
         Axios.get(
           config.API_URL +
@@ -308,6 +364,10 @@ class AllHistoires extends React.Component {
             this.setState({
               numberPage: Math.ceil(res.data / 6),
               histoireUsers: []
+            }, ()=> {
+              if(res.data <= 6){
+                this.setState({showMore: false})
+              }
             });
           }
         );
@@ -321,7 +381,11 @@ class AllHistoires extends React.Component {
             this.state.search,
           {}
         ).then(res => {
-          this.setState({ numberPage: Math.ceil(res.data / 6) });
+          this.setState({ numberPage: Math.ceil(res.data / 6) }, ()=> {
+            if(res.data <= 6){
+              this.setState({showMore: false})
+            }
+          });
         });
         Axios.get(
           config.API_URL +
@@ -329,7 +393,11 @@ class AllHistoires extends React.Component {
             this.state.search,
           {}
         ).then(res => {
-          this.setState({ numberPageUsers: Math.ceil(res.data / 6) });
+          this.setState({ numberPageUsers: Math.ceil(res.data / 6) }, ()=> {
+            if(res.data <= 6){
+              this.setState({showMoreUsers: false})
+            }
+          });
         });
         Axios.get(
           config.API_URL +
@@ -373,6 +441,10 @@ class AllHistoires extends React.Component {
             this.setState({
               numberPage: Math.ceil(res.data / 6),
               histoireUsers: []
+            }, ()=> {
+              if(res.data <= 6){
+                this.setState({showMore: false})
+              }
             });
           }
         );
@@ -386,7 +458,11 @@ class AllHistoires extends React.Component {
             this.state.search,
           {}
         ).then(res => {
-          this.setState({ numberPage: Math.ceil(res.data / 6) });
+          this.setState({ numberPage: Math.ceil(res.data / 6) }, ()=> {
+            if(res.data <= 6){
+              this.setState({showMore: false})
+            }
+          });
         });
         Axios.get(
           config.API_URL +
@@ -394,7 +470,11 @@ class AllHistoires extends React.Component {
             this.state.search,
           {}
         ).then(res => {
-          this.setState({ numberPageUsers: Math.ceil(res.data / 6) });
+          this.setState({ numberPageUsers: Math.ceil(res.data / 6) }, ()=> {
+            if(res.data <= 6){
+              this.setState({showMoreUsers: false})
+            }
+          });
         });
         Axios.get(
           config.API_URL +
@@ -438,11 +518,16 @@ class AllHistoires extends React.Component {
             this.setState({
               numberPage: Math.ceil(res.data / 6),
               histoireUsers: []
+            }, ()=> {
+              if(res.data <= 6){
+                this.setState({showMore: false})
+              }
             });
           }
         );
       }
     }
+  });
   }
 
   handleCheck(e) {
@@ -722,9 +807,9 @@ class AllHistoires extends React.Component {
                                 >
                                   <img
                                     src={planche.lienDessin}
-                                    alt="First slide"
                                     style={{
                                       height: "365px",
+                                      maxWidth: '800px',
                                       marginLeft: "auto",
                                       marginRight: "auto",
                                       display: "block"
@@ -987,13 +1072,13 @@ class AllHistoires extends React.Component {
               </h3>
             </MuiDialogActions>
           </Dialog>
-          <GridContainer justify="center">
+          {/* <GridContainer justify="center">
             <GridItem xs={12} sm={12} md={8}>
               <h2 className={classes.title}>LES HISTOIRES</h2>
             </GridItem>
-          </GridContainer>
+          </GridContainer> */}
 
-          <GridContainer justify="flex-end">
+          {/* <GridContainer justify="flex-end">
             <GridItem xs={7} sm={7} md={7}>
               <CustomInput
                 labelText="Recherche"
@@ -1045,8 +1130,8 @@ class AllHistoires extends React.Component {
                 ]}
               />
             </GridItem>
-          </GridContainer>
-          {this.state.histoireUsers.length === 0 ? (
+          </GridContainer> */}
+          {this.state.search === "" ? (
             <div>
               <GridContainer justify="center" spacing={"auto"}>
                 {this.state.histoires.map((histoire, index) => {
@@ -1075,22 +1160,8 @@ class AllHistoires extends React.Component {
                         }}
                       >
                         <Card
-                          style={{ width: "20rem", backgroundColor: "#e3f3fd" }}
+                          style={{ backgroundColor: "white" }}
                         >
-                          <h4
-                            className={classes.cardTitle}
-                            style={{
-                              fontFamily: "monospace",
-                              fontWeight: "bold",
-                              backgroundColor: "#594f76",
-                              color: "white",
-                              paddingTop: "10px",
-                              paddingBottom: "10px",
-                              margin: 0
-                            }}
-                          >
-                            {histoire.titreHistoire}
-                          </h4>
                           <div
                             style={{
                               height: "240px",
@@ -1099,7 +1170,20 @@ class AllHistoires extends React.Component {
                               display: "block"
                             }}
                           >
-                            <img
+                            <Parallax image={
+                                histoire.lienIllustration !== null
+                                  ?  histoire.lienIllustration
+                                  : ""
+                              }
+                              style={{
+                                height: "240px",
+                                maxWidth: "320px",
+                                marginLeft: "auto",
+                                marginRight: "auto",
+                                display: "block"
+                              }}
+                              ></Parallax>
+                            {/* <img
                               style={{
                                 height: "240px",
                                 maxWidth: "320px",
@@ -1114,7 +1198,7 @@ class AllHistoires extends React.Component {
                                   : ""
                               }
                               alt={histoire.titreHistoire}
-                            />
+                            /> */}
                           </div>
 
                           <h5
@@ -1210,16 +1294,22 @@ class AllHistoires extends React.Component {
               </GridContainer>
               <GridContainer justify="center">
                 <GridItem xs={4} sm={4} md={4}>
-                  <Pagination
-                    count={this.state.numberPage}
-                    page={this.state.page}
-                    onChange={this.handleChangePage}
-                  />
+                  {this.state.showMore ? (
+                  <Tooltip title="plus de résultats" aria-label="plus de résultats" onClick={() => {
+                    this.setState({page: this.state.page + 1}, () => {
+                      this.handleChangePage();
+                    })
+                  }}>
+                    <Fab color="primary" className={classes.fab}>
+                      <MoreHorizIcon />
+                    </Fab>
+                  </Tooltip>
+                  ): null}
                 </GridItem>
               </GridContainer>
             </div>
           ) : (
-            <div>
+            <div style={{marginTop: '6%'}}>
               {/* <GridContainer justify="center">
               <GridItem xs={12} sm={12} md={8}>
                 <h3 className={classes.title}>
@@ -1228,7 +1318,7 @@ class AllHistoires extends React.Component {
               </GridItem>
             </GridContainer> */}
               <GridContainer justify="center">
-                <GridItem xs={12} sm={12} md={12}>
+                <GridItem xs={11} sm={11} md={11}>
                   <CustomTabs
                     variant="fullWidth"
                     headerColor="info"
@@ -1435,15 +1525,17 @@ class AllHistoires extends React.Component {
                             </GridContainer>
                             <GridContainer justify="center">
                               <GridItem xs={4} sm={4} md={4}>
-                                {this.state.histoires.length > 0 ? (
-                                  <Pagination
-                                    count={this.state.numberPage}
-                                    page={this.state.page}
-                                    onChange={this.handleChangePage}
-                                  />
-                                ) : (
-                                  <div></div>
-                                )}
+                                {this.state.showMore ? (
+                                  <Tooltip title="plus de résultats" aria-label="plus de résultats" onClick={() => {
+                                    this.setState({page: this.state.page + 1}, () => {
+                                      this.handleChangePage();
+                                    })
+                                  }}>
+                                    <Fab color="primary" className={classes.fab}>
+                                      <MoreHorizIcon />
+                                    </Fab>
+                                  </Tooltip>
+                                  ): null}
                               </GridItem>
                             </GridContainer>
                           </div>
@@ -1667,15 +1759,17 @@ class AllHistoires extends React.Component {
                                 justify="center"
                                 alignItems="center"
                               >
-                                {this.state.histoireUsers.length > 0 ? (
-                                  <Pagination
-                                    count={this.state.numberPageUsers}
-                                    page={this.state.pageUsers}
-                                    onChange={this.handleChangePageUsers}
-                                  />
-                                ) : (
-                                  <div></div>
-                                )}
+                                {this.state.showMoreUsers ? (
+                                  <Tooltip title="plus de résultats" aria-label="plus de résultats" onClick={() => {
+                                    this.setState({pageUsers: this.state.pageUsers + 1}, () => {
+                                      this.handleChangePageUsers();
+                                    })
+                                  }}>
+                                    <Fab color="primary" className={classes.fab}>
+                                      <MoreHorizIcon />
+                                    </Fab>
+                                  </Tooltip>
+                                  ): null}
                               </GridItem>
                             </GridContainer>
                           </div>
@@ -1687,7 +1781,7 @@ class AllHistoires extends React.Component {
               </GridContainer>
             </div>
           )}
-          <GridContainer justify="center" style={{ marginTop: 20 }}>
+          {/* <GridContainer justify="center" style={{ marginTop: 20 }}>
             <GridItem xs={12} sm={12} md={4} style={{ width: "auto" }}>
               <Link to="/">
                 <Button
@@ -1699,7 +1793,7 @@ class AllHistoires extends React.Component {
                 </Button>
               </Link>
             </GridItem>
-          </GridContainer>
+          </GridContainer> */}
         </div>
       );
     else return <p>mazal matchargat</p>;

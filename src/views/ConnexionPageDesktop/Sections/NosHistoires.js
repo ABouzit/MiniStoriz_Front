@@ -427,9 +427,9 @@ class NosHistoires extends React.Component {
                                 >
                                   <img
                                     src={planche.lienDessin}
-                                    alt="First slide"
                                     style={{
                                       height: "365px",
+                                      maxWidth: '800px',
                                       marginLeft: "auto",
                                       marginRight: "auto",
                                       display: "block"

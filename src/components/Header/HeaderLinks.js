@@ -28,6 +28,7 @@ import MuiDialogActions from "@material-ui/core/DialogActions";
 import { withStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import ButtonBase from "@material-ui/core/ButtonBase";
+import config from "config/config";
 const useStyles = makeStyles(styles);
 
 export default function HeaderLinks(props) {

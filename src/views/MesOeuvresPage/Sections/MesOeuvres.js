@@ -595,9 +595,9 @@ class MesOeuvres extends React.Component {
                                 >
                                   <img
                                     src={planche.lienDessin}
-                                    alt="First slide"
                                     style={{
                                       height: "365px",
+                                      maxWidth: '800px',
                                       marginLeft: "auto",
                                       marginRight: "auto",
                                       display: "block"
@@ -680,13 +680,12 @@ class MesOeuvres extends React.Component {
                                 <div style={{ textAlign: "-webkit-center" }}>
                                   <img
                                     src={planche.lienDessin}
-                                    alt="First slide"
                                     className=""
                                     style={{
                                       alignSelf: "center",
                                       maxHeight: "365px",
                                       height: "auto",
-                                      maxWidth: "auto",
+                                      maxWidth: "330px",
                                       paddingRight: "10px"
                                     }}
                                   />

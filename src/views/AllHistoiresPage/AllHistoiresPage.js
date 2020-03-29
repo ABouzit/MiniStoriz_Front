@@ -11,14 +11,20 @@ import Header from "components/Header/Header.js";
 import Footer from "components/Footer/Footer.js";
 import GridContainer from "components/Grid/GridContainer.js";
 import GridItem from "components/Grid/GridItem.js";
-import Button from "components/CustomButtons/Button.js";
+// import Button from "components/CustomButtons/Button.js";
+import Button from '@material-ui/core/Button';
+import ButtonGroup from '@material-ui/core/ButtonGroup';
 import HeaderUser from "components/Header/HeaderUser.js";
 import Parallax from "components/Parallax/Parallax.js";
 import config from "config/config";
 import styles from "assets/jss/material-kit-react/views/landingPage.js";
-
+import CustomInput from "components/CustomInput/CustomInput.js";
+import InputAdornment from "@material-ui/core/InputAdornment";
+import Search from "@material-ui/icons/Search";
+import ButtonBase from "@material-ui/core/ButtonBase";
 // Sections for this page
 import AllHistoires from "./Sections/AllHistoires";
+import { subscriber, messageService } from "./../../services/messageService";
 
 const dashboardRoutes = [];
 
@@ -26,6 +32,8 @@ const useStyles = makeStyles(styles);
 
 export default function AllHistoiresPage(props) {
   const [refresh, setRefresh] = React.useState(false);
+  const [search, setSearch] = React.useState("");
+  const [filtre, setFiltre] = React.useState(1);
   let refreshCallBackFunction = publierData => {
     console.log(publierData);
     setRefresh(true);
@@ -67,41 +75,72 @@ export default function AllHistoiresPage(props) {
                       <h4 style={{fontFamily: 'cursive', marginTop: 2, marginLeft: '5%', fontWeight: 'bold'}}>
                         Bienvenue à toi, Azzedine le mini-artiste
                       </h4>
-        </div>
-      {/* <Parallax filter image={config.API_URL + "images/asset/bg1.jpg"}>
-        <div className={classes.container}>
-          <GridContainer>
-            <GridItem xs={12} sm={12} md={6}>
-              <h1 className={classes.title}>Ecris ton histoire !</h1>
-              <h4>
-                Ministoriz est un site collaboratif permettant q nos membres
-                (les mini-artostes), passionnes d'ecriture ou de dessin, de
-                publier des histoires et de ravir nos lecteurs!
-              </h4>
-              <br />
-              <Button
-                color="danger"
-                size="lg"
-                href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&ref=creativetim"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <i className="fas fa-play" />
-                Regarder la video
-              </Button>
-            </GridItem>
-          </GridContainer>
-        </div>
-      </Parallax> */}
-      <div
+      </div>
+      <div style={{backgroundColor: 'white'}}>
+        <GridContainer justify="flex-end">
+          <GridItem xs={12} sm={12} md={3}>
+            <div style={{position:'fixed'}}>
+            <GridContainer justify="center" style={{marginTop: '40%'}}>
+              <GridItem xs={10} sm={10} md={10} >
+                <CustomInput
+                  labelText="Recherche"
+                  id="material"
+                  formControlProps={{
+                    fullWidth: true
+                  }}
+                  value={search}
+                  onChange={(search, event) => {
+                    setSearch(
+                      search.target.value
+                    );
+                    window.scrollTo(0, 0)
+                  }}
+                  inputProps={{
+                    endAdornment: (
+                      <ButtonBase onClick={subscriber.next({search: search, filtre: filtre})}>
+                        
+                        
+                        <InputAdornment position="end">
+                          <Search />
+                        </InputAdornment>
+                      </ButtonBase>
+                    )
+                  }}
+                />
+              </GridItem>
+              <GridItem xs={12} sm={12} md={10} style={{textAlign: 'center', marginTop: '5%'}}>
+                <ButtonGroup
+                    orientation="vertical"
+                    // color="secondary"
+                    aria-label="Les filtres"
+                    variant="contained"
+                    style={{width : '-webkit-fill-available'}}
+                  >
+                  <Button onClick={()=> {subscriber.next({search: search, filtre: 1}); setFiltre(1); window.scrollTo(0, 0)}}>Les plus lues</Button>
+                  <Button onClick={()=> {subscriber.next({search: search, filtre: 2}); setFiltre(2); window.scrollTo(0, 0)}}>Les plus populaires</Button>
+                  <Button onClick={()=> {subscriber.next({search: search, filtre: 3}); setFiltre(3); window.scrollTo(0, 0)}}>Les plus recentes</Button>
+                  <Button onClick={()=> {subscriber.next({search: search, filtre: 4}); setFiltre(4); window.scrollTo(0, 0)}}>Les plus anciennes</Button>
+                </ButtonGroup>
+              </GridItem>
+            </GridContainer>
+            </div>
+          </GridItem>
+          <GridItem xs={9} sm={9} md={9} position="end">
+            <AllHistoires />
+          </GridItem>
+        </GridContainer>
+        <div style={{marginTop:200}}></div>
+      </div>
+      {/* <div
         className={classNames(classes.main, classes.mainRaised)}
-        style={{ marginTop: 81, backgroundImage: 'url("http://localhost:5600/images/asset/bg1.jpg")' }}
+        style={{ marginTop: 81, backgroundImage: 'url("'+config.API_URL+'images/asset/bg1.jpg")' }}
       >
         <div className={classes.container}>
           <AllHistoires />
         </div>
-      </div>
-      <Footer />
+      </div> */}
+      {/* <Footer /> */}
+      
     </div>
   );
 }

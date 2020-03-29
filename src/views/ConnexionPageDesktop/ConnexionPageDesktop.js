@@ -98,7 +98,7 @@ export default function ConnexionPageDesktp(props) {
       </Parallax> */}
       <div
         className={classNames(classes.main, classes.mainRaised)}
-        style={{ marginTop: 81, backgroundImage:'url("http://localhost:5600/images/asset/bg1.jpg")' }}
+        style={{ marginTop: 81, backgroundImage:'url("'+config.API_URL+'images/asset/bg1.jpg")' }}
         id="noshistoire"
       >
         <div className={classes.container}>
@@ -118,7 +118,7 @@ export default function ConnexionPageDesktp(props) {
       <br></br>
       <div
         className={classNames(classes.main, classes.mainRaised)}
-        style={{ marginTop: 20, backgroundImage:'url("http://localhost:5600/images/asset/bg2.jpg")', backgroundPosition: 'center' }}
+        style={{ marginTop: 20, backgroundImage:'url("'+config.API_URL+'images/asset/bg2.jpg")', backgroundPosition: 'center' }}
         id="echanger"
       >
         <div className={classes.container}>

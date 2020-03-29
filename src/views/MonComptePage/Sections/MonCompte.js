@@ -49,7 +49,7 @@ class MonCompte extends React.Component {
     this.headerClasse = makeStyles(headerStyle);
     // Don't call this.setState() here!
     this.state = {
-      idUser: "3c500b25-cb58-4be3-861e-2bb2926bd75f",
+      idUser: "5448c755-5085-4652-88fa-ffcac3987071",
       noteDessinMoy: 0,
       noteTextMoy: 0,
       imgProfil: "",
@@ -189,14 +189,19 @@ class MonCompte extends React.Component {
       ).then(res => {
         let s = res.data.filePath.replace("\\", "/").replace("\\", "/");
         _this.state.user.lienPhoto = config.API_URL + s;
-        return Axios.put(config.API_URL + "users", _this.state.user).catch(
+        return Axios.put(config.API_URL + "users", _this.state.user).then(res => {
+          _this.setState({ change: false }, ()=> {_this.forceUpdate()});
+        })
+        .catch(
           function(error) {
             console.log(error);
           }
         );
       });
     } else {
-      return Axios.put(config.API_URL + "users", _this.state.user).catch(
+      return Axios.put(config.API_URL + "users", _this.state.user).then(res => {
+        _this.setState({ change: false }, ()=> {_this.forceUpdate()});
+      }).catch(
         function(error) {
           console.log(error);
         }
@@ -250,7 +255,7 @@ class MonCompte extends React.Component {
                     marginTop: 30
                   }}
                 >
-                  Photo de profil
+                  Photo de profil 
                 </h5>
                 <Input
                   accept="image/*"

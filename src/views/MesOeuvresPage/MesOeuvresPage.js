@@ -95,7 +95,7 @@ export default function MesOeuvresPage(props) {
       </Parallax> */}
       <div
         className={classNames(classes.main, classes.mainRaised)}
-        style={{ marginTop: 81, backgroundImage:'url("http://localhost:5600/images/asset/bg1.jpg")' }}
+        style={{ marginTop: 81, backgroundImage:'url("'+config.API_URL+'images/asset/bg1.jpg")' }}
       >
         <div className={classes.container}>
           <MesOeuvres />
