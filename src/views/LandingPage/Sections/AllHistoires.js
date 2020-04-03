@@ -53,7 +53,7 @@ import Chat from "@material-ui/icons/Chat";
 import Contacts from "@material-ui/icons/Contacts";
 import AccountBoxIcon from "@material-ui/icons/AccountBox";
 import TitleIcon from "@material-ui/icons/Title";
-
+import { Link } from "react-router-dom";
 class AllHistoires extends React.Component {
   constructor(props) {
     super(props);
@@ -1056,21 +1056,7 @@ class AllHistoires extends React.Component {
                       style={{ width: "auto" }}
                       key={index}
                     >
-                      <ButtonBase
-                        focusRipple
-                        className={classes.image}
-                        focusVisibleClassName={classes.focusVisible}
-                        style={{
-                          width: "20rem"
-                        }}
-                        onClick={() => {
-                          this.setState({
-                            modal: true,
-                            selectedHistoire: histoire
-                          });
-                          this.fetchPlanche(histoire);
-                        }}
-                      >
+                      <Link to={"/Histoire/" + histoire.id}>
                         <Card
                           style={{ width: "20rem", backgroundColor: "#e3f3fd" }}
                         >
@@ -1200,7 +1186,7 @@ class AllHistoires extends React.Component {
                             </GridContainer>
                           </CardBody>
                         </Card>
-                      </ButtonBase>
+                      </Link>
                     </GridItem>
                   );
                 })}
