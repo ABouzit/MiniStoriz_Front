@@ -55,8 +55,16 @@ import Chat from "@material-ui/icons/Chat";
 import Contacts from "@material-ui/icons/Contacts";
 import AccountBoxIcon from "@material-ui/icons/AccountBox";
 import TitleIcon from "@material-ui/icons/Title";
-import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
-import Fab from "@material-ui/core/Fab";
+import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
+import Fab from '@material-ui/core/Fab';
+import Avatar from "@material-ui/core/Avatar";
+import CreateIcon from '@material-ui/icons/Create';
+import BrushIcon from '@material-ui/icons/Brush';
+import CommentIcon from '@material-ui/icons/Comment';
+import VisibilityIcon from '@material-ui/icons/Visibility';
+import { CircularProgressbar,CircularProgressbarWithChildren,buildStyles } from 'react-circular-progressbar';
+import 'react-circular-progressbar/dist/styles.css';
+import Divider from '@material-ui/core/Divider';
 import { subscriber, messageService } from "./../../../services/messageService";
 
 class AllHistoires extends React.Component {
@@ -66,39 +74,21 @@ class AllHistoires extends React.Component {
     this.state = {
       page: 1,
       pageUsers: 1,
-      counter: 1,
       numberPage: 0,
       numberPageUsers: 0,
       search: "",
       currentFiltre: 1,
       selectedFiltre: "",
-      modal: false,
-      showMore: true,
+      showMore: false,
       showMoreUsers: true,
-      settings: {
-        beforeChange: (current, next) => {
-          this.setState({ counter: next + 1 });
-          console.log(this.state.counter);
-        },
-        dots: false,
-        arrows: false,
-        infinite: false,
-        speed: 500,
-        slidesToShow: 1,
-        slidesToScroll: 1,
-        autoplay: false
-      },
       commentaire: "",
       ratingText: 0,
       ratingDessin: 0,
       histoires: [],
       histoireUsers: [],
       selectedHistoire: "",
-      planches: [],
       image: ""
     };
-    this.next = this.next.bind(this);
-    this.previous = this.previous.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.handleChangePage = this.handleChangePage.bind(this);
     this.fetchHistoire();
@@ -196,7 +186,7 @@ class AllHistoires extends React.Component {
         "/1/xxxx",
       {}
     ).then(res => {
-      this.setState({ histoires: res.data });
+      this.setState({ histoires: res.data, showMore: true });
     });
     Axios.get(config.API_URL + "histoires/numberHistoires", {}).then(res => {
       this.setState({ numberPage: Math.ceil(res.data / 6) }, () => {
@@ -206,7 +196,6 @@ class AllHistoires extends React.Component {
       });
     });
   }
-
   handleChange = e => {
     this.setState({ selectedFiltre: e.target.value });
     console.log(this.state.selectedFiltre);
@@ -612,535 +601,15 @@ class AllHistoires extends React.Component {
     }
   }
 
-  fetchPlanche(histoire) {
-    Axios.get(config.API_URL + "planches/histoire/" + histoire.id, {}).then(
-      res => {
-        this.setState({ planches: res.data });
-        histoire.nombreVue = histoire.nombreVue + 1;
-        console.log(histoire);
-        Axios.put(config.API_URL + "histoires/", histoire).then(res => {
-          this.forceUpdate();
-        });
-      }
-    );
-  }
-  getDay(date) {
-    const d = moment(new Date());
-    const dHistoire = moment(date);
-    let dt = "";
-    if (d.diff(dHistoire, "days") > 30) {
-      dt =
-        Math.floor(d.diff(dHistoire, "month")) +
-        " mois " +
-        (d.diff(dHistoire, "days") - d.diff(dHistoire, "month") * 30) +
-        " jours ";
-    } else {
-      dt = d.diff(dHistoire, "days") + " jours";
-    }
-    return dt;
-  }
 
-  next() {
-    console.log(this.slider);
-    this.slider.slickNext();
-  }
-  previous() {
-    this.slider.slickPrev();
-  }
-  gotToIndex(index) {
-    this.slider.slickGoTo(index - 1);
-    this.setState({ counter: 1 });
-  }
-  submitCommantaire() {
-    Axios.post(config.API_URL + "impressions", {
-      histoire: this.state.selectedHistoire,
-      commentaire: this.state.commentaire,
-      noteHistoire: this.state.ratingText,
-      noteDessin: this.state.ratingDessin,
-      isActive: true,
-      user: { id: "4305f81f-8e67-45df-80eb-54a646387457" }
-    }).then(res => {
-      this.searchCheck();
-      this.forceUpdate();
-    });
-  }
   //modal - carousel
   render() {
     const { settings, modal } = this.state;
     const { classes } = this.props;
     if (this.state.histoires !== [])
       return (
-        <div className={classes.section}>
-          <Dialog
-            classes={{
-              root: classes.center,
-              paper: classes.modal
-            }}
-            onBackdropClick={() => {
-              this.setState({
-                modal: false,
-                ratingDessin: 0,
-                ratingText: 0,
-                commentaire: ""
-              });
-              this.gotToIndex(1);
-            }}
-            open={modal}
-            TransitionComponent={Transition}
-            keepMounted
-            onClose={() =>
-              this.setState({
-                modal: false,
-                ratingDessin: 0,
-                ratingText: 0,
-                commentaire: ""
-              })
-            }
-            aria-labelledby="modal-slide-title"
-            aria-describedby="modal-slide-description"
-            maxWidth={"md"}
-            fullWidth={true}
-            scroll="paper"
-            style={{ backgroundColor: "#e3f3fd" }}
-          >
-            <DialogTitle
-              id="customized-dialog-title"
-              onClose={() => {
-                this.setState({
-                  modal: false,
-                  ratingDessin: 0,
-                  ratingText: 0,
-                  commentaire: ""
-                });
-                this.gotToIndex(1);
-              }}
-              style={{
-                paddingBottom: "0px",
-                backgroundColor: "#e3f3fd",
-                color: "#332861"
-              }}
-            >
-              <h3
-                style={{
-                  color: "#332861",
-                  textAlign: "center",
-                  marginTop: "0px",
-                  marginBottom: "0px",
-                  fontWeight: "600"
-                }}
-              >
-                {this.state.selectedHistoire.titreHistoire}
-              </h3>
-            </DialogTitle>
-            <DialogContent
-              id="modal-slide-description"
-              className={classes.modalBody}
-              style={{ padding: 0, backgroundColor: "#e3f3fd" }}
-            >
-              <SampleNextArrow
-                onClick={() => this.next()}
-                style={Styles.NextArrow}
-                Color={
-                  this.state.counter === this.state.planches.length + 1
-                    ? "rgba(0, 0, 0, 0.26)"
-                    : "#332861"
-                }
-                disabled={
-                  this.state.counter === this.state.planches.length + 1
-                    ? true
-                    : false
-                }
-              />
-              <Slider
-                ref={slider => (this.slider = slider)}
-                {...settings}
-                style={{
-                  height: "100%",
-                  paddingLeft: 30,
-                  paddingRight: 30,
-                  marginLeft: 20,
-                  marginRight: 20
-                }}
-              >
-                {this.state.planches !== []
-                  ? this.state.planches.map((planche, index) => {
-                      console.log("histoire" + this.state.histoire);
-                      return (
-                        <div key={1}>
-                          <GridContainer justify="center" alignItems="center">
-                            <GridItem xs={12} sm={12} md={12}>
-                              <h5
-                                style={{
-                                  textAlign: "center",
-                                  fontSize: "17px",
-                                  fontWeight: "400",
-                                  color: "#332861"
-                                }}
-                              >
-                                Texts par
-                                <strong>
-                                  {" "}
-                                  {this.state.selectedHistoire.userText.pseudo +
-                                    " - "}
-                                </strong>
-                                Dessins par
-                                <strong>
-                                  {" "}
-                                  {
-                                    this.state.selectedHistoire.userDessin
-                                      .pseudo
-                                  }
-                                </strong>
-                              </h5>
-                            </GridItem>
-                          </GridContainer>
-                          {planche.text === "" ? (
-                            <GridContainer
-                              style={{ height: "365px" }}
-                              justify="center"
-                              alignItems="center"
-                            >
-                              <GridItem
-                                xs={12}
-                                sm={12}
-                                md={12}
-                                justify="center"
-                                alignItems="center"
-                              >
-                                <div
-                                  style={{
-                                    height: "365px",
-                                    width: "100%",
-                                    textAlign: "center",
-                                    display: "block"
-                                  }}
-                                >
-                                  <img
-                                    src={planche.lienDessin}
-                                    style={{
-                                      height: "365px",
-                                      maxWidth: "800px",
-                                      marginLeft: "auto",
-                                      marginRight: "auto",
-                                      display: "block"
-                                    }}
-                                  />
-                                </div>
-                              </GridItem>
-                            </GridContainer>
-                          ) : planche.lienDessin === null ||
-                            planche.lienDessin === "" ? (
-                            <GridContainer
-                              style={{ height: "365px" }}
-                              justify="center"
-                              alignItems="center"
-                            >
-                              <GridItem
-                                xs={12}
-                                sm={12}
-                                md={12}
-                                justify="center"
-                                alignItems="center"
-                                style={{ paddingRight: "20px" }}
-                              >
-                                {" "}
-                                <SimpleBar style={{ maxHeight: "365px" }}>
-                                  <h5
-                                    style={{
-                                      color: "#332861",
-                                      width: "100%",
-                                      maxHeight: "365px",
-                                      margin: "0px",
-                                      paddingLeft: "10px",
-                                      paddingRight: "10px",
-                                      fontSize: "16px"
-                                    }}
-                                  >
-                                    {planche.text}
-                                  </h5>
-                                </SimpleBar>
-                              </GridItem>
-                            </GridContainer>
-                          ) : (
-                            <GridContainer
-                              style={{ height: "365px" }}
-                              justify="center"
-                              alignItems="center"
-                            >
-                              <GridItem
-                                xs={7}
-                                sm={7}
-                                md={7}
-                                justify="center"
-                                alignItems="center"
-                                style={{ paddingRight: "20px" }}
-                              >
-                                {" "}
-                                <SimpleBar style={{ maxHeight: "365px" }}>
-                                  <h5
-                                    style={{
-                                      color: "#332861",
-                                      width: "100%",
-                                      maxHeight: "365px",
-                                      margin: "0px",
-                                      paddingLeft: "10px",
-                                      paddingRight: "10px",
-                                      fontSize: "16px"
-                                    }}
-                                  >
-                                    {planche.text}
-                                  </h5>
-                                </SimpleBar>
-                              </GridItem>
-                              <GridItem
-                                xs={5}
-                                sm={5}
-                                md={5}
-                                justify="center"
-                                alignItems="center"
-                              >
-                                <div style={{ textAlign: "-webkit-center" }}>
-                                  <img
-                                    src={planche.lienDessin}
-                                    alt="First slide"
-                                    className=""
-                                    style={{
-                                      alignSelf: "center",
-                                      maxHeight: "365px",
-                                      height: "auto",
-                                      maxWidth: "330px",
-                                      width: "auto",
-                                      paddingRight: "10px"
-                                    }}
-                                  />
-                                </div>
-                              </GridItem>
-                            </GridContainer>
-                          )}
-                        </div>
-                      );
-                    })
-                  : () => {
-                      console.log(this.state.histoire);
-                      return (
-                        <div>
-                          <p>mazal maja</p>
-                        </div>
-                      );
-                    }}
-                <div key={this.state.planches.length + 1}>
-                  <GridContainer style={{ height: "411px" }}>
-                    <GridItem
-                      xs={12}
-                      sm={12}
-                      md={12}
-                      justify="center"
-                      alignItems="center"
-                      style={{ marginTop: "40px" }}
-                    >
-                      <p
-                        style={{
-                          fontSize: 16,
-                          fontWeight: 400,
-                          textAlign: "center",
-                          color: "#332861"
-                        }}
-                      >
-                        L’histoire est terminée. Encourage les auteurs en leur
-                        attribuant une note !
-                      </p>
-                    </GridItem>
-
-                    <GridItem
-                      xs={6}
-                      sm={6}
-                      md={6}
-                      style={{ textAlign: "center", marginTop: "20px" }}
-                    >
-                      <GridContainer>
-                        <GridItem xs={2} sm={2} md={2}></GridItem>
-                        <GridItem xs={3} sm={3} md={3}>
-                          <p style={{ color: "#332861" }}>Text :</p>
-                        </GridItem>
-                        <GridItem xs={5} sm={5} md={5}>
-                          <StyledRating
-                            style={{ fontSize: "20px" }}
-                            name="rating-Text"
-                            value={this.state.ratingText}
-                            emptyIcon={<StarBorderIcon fontSize="24px" />}
-                            onChange={(event, newValue1) => {
-                              this.setState({ ratingText: newValue1 });
-                            }}
-                            precision={0.5}
-                          />
-                        </GridItem>
-                        <GridItem xs={1} sm={1} md={1}></GridItem>
-                      </GridContainer>
-                    </GridItem>
-                    <GridItem
-                      xs={6}
-                      sm={6}
-                      md={6}
-                      style={{ textAlign: "center", marginTop: "20px" }}
-                    >
-                      <GridContainer>
-                        <GridItem xs={2} sm={2} md={2}></GridItem>
-                        <GridItem xs={3} sm={3} md={3}>
-                          <p style={{ color: "#332861" }}>Dessins :</p>
-                        </GridItem>
-                        <GridItem xs={5} sm={5} md={5}>
-                          <StyledRating
-                            name="simple-controlled"
-                            value={this.state.ratingDessin}
-                            emptyIcon={<StarBorderIcon fontSize="24px" />}
-                            size="large"
-                            onChange={(event, newValue) => {
-                              this.setState({ ratingDessin: newValue });
-                            }}
-                            precision={0.5}
-                          />
-                        </GridItem>
-                        <GridItem xs={1} sm={1} md={1}></GridItem>
-                      </GridContainer>
-                    </GridItem>
-                    <GridItem
-                      xs={12}
-                      sm={12}
-                      md={12}
-                      justify="center"
-                      alignItems="center"
-                    >
-                      <TextField
-                        id="standard-multiline-static"
-                        placeholder="Laissez un commentaire(facultatif)"
-                        label="commentaire"
-                        multiline
-                        rows="9"
-                        value={this.state.commentaire}
-                        style={{ width: "100%" }}
-                        autoFocus={
-                          this.state.counter !== this.state.planches.length + 1
-                            ? false
-                            : true
-                        }
-                        onChange={(commentaire, event) => {
-                          this.setState({
-                            commentaire: commentaire.target.value
-                          });
-                        }}
-                      />
-                    </GridItem>
-                  </GridContainer>
-                </div>
-                <div key={this.state.planches.length + 2}></div>
-              </Slider>
-              <SamplePrevArrow
-                onClick={() => this.previous()}
-                Color={
-                  this.state.counter === 1 ? "rgba(0, 0, 0, 0.26)" : "#332861"
-                }
-                disabled={this.state.counter === 1 ? true : false}
-              />
-            </DialogContent>
-            <MuiDialogActions style={{ padding: 0 }}>
-              <h3
-                style={{
-                  height: "49px",
-                  textAlign: "center",
-                  marginTop: "0px",
-                  marginBottom: "0px",
-                  width: "100%",
-                  fontWeight: "400",
-                  backgroundColor: "#e3f3fd",
-                  color: "#332861"
-                }}
-              >
-                {this.state.counter !== this.state.planches.length + 1 ? (
-                  this.state.counter
-                ) : (
-                  <Button
-                    color="white"
-                    style={{
-                      color: "rgb(89, 79, 118)",
-                      fontWeight: "bold",
-                      margin: 0
-                    }}
-                    onClick={() => {
-                      this.setState({
-                        modal: false,
-                        ratingDessin: 0,
-                        ratingText: 0,
-                        commentaire: ""
-                      });
-                      this.gotToIndex(1);
-                      this.submitCommantaire();
-                    }}
-                  >
-                    Terminée
-                  </Button>
-                )}
-              </h3>
-            </MuiDialogActions>
-          </Dialog>
-          {/* <GridContainer justify="center">
-            <GridItem xs={12} sm={12} md={8}>
-              <h2 className={classes.title}>LES HISTOIRES</h2>
-            </GridItem>
-          </GridContainer> */}
-
-          {/* <GridContainer justify="flex-end">
-            <GridItem xs={7} sm={7} md={7}>
-              <CustomInput
-                labelText="Recherche"
-                id="material"
-                formControlProps={{
-                  fullWidth: true
-                }}
-                value={this.state.search}
-                onChange={(search, event) => {
-                  this.setState({
-                    search: search.target.value
-                  });
-                }}
-                inputProps={{
-                  endAdornment: (
-                    <ButtonBase onClick={this.searchCheck.bind(this)}>
-                      <InputAdornment position="end">
-                        <Search />
-                      </InputAdornment>
-                    </ButtonBase>
-                  )
-                }}
-              />
-            </GridItem>
-            <GridItem xs={4} sm={4} md={4}>
-              <CustomDropdown
-                buttonProps={{
-                  round: true,
-                  color: "white"
-                }}
-                color="white"
-                style={{ color: "rgb(89, 79, 118)", fontWeight: "bold" }}
-                buttonText="Filtre"
-                value={this.state.selectedFiltre}
-                onChange={this.handleChange}
-                dropdownList={[
-                  <li onClick={this.handleCheck.bind(this)} data-id="1">
-                    <span>Les plus lues</span>
-                  </li>,
-                  <li onClick={this.handleCheck.bind(this)} data-id="2">
-                    <span>Les plus populaires</span>
-                  </li>,
-                  <li onClick={this.handleCheck.bind(this)} data-id="3">
-                    <span>Les plus recentes</span>
-                  </li>,
-                  <li onClick={this.handleCheck.bind(this)} data-id="4">
-                    <span>Les plus anciennes</span>
-                  </li>
-                ]}
-              />
-            </GridItem>
-          </GridContainer> */}
+        <div className={classes.section} style={{width: '99%'}}>
+          
           {this.state.search === "" ? (
             <div>
               <GridContainer justify="center" spacing={"auto"}>
@@ -1151,137 +620,10 @@ class AllHistoires extends React.Component {
                       sm={12}
                       md={4}
                       justify="center"
-                      style={{ width: "auto" }}
                       key={index}
                     >
                       <Link to={"/Histoire/" + histoire.id}>
-                        <Card style={{ backgroundColor: "white" }}>
-                          <div
-                            style={{
-                              height: "240px",
-                              width: "100%",
-                              textAlign: "center",
-                              display: "block"
-                            }}
-                          >
-                            <Parallax
-                              image={
-                                histoire.lienIllustration !== null
-                                  ? histoire.lienIllustration
-                                  : ""
-                              }
-                              style={{
-                                height: "240px",
-                                maxWidth: "320px",
-                                marginLeft: "auto",
-                                marginRight: "auto",
-                                display: "block"
-                              }}
-                            ></Parallax>
-                            {/* <img
-                              style={{
-                                height: "240px",
-                                maxWidth: "320px",
-                                marginLeft: "auto",
-                                marginRight: "auto",
-                                display: "block"
-                              }}
-                              className={classes.imgCardTop}
-                              src={
-                                histoire.lienIllustration !== null
-                                  ?  histoire.lienIllustration
-                                  : ""
-                              }
-                              alt={histoire.titreHistoire}
-                            /> */}
-                          </div>
-
-                          <h5
-                            style={{
-                              fontFamily: "monospace",
-                              fontWeight: "bold",
-                              backgroundColor: "#594f76",
-                              color: "white",
-                              paddingTop: "10px",
-                              paddingBottom: "10px",
-                              margin: 0
-                            }}
-                          >
-                            {histoire.nombreVue ? histoire.nombreVue : 0} vues -{" "}
-                            {this.getDay(histoire.dateDeCreation)}
-                          </h5>
-                          <CardBody>
-                            <GridContainer>
-                              <GridItem xs={12} sm={12} md={12}>
-                                <p>{"Text par " + histoire.userText.pseudo}</p>
-                                <Tooltip
-                                  disableFocusListener
-                                  disableTouchListener
-                                  title={
-                                    histoire.noteHistoireMoy
-                                      ? parseFloat(
-                                          Math.round(
-                                            histoire.noteHistoireMoy * 100
-                                          ) / 100
-                                        ).toFixed(2) + "/5"
-                                      : 0
-                                  }
-                                >
-                                  <ButtonBase>
-                                    <StyledRating
-                                      name="read-only"
-                                      value={
-                                        histoire.noteHistoireMoy
-                                          ? histoire.noteHistoireMoy
-                                          : 0
-                                      }
-                                      emptyIcon={
-                                        <StarBorderIcon fontSize="inherit" />
-                                      }
-                                      precision={0.5}
-                                      readOnly
-                                    />
-                                  </ButtonBase>
-                                </Tooltip>
-                              </GridItem>
-                              <GridItem xs={12} sm={12} md={12}>
-                                <p>
-                                  {" "}
-                                  {"Dessin par " + histoire.userDessin.pseudo}
-                                </p>
-                                <Tooltip
-                                  disableFocusListener
-                                  disableTouchListener
-                                  title={
-                                    histoire.noteHistoireMoy
-                                      ? parseFloat(
-                                          Math.round(
-                                            histoire.noteDessinMoy * 100
-                                          ) / 100
-                                        ).toFixed(2) + "/5"
-                                      : 0
-                                  }
-                                >
-                                  <ButtonBase>
-                                    <StyledRating
-                                      name="read-only"
-                                      value={
-                                        histoire.noteDessinMoy
-                                          ? histoire.noteDessinMoy
-                                          : 0
-                                      }
-                                      emptyIcon={
-                                        <StarBorderIcon fontSize="inherit" />
-                                      }
-                                      precision={0.5}
-                                      readOnly
-                                    />
-                                  </ButtonBase>
-                                </Tooltip>
-                              </GridItem>
-                            </GridContainer>
-                          </CardBody>
-                        </Card>
+                        <CardHistoire histoire={histoire}/>
                       </Link>
                     </GridItem>
                   );
@@ -1317,7 +659,7 @@ class AllHistoires extends React.Component {
               </GridItem>
             </GridContainer> */}
               <GridContainer justify="center">
-                <GridItem xs={11} sm={11} md={11}>
+                <GridItem xs={11} sm={11} md={12}>
                   <CustomTabs
                     variant="fullWidth"
                     headerColor="info"
@@ -1327,7 +669,7 @@ class AllHistoires extends React.Component {
                         tabName: "LES HISTOIRES PAR TITRE",
                         tabIcon: TitleIcon,
                         tabContent: (
-                          <div>
+                          <div style={{minHeight: 1280}}>
                             <GridContainer justify="center" spacing={"auto"}>
                               {this.state.histoires.length > 0 ? (
                                 this.state.histoires.map((histoire, index) => {
@@ -1337,171 +679,11 @@ class AllHistoires extends React.Component {
                                       sm={12}
                                       md={4}
                                       justify="center"
-                                      style={{ width: "auto" }}
                                       key={index}
                                     >
-                                      <ButtonBase
-                                        focusRipple
-                                        className={classes.image}
-                                        focusVisibleClassName={
-                                          classes.focusVisible
-                                        }
-                                        style={{
-                                          width: "20rem"
-                                        }}
-                                        onClick={() => {
-                                          this.setState({
-                                            modal: true,
-                                            selectedHistoire: histoire
-                                          });
-                                          this.fetchPlanche(histoire);
-                                        }}
-                                      >
-                                        <Card
-                                          style={{
-                                            width: "20rem",
-                                            backgroundColor: "#e3f3fd"
-                                          }}
-                                        >
-                                          <h4
-                                            className={classes.cardTitle}
-                                            style={{
-                                              fontFamily: "monospace",
-                                              fontWeight: "bold",
-                                              backgroundColor: "#594f76",
-                                              color: "white",
-                                              paddingTop: "10px",
-                                              paddingBottom: "10px",
-                                              margin: 0
-                                            }}
-                                          >
-                                            {histoire.titreHistoire}
-                                          </h4>
-                                          <div
-                                            style={{
-                                              height: "240px",
-                                              width: "100%",
-                                              textAlign: "center",
-                                              display: "block"
-                                            }}
-                                          >
-                                            <img
-                                              style={{
-                                                height: "240px",
-                                                maxWidth: "320px",
-                                                marginLeft: "auto",
-                                                marginRight: "auto",
-                                                display: "block"
-                                              }}
-                                              className={classes.imgCardTop}
-                                              src={
-                                                histoire.lienIllustration !==
-                                                null
-                                                  ? histoire.lienIllustration
-                                                  : ""
-                                              }
-                                              alt={histoire.titreHistoire}
-                                            />
-                                          </div>
-
-                                          <h5
-                                            style={{
-                                              fontFamily: "monospace",
-                                              fontWeight: "bold",
-                                              backgroundColor: "#594f76",
-                                              color: "white",
-                                              paddingTop: "10px",
-                                              paddingBottom: "10px",
-                                              margin: 0
-                                            }}
-                                          >
-                                            {histoire.nombreVue
-                                              ? histoire.nombreVue
-                                              : 0}{" "}
-                                            vues -{" "}
-                                            {this.getDay(
-                                              histoire.dateDeCreation
-                                            )}
-                                          </h5>
-                                          <CardBody>
-                                            <GridContainer>
-                                              <GridItem xs={12} sm={12} md={12}>
-                                                <p>
-                                                  {"Text par " +
-                                                    histoire.userText.pseudo}
-                                                </p>
-                                                <Tooltip
-                                                  disableFocusListener
-                                                  disableTouchListener
-                                                  title={
-                                                    histoire.noteHistoireMoy
-                                                      ? parseFloat(
-                                                          Math.round(
-                                                            histoire.noteHistoireMoy *
-                                                              100
-                                                          ) / 100
-                                                        ).toFixed(2) + "/5"
-                                                      : 0
-                                                  }
-                                                >
-                                                  <ButtonBase>
-                                                    <StyledRating
-                                                      name="read-only"
-                                                      value={
-                                                        histoire.noteHistoireMoy
-                                                          ? histoire.noteHistoireMoy
-                                                          : 0
-                                                      }
-                                                      emptyIcon={
-                                                        <StarBorderIcon fontSize="inherit" />
-                                                      }
-                                                      precision={0.5}
-                                                      readOnly
-                                                    />
-                                                  </ButtonBase>
-                                                </Tooltip>
-                                              </GridItem>
-                                              <GridItem xs={12} sm={12} md={12}>
-                                                <p>
-                                                  {" "}
-                                                  {"Dessin par " +
-                                                    histoire.userDessin.pseudo}
-                                                </p>
-                                                <Tooltip
-                                                  disableFocusListener
-                                                  disableTouchListener
-                                                  title={
-                                                    histoire.noteHistoireMoy
-                                                      ? parseFloat(
-                                                          Math.round(
-                                                            histoire.noteDessinMoy *
-                                                              100
-                                                          ) / 100
-                                                        ).toFixed(2) + "/5"
-                                                      : 0
-                                                  }
-                                                >
-                                                  <ButtonBase>
-                                                    <StyledRating
-                                                      name="read-only"
-                                                      value={
-                                                        histoire.noteDessinMoy
-                                                          ? histoire.noteDessinMoy
-                                                          : 0
-                                                      }
-                                                      emptyIcon={
-                                                        <StarBorderIcon fontSize="inherit" />
-                                                      }
-                                                      precision={0.5}
-                                                      readOnly
-                                                    />
-                                                  </ButtonBase>
-                                                </Tooltip>
-                                              </GridItem>
-                                            </GridContainer>
-                                          </CardBody>
-                                        </Card>
-                                      </ButtonBase>
+                                      <Link to={"/Histoire/" + histoire.id}>
+                                        <CardHistoire histoire={histoire}/>
+                                      </Link>
                                     </GridItem>
                                   );
                                 })
@@ -1553,7 +735,7 @@ class AllHistoires extends React.Component {
                         tabName: "LES HISTOIRES PAR UTILISATEUR",
                         tabIcon: AccountBoxIcon,
                         tabContent: (
-                          <div>
+                          <div style={{minHeight: 1280}}>
                             <GridContainer justify="center" spacing={"auto"}>
                               {this.state.histoireUsers.length > 0 ? (
                                 this.state.histoireUsers.map(
@@ -1564,180 +746,11 @@ class AllHistoires extends React.Component {
                                         sm={12}
                                         md={4}
                                         justify="center"
-                                        style={{ width: "auto" }}
                                         key={index}
                                       >
-                                        <ButtonBase
-                                          focusRipple
-                                          className={classes.image}
-                                          focusVisibleClassName={
-                                            classes.focusVisible
-                                          }
-                                          style={{
-                                            width: "20rem"
-                                          }}
-                                          onClick={() => {
-                                            this.setState({
-                                              modal: true,
-                                              selectedHistoire: histoire
-                                            });
-                                            this.fetchPlanche(histoire);
-                                          }}
-                                        >
-                                          <Card
-                                            style={{
-                                              width: "20rem",
-                                              backgroundColor: "#e3f3fd"
-                                            }}
-                                          >
-                                            <h4
-                                              className={classes.cardTitle}
-                                              style={{
-                                                fontFamily: "monospace",
-                                                fontWeight: "bold",
-                                                backgroundColor: "#594f76",
-                                                color: "white",
-                                                paddingTop: "10px",
-                                                paddingBottom: "10px",
-                                                margin: 0
-                                              }}
-                                            >
-                                              {histoire.titreHistoire}
-                                            </h4>
-                                            <div
-                                              style={{
-                                                height: "240px",
-                                                width: "100%",
-                                                textAlign: "center",
-                                                display: "block"
-                                              }}
-                                            >
-                                              <img
-                                                style={{
-                                                  height: "240px",
-                                                  maxWidth: "320px",
-                                                  marginLeft: "auto",
-                                                  marginRight: "auto",
-                                                  display: "block"
-                                                }}
-                                                className={classes.imgCardTop}
-                                                src={
-                                                  histoire.lienIllustration !==
-                                                  null
-                                                    ? histoire.lienIllustration
-                                                    : ""
-                                                }
-                                                alt={histoire.titreHistoire}
-                                              />
-                                            </div>
-
-                                            <h5
-                                              style={{
-                                                fontFamily: "monospace",
-                                                fontWeight: "bold",
-                                                backgroundColor: "#594f76",
-                                                color: "white",
-                                                paddingTop: "10px",
-                                                paddingBottom: "10px",
-                                                margin: 0
-                                              }}
-                                            >
-                                              {histoire.nombreVue
-                                                ? histoire.nombreVue
-                                                : 0}{" "}
-                                              vues -{" "}
-                                              {this.getDay(
-                                                histoire.dateDeCreation
-                                              )}
-                                            </h5>
-                                            <CardBody>
-                                              <GridContainer>
-                                                <GridItem
-                                                  xs={12}
-                                                  sm={12}
-                                                  md={12}
-                                                >
-                                                  <p>
-                                                    {"Text par " +
-                                                      histoire.userText.pseudo}
-                                                  </p>
-                                                  <Tooltip
-                                                    disableFocusListener
-                                                    disableTouchListener
-                                                    title={
-                                                      histoire.noteHistoireMoy
-                                                        ? parseFloat(
-                                                            Math.round(
-                                                              histoire.noteHistoireMoy *
-                                                                100
-                                                            ) / 100
-                                                          ).toFixed(2) + "/5"
-                                                        : 0
-                                                    }
-                                                  >
-                                                    <ButtonBase>
-                                                      <StyledRating
-                                                        name="read-only"
-                                                        value={
-                                                          histoire.noteHistoireMoy
-                                                            ? histoire.noteHistoireMoy
-                                                            : 0
-                                                        }
-                                                        emptyIcon={
-                                                          <StarBorderIcon fontSize="inherit" />
-                                                        }
-                                                        precision={0.5}
-                                                        readOnly
-                                                      />
-                                                    </ButtonBase>
-                                                  </Tooltip>
-                                                </GridItem>
-                                                <GridItem
-                                                  xs={12}
-                                                  sm={12}
-                                                  md={12}
-                                                >
-                                                  <p>
-                                                    {" "}
-                                                    {"Dessin par " +
-                                                      histoire.userDessin
-                                                        .pseudo}
-                                                  </p>
-                                                  <Tooltip
-                                                    disableFocusListener
-                                                    disableTouchListener
-                                                    title={
-                                                      histoire.noteHistoireMoy
-                                                        ? parseFloat(
-                                                            Math.round(
-                                                              histoire.noteDessinMoy *
-                                                                100
-                                                            ) / 100
-                                                          ).toFixed(2) + "/5"
-                                                        : 0
-                                                    }
-                                                  >
-                                                    <ButtonBase>
-                                                      <StyledRating
-                                                        name="read-only"
-                                                        value={
-                                                          histoire.noteDessinMoy
-                                                            ? histoire.noteDessinMoy
-                                                            : 0
-                                                        }
-                                                        emptyIcon={
-                                                          <StarBorderIcon fontSize="inherit" />
-                                                        }
-                                                        precision={0.5}
-                                                        readOnly
-                                                      />
-                                                    </ButtonBase>
-                                                  </Tooltip>
-                                                </GridItem>
-                                              </GridContainer>
-                                            </CardBody>
-                                          </Card>
-                                        </ButtonBase>
+                                        <Link to={"/Histoire/" + histoire.id}>
+                                          <CardHistoire histoire={histoire}/>
+                                        </Link>
                                       </GridItem>
                                     );
                                   }
@@ -1816,100 +829,267 @@ class AllHistoires extends React.Component {
     else return <p>mazal matchargat</p>;
   }
 }
-const StyledRating = withStyles({
-  decimal: { display: "flex" },
-  iconFilled: {
-    color: "#ffb400",
-    fontSize: "24px"
-  },
-  iconHover: {
-    color: "#ffb400",
-    fontSize: "24px"
-  }
-})(Rating);
 
-const Styles = {};
-const styles1 = theme => ({
-  root: {
-    margin: 0
-  },
-  closeButton: {
-    position: "absolute",
-    right: theme.spacing(1),
-    top: theme.spacing(1),
-    color: theme.palette.grey[500]
-  }
-});
 
-const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="down" ref={ref} {...props} />;
-});
-const DialogTitle = withStyles(styles1)(props => {
-  const { children, classes, onClose, ...other } = props;
+function dateNew(date){
+  return new Date(date);
+}
+function CardHistoire(props) {
+  const { histoire } = props;
+  const dateFormat = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
   return (
-    <MuiDialogTitle disableTypography className={classes.root} {...other}>
-      <Typography variant="h6">{children}</Typography>
-      {onClose ? (
-        <IconButton
-          aria-label="close"
-          className={classes.closeButton}
-          onClick={onClose}
+    <Card
+        style={{ backgroundColor: "white" }}
+      >
+        <div
+          style={{
+            height: "240px",
+            width: "100%",
+            textAlign: "center",
+            display: "block"
+          }}
         >
-          <CloseIcon />
-        </IconButton>
-      ) : null}
-    </MuiDialogTitle>
-  );
-});
-function SampleNextArrow(props) {
-  const { className, style, onClick, disabled, Color } = props;
-  return (
-    <IconButton
-      aria-label="delete"
-      style={{
-        ...style,
-        display: "block",
-        position: "absolute",
-        top: "45%",
-        right: "3px",
-        zIndex: 100,
-        padding: 0
-      }}
-      onClick={onClick}
-      disabled={disabled}
-    >
-      <div className={className} style={{ height: "50px", width: "50px" }}>
-        <ArrowRightOutlined
-          color="green"
-          style={{ color: Color, fontSize: "50px" }}
-        />
-      </div>
-    </IconButton>
+          <Parallax image={
+              histoire.lienIllustration !== null
+                ?  histoire.lienIllustration
+                : ""
+            }
+            style={{
+              height: "240px",
+              marginLeft: "auto",
+              marginRight: "auto",
+              display: "block"
+            }}
+            ></Parallax>
+          {/* <img
+            style={{
+              height: "240px",
+              maxWidth: "320px",
+              marginLeft: "auto",
+              marginRight: "auto",
+              display: "block"
+            }}
+            className={classes.imgCardTop}
+            src={
+              histoire.lienIllustration !== null
+                ?  histoire.lienIllustration
+                : ""
+            }
+            alt={histoire.titreHistoire}
+          /> */}
+        </div>
+
+        <h5
+          style={{
+            fontFamily: "monospace",
+            fontWeight: "bold",
+            color: "black",
+            marginLeft: '5%',
+            textAlign: 'left'
+          }}
+        >
+          {histoire.titreHistoire}
+          {/* {histoire.nombreVue ? histoire.nombreVue : 0} vues -{" "}
+          {this.getDay(histoire.dateDeCreation)} */}
+        </h5>
+        <h6
+          style={{
+            fontFamily: "monospace",
+            color: "black",
+            marginLeft: '5%',
+            textAlign: 'left'
+          }}
+        >
+          {dateNew(histoire.dateDeCreation).toLocaleDateString('fr-FR', dateFormat)}
+          {/* {this.getDay(histoire.dateDeCreation)} */}
+        </h6>
+        <CardBody>
+        <Divider/>
+          <GridContainer style={{marginTop: '4%'}}>
+            <GridItem xs={6} sm={6} md={6}>
+              <GridContainer>
+                <GridItem xs={4} sm={4} md={4}>
+                  <Avatar
+                    alt=""
+                    src={histoire.userText.lienPhoto}
+                    // style={{ width: 200, height: 200 }}
+                  />
+                </GridItem>
+                <GridItem xs={8} sm={8} md={8}>
+                  <h6
+                    style={{
+                      fontFamily: "monospace",
+                      color: "black",
+                      fontWeight: "bold",
+                      marginLeft: '5%',
+                      textAlign: 'left'
+                    }}
+                  >
+                    {histoire.userText.pseudo}
+                  </h6>
+                </GridItem>
+              </GridContainer>
+            </GridItem>
+            <GridItem xs={3} sm={3} md={3}>
+            <div style={{width: 40}}>
+            <Tooltip
+                disableFocusListener
+                disableTouchListener
+                title={
+                  histoire.noteHistoireMoy
+                    ? parseFloat(
+                        Math.round(
+                          histoire.noteHistoireMoy * 100
+                        ) / 100
+                      ).toFixed(2) + "/5"
+                    : 0
+                }
+              >
+              <ButtonBase>
+              <CircularProgressbarWithChildren
+                  maxValue={5}
+                  minValue={0}
+                  strokeWidth={3}
+                  value={parseFloat(
+                        Math.round(
+                          histoire.noteHistoireMoy * 100
+                        ) / 100
+                      ).toFixed(2)}
+                  text={parseFloat( Math.round( histoire.noteHistoireMoy * 100) / 100).toFixed(1)}
+                  styles={buildStyles({
+                    textColor: "transparent",
+                    pathColor: "#df6c4f",
+                    trailColor: "#d6d6d6",
+                    strokeLinecap: "butt"
+                  })}
+                >
+                  <div
+                    style={{
+                      height: "100%",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      display: "flex"
+                    }}
+                  >
+                    <p
+                      style={{
+                        color: "#df6c4f",
+                        fontSize: 15,
+                        margin: 0
+                      }}
+                    >
+                      {parseFloat( Math.round( histoire.noteHistoireMoy * 100) / 100).toFixed(1)}
+                    </p>
+                  </div>
+                </CircularProgressbarWithChildren>
+              </ButtonBase>
+              </Tooltip>
+              </div>
+            </GridItem>
+            <GridItem xs={3} sm={3} md={3} style={{textAlign:'right'}}><div style={{height:40, paddingTop: 8}}><CreateIcon style={{width:20}} /></div></GridItem>
+            </GridContainer>
+            <Divider  style={{marginTop: '4%'}} />
+            <GridContainer style={{marginTop:'4%'}}>
+            <GridItem xs={6} sm={6} md={6}>
+              <GridContainer>
+                <GridItem xs={4} sm={4} md={4}>
+                  <Avatar
+                    alt=""
+                    src={histoire.userDessin.lienPhoto}
+                    // style={{ width: 200, height: 200 }}
+                  />
+                </GridItem>
+                <GridItem xs={8} sm={8} md={8}>
+                  <h6
+                    style={{
+                      fontFamily: "monospace",
+                      color: "black",
+                      fontWeight: "bold",
+                      marginLeft: '5%',
+                      textAlign: 'left'
+                    }}
+                  >
+                    {histoire.userDessin.pseudo}
+                  </h6>
+                </GridItem>
+              </GridContainer>
+            </GridItem>
+            <GridItem xs={3} sm={3} md={3}>
+            <div style={{width: 40}}>
+            <Tooltip
+                disableFocusListener
+                disableTouchListener
+                title={
+                  histoire.noteHistoireMoy
+                    ? parseFloat(
+                        Math.round(
+                          histoire.noteDessinMoy * 100
+                        ) / 100
+                      ).toFixed(2) + "/5"
+                    : 0
+                }
+              >
+              <ButtonBase >
+            <CircularProgressbarWithChildren
+                  text={parseFloat(
+                    Math.round(
+                      histoire.noteDessinMoy * 100
+                    ) / 100
+                  ).toFixed(1)}
+                  maxValue={5}
+                  minValue={0}
+                  strokeWidth={3}
+                  value={parseFloat(
+                        Math.round(
+                          histoire.noteDessinMoy * 100
+                        ) / 100
+                      ).toFixed(2)}
+                  styles={buildStyles({
+                    textColor: "transparent",
+                    pathColor: "#1a99aa",
+                    trailColor: "#d6d6d6",
+                    strokeLinecap: "butt"
+                  })}
+                >
+                  <div
+                    style={{
+                      height: "100%",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      display: "flex"
+                    }}
+                  >
+                    <p
+                      style={{
+                        color: "#1a99aa",
+                        fontSize: 15,
+                        margin: 0
+                      }}
+                    >
+                      {parseFloat(
+                        Math.round(
+                          histoire.noteDessinMoy * 100
+                        ) / 100
+                      ).toFixed(1)}
+                    </p>
+                  </div>
+                </CircularProgressbarWithChildren>
+              </ButtonBase>
+            </Tooltip>
+            </div>
+            </GridItem>
+            <GridItem xs={3} sm={3} md={3} style={{textAlign:'right'}}><div style={{height:40, paddingTop: 8}}> <BrushIcon style={{width:20}} /></div> </GridItem>
+            </GridContainer>
+            <Divider  style={{marginTop: '4%', marginLeft: -30, marginRight: -30}} />
+          <GridContainer justify="flex-end" style={{marginTop: '7%'}}>
+            <GridItem xs={4} sm={4} md={4}><small><CommentIcon style={{width:20}} /> {histoire.nombreComment}</small> </GridItem>
+            <GridItem xs={4} sm={4} md={4}><small><VisibilityIcon style={{width:20}} /> {histoire.nombreVue}</small> </GridItem>
+          </GridContainer>
+        </CardBody>
+      </Card>
   );
 }
 
-function SamplePrevArrow(props) {
-  const { className, style, onClick, disabled, Color } = props;
-  return (
-    <IconButton
-      style={{
-        ...style,
-        display: "block",
-        position: "absolute",
-        top: "45%",
-        zIndex: 100,
-        left: "3px",
-        padding: 0
-      }}
-      onClick={onClick}
-      disabled={disabled}
-    >
-      <div className={className} style={{ height: "50px", width: "50px" }}>
-        <ArrowLeftOutlined style={{ fontSize: "50px", color: Color }} />
-      </div>
-    </IconButton>
-  );
-}
 AllHistoires.propTypes = {
   classes: PropTypes.object.isRequired
 };

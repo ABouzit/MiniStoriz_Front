@@ -22,6 +22,12 @@ import CustomInput from "components/CustomInput/CustomInput.js";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import Search from "@material-ui/icons/Search";
 import ButtonBase from "@material-ui/core/ButtonBase";
+import {
+  BrowserView,
+  MobileView,
+  isBrowser,
+  isMobile
+} from "react-device-detect";
 // Sections for this page
 import AllHistoires from "./Sections/AllHistoires";
 import { subscriber, messageService } from "./../../services/messageService";
@@ -64,70 +70,51 @@ export default function AllHistoiresPage(props) {
         }}
         {...rest}
       />
-      <div
-        style={{
-          width: "100%",
-          backgroundColor: "#e3f3fd",
-          color: "rgb(89, 79, 118)",
-          marginTop: "-9px",
-          height: 30,
-          position: "fixed",
-          zIndex: "100",
-          boxShadow:
-            "0 16px 24px 2px rgba(0, 0, 0, 0.14), 0 6px 30px 5px rgba(0, 0, 0, 0.12), 0 8px 10px -5px rgba(0, 0, 0, 0.2)"
-        }}
-      >
-        <h4
-          style={{
-            fontFamily: "cursive",
-            marginTop: 2,
-            marginLeft: "5%",
-            fontWeight: "bold"
-          }}
-        >
-          Bienvenue à toi, Azzedine le mini-artiste
-        </h4>
-      </div>
-      <div style={{ backgroundColor: "white" }}>
-        <GridContainer justify="flex-end">
+      {/* <div style={{width: '100%',
+                    backgroundColor: '#e3f3fd',
+                    color: 'rgb(89, 79, 118)',
+                    marginTop: '-9px',
+                    height: 30,
+                    position: 'fixed',
+                    zIndex: '100',
+                    boxShadow: '0 16px 24px 2px rgba(0, 0, 0, 0.14), 0 6px 30px 5px rgba(0, 0, 0, 0.12), 0 8px 10px -5px rgba(0, 0, 0, 0.2)'}}>
+                      <h4 style={{fontFamily: 'cursive', marginTop: 2, marginLeft: '5%', fontWeight: 'bold'}}>
+                        Bienvenue à toi, Azzedine le mini-artiste
+                      </h4>
+      </div> */}
+      <div style={{backgroundColor: 'white'}}>
+        <GridContainer justify="flex-end" style={{margin: 0}}>
           <GridItem xs={12} sm={12} md={3}>
-            <div style={{ position: "fixed" }}>
-              <GridContainer justify="center" style={{ marginTop: "40%" }}>
-                <GridItem xs={10} sm={10} md={10}>
-                  <CustomInput
-                    labelText="Recherche"
-                    id="material"
-                    formControlProps={{
-                      fullWidth: true
-                    }}
-                    value={search}
-                    onChange={(search, event) => {
-                      setSearch(search.target.value);
-                      window.scrollTo(0, 0);
-                    }}
-                    inputProps={{
-                      endAdornment: (
-                        <ButtonBase
-                          onClick={subscriber.next({
-                            search: search,
-                            filtre: filtre
-                          })}
-                        >
-                          <InputAdornment position="end">
-                            <Search />
-                          </InputAdornment>
-                        </ButtonBase>
-                      )
-                    }}
-                  />
-                </GridItem>
-                <GridItem
-                  xs={12}
-                  sm={12}
-                  md={10}
-                  style={{ textAlign: "center", marginTop: "5%" }}
-                >
-                  <ButtonGroup
+            {isMobile ? (
+            <div style={{ display: 'contents'}}>
+              <GridContainer justify="center" style={{marginTop: '40%'}}>
+              <GridItem xs={10} sm={10} md={10} >
+                <CustomInput
+                  labelText="Recherche"
+                  id="material"
+                  formControlProps={{
+                    fullWidth: true
+                  }}
+                  value={search}
+                  onChange={(search, event) => {
+                    setSearch(
+                      search.target.value
+                    );
+                    window.scrollTo(0, 0)
+                  }}
+                  inputProps={{
+                    endAdornment: (
+                      <ButtonBase onClick={subscriber.next({search: search, filtre: filtre})}>
+                        <InputAdornment position="end">
+                          <Search />
+                        </InputAdornment>
+                      </ButtonBase>
+                    )
+                  }}
+                />
+              </GridItem>
+              <GridItem xs={10} sm={10} style={{ marginTop: '5%'}}>
+                <ButtonGroup
                     orientation="vertical"
                     // color="secondary"
                     aria-label="Les filtres"
@@ -174,12 +161,62 @@ export default function AllHistoiresPage(props) {
                 </GridItem>
               </GridContainer>
             </div>
+              ) : (
+            <div style={{position:'fixed'}}> 
+            <GridContainer justify="center" style={{marginTop: '40%', width: '90%'}}>
+              <GridItem xs={10} sm={10} md={10} >
+                <CustomInput
+                  labelText="Recherche"
+                  id="material"
+                  formControlProps={{
+                    fullWidth: true
+                  }}
+                  value={search}
+                  onChange={(search, event) => {
+                    setSearch(
+                      search.target.value
+                    );
+                    window.scrollTo(0, 0)
+                  }}
+                  inputProps={{
+                    endAdornment: (
+                      <ButtonBase onClick={subscriber.next({search: search, filtre: filtre})}>
+                        <InputAdornment position="end">
+                          <Search />
+                        </InputAdornment>
+                      </ButtonBase>
+                    )
+                  }}
+                />
+              </GridItem>
+              <GridItem xs={12} sm={12} md={10} style={{textAlign: 'center', marginTop: '5%'}}>
+                <ButtonGroup
+                    orientation="vertical"
+                    // color="secondary"
+                    aria-label="Les filtres"
+                    variant="contained"
+                    style={{width : '-webkit-fill-available'}}
+                  >
+                  <Button onClick={()=> {subscriber.next({search: search, filtre: 1}); setFiltre(1); window.scrollTo(0, 0)}}>Les plus lues</Button>
+                  <Button onClick={()=> {subscriber.next({search: search, filtre: 2}); setFiltre(2); window.scrollTo(0, 0)}}>Les plus populaires</Button>
+                  <Button onClick={()=> {subscriber.next({search: search, filtre: 3}); setFiltre(3); window.scrollTo(0, 0)}}>Les plus recentes</Button>
+                  <Button onClick={()=> {subscriber.next({search: search, filtre: 4}); setFiltre(4); window.scrollTo(0, 0)}}>Les plus anciennes</Button>
+                </ButtonGroup>
+              </GridItem>
+            </GridContainer>
+            </div> )}
           </GridItem>
-          <GridItem xs={9} sm={9} md={9} position="end">
-            <AllHistoires />
+          {isMobile ? (
+          <GridItem xs={12} sm={12} md={9} position="center">
+            <div>
+            <AllHistoires /></div>
           </GridItem>
+          ):(
+          <GridItem xs={12} sm={12} md={9} position="end">
+          <AllHistoires />
+        </GridItem>
+        )}
         </GridContainer>
-        <div style={{ marginTop: 200 }}></div>
       </div>
       {/* <div
         className={classNames(classes.main, classes.mainRaised)}

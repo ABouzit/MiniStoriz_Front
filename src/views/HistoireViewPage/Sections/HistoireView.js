@@ -835,7 +835,7 @@ class HistoireView extends React.Component {
           noteHistoire: parseFloat(this.state.ratingText),
           noteDessin: parseFloat(this.state.ratingDessin),
           isActive: true,
-          user: { id: "4305f81f-8e67-45df-80eb-54a646387457" }
+          user: { id: "5448c755-5085-4652-88fa-ffcac3987071" }
         }).then(res => {
           this.setState({
             ratingDessin: 0,
@@ -1072,7 +1072,13 @@ class HistoireView extends React.Component {
             <GridItem xs={12} sm={12} md={12}>
               <Paper
                 variant="outlined"
-                style={{
+                style={isMobile ? {
+                  position: "relative",
+                  width: "100%",
+                  marginTop: "5%",
+                  marginLeft: "auto",
+                  marginRight: "auto"
+                } : {
                   position: "relative",
                   width: "90%",
                   marginTop: "5%",
@@ -1111,8 +1117,8 @@ class HistoireView extends React.Component {
                   <GridItem xs={12} sm={12} md={6} style={{ padding: 0 }}>
                     <ListItem>
                       <ListItemAvatar>
-                        {this.state.histoire.userDessin.imgProfil == "" ||
-                        this.state.histoire.userText.imgProfil == null ? (
+                        {this.state.histoire.userDessin.lienPhoto == "" ||
+                        this.state.histoire.userDessin.lienPhoto == null ? (
                           <Avatar
                             alt=""
                             src={
@@ -1122,7 +1128,7 @@ class HistoireView extends React.Component {
                         ) : (
                           <Avatar
                             alt=""
-                            src={this.state.histoire.userDessin.imgProfil}
+                            src={this.state.histoire.userDessin.lienPhoto}
                           />
                         )}
                       </ListItemAvatar>
@@ -1147,8 +1153,8 @@ class HistoireView extends React.Component {
                   <GridItem xs={12} sm={12} md={6} style={{ padding: 0 }}>
                     <ListItem>
                       <ListItemAvatar>
-                        {this.state.histoire.userText.imgProfil == "" ||
-                        this.state.histoire.userText.imgProfil == null ? (
+                        {this.state.histoire.userText.lienPhoto == "" ||
+                        this.state.histoire.userText.lienPhoto == null ? (
                           <Avatar
                             alt=""
                             src={
@@ -1158,7 +1164,7 @@ class HistoireView extends React.Component {
                         ) : (
                           <Avatar
                             alt=""
-                            src={this.state.histoire.userText.imgProfil}
+                            src={this.state.histoire.userText.lienPhoto}
                           />
                         )}
                       </ListItemAvatar>
@@ -1689,8 +1695,8 @@ class HistoireView extends React.Component {
                               }}
                             >
                               <ListItemAvatar>
-                                {commentaire.user.imgProfil == "" ||
-                                commentaire.user.imgProfil == null ? (
+                                {commentaire.user.lienPhoto == "" ||
+                                commentaire.user.lienPhoto == null ? (
                                   <Avatar
                                     alt=""
                                     src={
@@ -1702,7 +1708,7 @@ class HistoireView extends React.Component {
                                   <Avatar
                                     alt=""
                                     src={
-                                      this.state.histoire.userDessin.imgProfil
+                                      this.state.histoire.userDessin.lienPhoto
                                     }
                                   />
                                 )}

@@ -11,24 +11,103 @@ import Header from "components/Header/Header.js";
 import Footer from "components/Footer/Footer.js";
 import GridContainer from "components/Grid/GridContainer.js";
 import GridItem from "components/Grid/GridItem.js";
-import Button from "components/CustomButtons/Button.js";
+// import Button from "components/CustomButtons/Button.js";
+import Button from '@material-ui/core/Button';
+import ButtonGroup from '@material-ui/core/ButtonGroup';
 import HeaderUser from "components/Header/HeaderUser.js";
 import Parallax from "components/Parallax/Parallax.js";
 import config from "config/config";
 import styles from "assets/jss/material-kit-react/views/landingPage.js";
-
+import CustomInput from "components/CustomInput/CustomInput.js";
+import InputAdornment from "@material-ui/core/InputAdornment";
+import Search from "@material-ui/icons/Search";
+import PhotoCamera from "@material-ui/icons/CameraAltOutlined";
+import ButtonBase from "@material-ui/core/ButtonBase";
+import {
+  BrowserView,
+  MobileView,
+  isBrowser,
+  isMobile
+} from "react-device-detect";
+import Fab from '@material-ui/core/Fab';
+import NavigationIcon from '@material-ui/icons/Navigation';
+import CreateIcon from '@material-ui/icons/Create';
+import BrushIcon from '@material-ui/icons/Brush';
+import { CircularProgressbar } from 'react-circular-progressbar';
+import 'react-circular-progressbar/dist/styles.css';
+import Card from "components/Card/Card.js";
+import CardBody from "components/Card/CardBody.js";
+import Tooltip from '@material-ui/core/Tooltip';
+import Divider from "@material-ui/core/Divider";
+import Avatar from "@material-ui/core/Avatar";
 // Sections for this page
+import { subscriber, messageService } from "./../../services/messageService";
 import MonCompte from "./Sections/MonCompte";
-
+import { Input } from "@material-ui/core";
+import useForceUpdate from 'use-force-update';
+import Badge from '@material-ui/core/Badge';
 const dashboardRoutes = [];
 
 const useStyles = makeStyles(styles);
 
 export default function MonComptePage(props) {
   const [refresh, setRefresh] = React.useState(false);
+  const [search, setSearch] = React.useState("");
+  const [imgProf, setImgProf] = React.useState("");
+  const [imgCov, setImgCov] = React.useState("");
+  const [user, setUser] = React.useState("");
+  const [filtre, setFiltre] = React.useState(1);
   let refreshCallBackFunction = publierData => {
     console.log(publierData);
     setRefresh(true);
+  };
+  React.useEffect(() => {
+    subscriber.subscribe(v => {
+      if(v.imgProfil){
+        setImgProf(v.imgProfil)
+      }
+      if(v.imgCov){
+        setImgCov(v.imgCov)
+      }
+      if(v.user){
+        setImgProf(v.user.lienPhoto)
+        setImgCov(v.user.lienCouverture)
+        setUser(v.user)
+      }
+    });
+      window.addEventListener("scroll", scrollBalise);
+    return function cleanup() {
+        window.removeEventListener("scroll", scrollBalise);
+    };
+  });
+  const scrollBalise = () => {
+    const windowsScrollTop = window.pageYOffset;
+    if (!isMobile) {
+      if (windowsScrollTop > 110) {
+        document.getElementById("navBarLeft")
+          .style.position = "fixed";
+        document.getElementById("navBarLeft1")
+          .style.width = "42%";
+        document.getElementById("navBarLeft1")
+          .style.marginTop = "-100px";
+      } else {
+        document.getElementById("navBarLeft")
+          .style.position = "";
+        document.getElementById("navBarLeft1")
+          .style.width = "";
+        document.getElementById("navBarLeft1")
+          .style.marginTop = "0";
+      }
+    }else {
+      if (windowsScrollTop > 110) {
+        document.getElementById("scrollTop")
+          .style.display = "block";
+      } else {
+        document.getElementById("scrollTop")
+          .style.display = "none";
+      }
+    }
+    
   };
   const classes = useStyles();
   const { ...rest } = props;
@@ -56,7 +135,7 @@ export default function MonComptePage(props) {
         }}
         {...rest}
       />
-      <div style={{width: '100%',
+      {/* <div style={{width: '100%',
                     backgroundColor: '#e3f3fd',
                     color: 'rgb(89, 79, 118)',
                     marginTop: '-9px',
@@ -67,41 +146,554 @@ export default function MonComptePage(props) {
                       <h4 style={{fontFamily: 'cursive', marginTop: 2, marginLeft: '5%', fontWeight: 'bold'}}>
                         Bienvenue à toi, Azzedine le mini-artiste
                       </h4>
-        </div>
-      {/* <Parallax filter image={config.API_URL + "images/asset/bg1.jpg"}>
-        <div className={classes.container}>
-          <GridContainer>
-            <GridItem xs={12} sm={12} md={6}>
-              <h1 className={classes.title}>Ecris ton histoire !</h1>
-              <h4>
-                Ministoriz est un site collaboratif permettant q nos membres
-                (les mini-artostes), passionnes d'ecriture ou de dessin, de
-                publier des histoires et de ravir nos lecteurs!
-              </h4>
-              <br />
-              <Button
-                color="danger"
-                size="lg"
-                href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&ref=creativetim"
-                target="_blank"
-                rel="noopener noreferrer"
+      </div> */}
+      <div style={{backgroundColor: 'white'}}>
+        <GridContainer justify="center" style={{margin: 0, padding: 0}}>
+          <GridItem xs={12} sm={12} md={12} style={{margin: 0, padding: 0, boxShadow: '0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12)'}}>
+            
+            <Parallax image={
+                imgCov == ""
+                  ?  config.API_URL + "images/asset/bg1.jpg"
+                  : imgCov
+                
+              }
+              style={{
+                height: "240px",
+                marginLeft: "auto",
+                marginRight: "auto"
+              }}
+            >
+              <div style={{width: '95%', textAlign: 'end'}}>
+              <Input
+                  accept="image/*"
+                  className={classes.input}
+                  id="contained-button-file1"
+                  multiple
+                  type="file"
+                  style={{ display: "none" }}
+                  onChange={file => subscriber.next({couverture: file.target.files[0]})}
+                ></Input>
+                <label htmlFor="contained-button-file1">
+                  <Button variant="contained" color="white" component="span">
+                    Choisir une image
+                  </Button>
+                </label>
+                </div>
+            </Parallax>
+          </GridItem>
+        </GridContainer>
+        <GridContainer justify="flex-end" style={{margin: 0}}>
+          <GridItem xs={12} sm={12} md={3}>
+            {isMobile ? (
+            <div style={{ display: 'contents'}}>
+              <GridContainer justify="center" style={{marginTop: '0%'}}>
+              
+              <GridItem xs={11} sm={11} md={11}>
+              <Card
+                style={{ backgroundColor: "white", marginTop: 0, borderRadius: 0 }}
               >
-                <i className="fas fa-play" />
-                Regarder la video
-              </Button>
-            </GridItem>
-          </GridContainer>
-        </div>
-      </Parallax> */}
-      <div
-        className={classNames(classes.main, classes.mainRaised)}
-        style={{ marginTop: 81, backgroundColor: 'white' }}
-      >
-        <div className={classes.container}>
+                <div style={{textAlign: '-webkit-center', position: 'absolute', top: -65, width: '100%'}}>
+                { imgProf == "" ? (
+                    <Badge
+                    overlap="circle"
+                    anchorOrigin={{
+                      vertical: 'top',
+                      horizontal: 'right',
+                    }}
+                    badgeContent={<Avatar style={{backgroundColor: '#fafafa'}} ><div><Input
+                      accept="image/*"
+                      className={classes.input}
+                      id="contained-button-file"
+                      multiple
+                      type="file"
+                      style={{ display: "none" }}
+                      onChange={file => subscriber.next({profil: file.target.files[0]}) }
+                    ></Input>
+                    <label htmlFor="contained-button-file" style={{color: '#000000'}}>
+                      <PhotoCamera />
+                    </label></div></Avatar>}
+                  >
+                   <Avatar
+                        alt=""
+                        src={config.API_URL + "images/defaultPhotoProfil.jpg"}
+                        style={{ width: 130, height: 130, borderStyle: 'solid', borderWidth: 7, borderColor: 'white' }}
+                      />
+                  </Badge>
+                    
+                    ):(
+                      <Badge
+                    overlap="circle"
+                    anchorOrigin={{
+                      vertical: 'top',
+                      horizontal: 'right',
+                    }}
+                    badgeContent={<Avatar style={{backgroundColor: '#fafafa'}} ><div><Input
+                      accept="image/*"
+                      className={classes.input}
+                      id="contained-button-file"
+                      multiple
+                      type="file"
+                      style={{ display: "none" }}
+                      onChange={file => subscriber.next({profil: file.target.files[0]}) }
+                    ></Input>
+                    <label htmlFor="contained-button-file" style={{color: '#000000'}}>
+                      <PhotoCamera />
+                    </label></div></Avatar>}
+                  >
+                   <Avatar
+                      alt=""
+                      src={imgProf}
+                      style={{ width: 130, height: 130, borderStyle: 'solid', borderWidth: 7, borderColor: 'white' }}
+                    />
+                  </Badge>
+                    
+                    )}
+                </div>
+                <h3
+                  style={{
+                    fontFamily: "monospace",
+                    fontWeight: "bold",
+                    color: "black",
+                    marginTop: 65,
+                    textAlign: 'center'
+                  }}
+                >
+                  {user.pseudo}
+                </h3>
+                <CardBody style={{paddingTop: 0, paddingBottom: 8}}>
+                <Divider  style={{ marginLeft: -30, marginRight: -30}} />
+                <GridContainer justify="center">
+                  <GridItem xs={8} sm={8} md={6}>
+                  <h6
+                    style={{
+                      fontFamily: "cursive",
+                      color: "black",
+                      textAlign: 'center'
+                    }}
+                  >
+                    Histoires
+                  </h6>
+                  </GridItem>
+                  <GridItem xs={4} sm={4} md={4}>
+                  <h6
+                    style={{
+                      fontFamily: "monospace",
+                      fontWeight: "bold",
+                      color: "black",
+                      textAlign: 'center'
+                    }}
+                  >
+                    {user.nombreHistoire}
+                  </h6>
+                  </GridItem>
+                </GridContainer>
+                <Divider  style={{ marginLeft: -30, marginRight: -30}} />
+                <GridContainer justify="center">
+                  <GridItem xs={8} sm={8} md={6}>
+                  <h6
+                    style={{
+                      fontFamily: "cursive",
+                      color: "black",
+                      textAlign: 'center'
+                    }}
+                  >
+                    Reseau
+                  </h6>
+                  </GridItem>
+                  <GridItem xs={4} sm={4} md={4}>
+                  <h6
+                    style={{
+                      fontFamily: "monospace",
+                      fontWeight: "bold",
+                      color: "black",
+                      textAlign: 'center'
+                    }}
+                  >
+                    29
+                  </h6>
+                  </GridItem>
+                </GridContainer>
+                <Divider  style={{ marginLeft: -30, marginRight: -30}} />
+                  <GridContainer justify="center">
+
+                    <GridItem xs={12} sm={12} md={12}>
+                      <h6
+                      style={{
+                        fontFamily: "cursive",
+                        color: "black",
+                        textAlign: 'center'
+                      }}
+                    >
+                      Note moyenne
+                    </h6>
+                    </GridItem>
+                    <GridItem xs={3} sm={3} md={3}>
+                    <Tooltip
+                        disableFocusListener
+                        disableTouchListener
+                        title={
+                          // histoire.noteHistoireMoy
+                          //   ? parseFloat(
+                          //       Math.round(
+                          //         histoire.noteHistoireMoy * 100
+                          //       ) / 100
+                          //     ).toFixed(2) + "/5"
+                          //   : 0
+                          4.4
+                        }
+                      >
+                      <ButtonBase>
+                      <CircularProgressbar value={parseFloat(
+                                Math.round(
+                                  4.4 * 100
+                                ) / 100
+                              ).toFixed(2)} maxValue={5} text={parseFloat( Math.round( 4.4* 100) / 100).toFixed(1)} />
+                      </ButtonBase>
+                      </Tooltip>
+                    </GridItem>
+                    <GridItem xs={2} sm={2} md={2} style={{textAlign:'left', paddingLeft: 0}}><div style={{height:40, paddingTop: 8}}><CreateIcon style={{width:20}} /></div></GridItem>
+                    <GridItem xs={3} sm={3} md={3}>
+                    <Tooltip
+                        disableFocusListener
+                        disableTouchListener
+                        title={
+                          // histoire.noteHistoireMoy
+                          //   ? parseFloat(
+                          //       Math.round(
+                          //         histoire.noteDessinMoy * 100
+                          //       ) / 100
+                          //     ).toFixed(2) + "/5"
+                          //   : 0
+                          4.4
+                        }
+                      >
+                      <ButtonBase>
+                    <CircularProgressbar value={parseFloat(
+                                Math.round(
+                                  4.3 * 100
+                                ) / 100
+                              ).toFixed(2)} maxValue={5} text={parseFloat(
+                                Math.round(
+                                  4.4 * 100
+                                ) / 100
+                              ).toFixed(1)} />
+                      </ButtonBase>
+                    </Tooltip>
+                    </GridItem>
+                    <GridItem xs={2} sm={2} md={2} style={{textAlign:'left', paddingLeft: 0}}><div style={{height:40, paddingTop: 8}}> <BrushIcon style={{width:20}} /></div> </GridItem>
+                    </GridContainer>
+                  <Divider  style={{marginTop: '2%', marginLeft: -30, marginRight: -30}} />
+                  <GridContainer justify="center">
+                    
+                    <GridItem xs={12} sm={12} md={12}>
+                      <h5
+                        style={{
+                          fontFamily: "cursive",
+                          fontWeight: "bold",
+                          color: "black",
+                          margin: 0,
+                          marginTop: '2%',
+                          textAlign: 'center'
+                        }}
+                      >
+                        Mon Reseau
+                      </h5>
+                    </GridItem>
+                    </GridContainer>
+                    <Divider  style={{marginTop: '2%', marginLeft: -30, marginRight: -30}} />
+                   
+                    <GridContainer justify="center">
+                    <GridItem xs={12} sm={12} md={12}>
+                      <h5
+                        style={{
+                          fontFamily: "cursive",
+                          fontWeight: "bold",
+                          color: "black",
+                          margin: 0,
+                          marginTop: '2%',
+                          textAlign: 'center'
+                        }}
+                      >
+                        Mes Oeuvres
+                      </h5>
+                    </GridItem>
+                  </GridContainer>
+                </CardBody>
+              </Card>
+              </GridItem>
+              
+            </GridContainer>
+            <div id="scrollTop" style={{ display: 'none', position: 'fixed', width: '100%', textAlign: 'left', zIndex: 10, bottom: 5, right: -5}}>
+              <Fab
+                onClick={()=> {window.scrollTo(0, 0)}}
+                variant="extended"
+                size="small"
+                color="primary"
+                aria-label="add"
+                className={classes.margin}
+              >
+                <NavigationIcon className={classes.extendedIcon} />
+              </Fab>
+            </div>
+            </div>
+              ) : (
+            <div id="navBarLeft"> 
+            <GridContainer justify="center" id="navBarLeft1">
+              <GridItem xs={11} sm={11} md={11}>
+              <Card
+                style={{ backgroundColor: "white", marginTop: 0, borderRadius: 0 }}
+              >
+                <div style={{textAlign: '-webkit-center', position: 'absolute', top: -65, width: '100%'}}>
+                <div style={{position: 'relative',display: 'inline-grid'}}>
+                  { imgProf == "" ? (
+                    <Badge
+                    overlap="circle"
+                    anchorOrigin={{
+                      vertical: 'top',
+                      horizontal: 'right',
+                    }}
+                    badgeContent={<Avatar style={{backgroundColor: '#fafafa'}} ><div><Input
+                      accept="image/*"
+                      className={classes.input}
+                      id="contained-button-file"
+                      multiple
+                      type="file"
+                      style={{ display: "none" }}
+                      onChange={file => subscriber.next({profil: file.target.files[0]}) }
+                    ></Input>
+                    <label htmlFor="contained-button-file" style={{color: '#000000'}}>
+                      <PhotoCamera />
+                    </label></div></Avatar>}
+                  >
+                   <Avatar
+                        alt=""
+                        src={config.API_URL + "images/defaultPhotoProfil.jpg"}
+                        style={{ width: 130, height: 130, borderStyle: 'solid', borderWidth: 7, borderColor: 'white' }}
+                      />
+                  </Badge>
+                    
+                    ):(
+                      <Badge
+                    overlap="circle"
+                    anchorOrigin={{
+                      vertical: 'top',
+                      horizontal: 'right',
+                    }}
+                    badgeContent={<Avatar style={{backgroundColor: '#fafafa'}} ><div><Input
+                      accept="image/*"
+                      className={classes.input}
+                      id="contained-button-file"
+                      multiple
+                      type="file"
+                      style={{ display: "none" }}
+                      onChange={file => subscriber.next({profil: file.target.files[0]}) }
+                    ></Input>
+                    <label htmlFor="contained-button-file" style={{color: '#000000'}}>
+                      <PhotoCamera />
+                    </label></div></Avatar>}
+                  >
+                   <Avatar
+                      alt=""
+                      src={imgProf}
+                      style={{ width: 130, height: 130, borderStyle: 'solid', borderWidth: 7, borderColor: 'white' }}
+                    />
+                  </Badge>
+                    
+                    )}
+                
+                  
+                </div>
+                </div>
+                <h3
+                  style={{
+                    fontFamily: "monospace",
+                    fontWeight: "bold",
+                    color: "black",
+                    marginTop: 65,
+                    textAlign: 'center'
+                  }}
+                >
+                  {user.pseudo}
+                </h3>
+                <CardBody style={{paddingTop: 0, paddingBottom: 8}}>
+                <Divider  style={{ marginLeft: -30, marginRight: -30}} />
+                <GridContainer justify="center">
+                  <GridItem xs={4} sm={4} md={6}>
+                  <h6
+                    style={{
+                      fontFamily: "cursive",
+                      color: "black",
+                      textAlign: 'center'
+                    }}
+                  >
+                    Histoires
+                  </h6>
+                  </GridItem>
+                  <GridItem xs={4} sm={4} md={4}>
+                  <h6
+                    style={{
+                      fontFamily: "monospace",
+                      fontWeight: "bold",
+                      color: "black",
+                      textAlign: 'center'
+                    }}
+                  >
+                    {user.nombreHistoire}
+                  </h6>
+                  </GridItem>
+                </GridContainer>
+                <Divider  style={{ marginLeft: -30, marginRight: -30}} />
+                <GridContainer justify="center">
+                  <GridItem xs={4} sm={4} md={6}>
+                  <h6
+                    style={{
+                      fontFamily: "cursive",
+                      color: "black",
+                      textAlign: 'center'
+                    }}
+                  >
+                    Reseau
+                  </h6>
+                  </GridItem>
+                  <GridItem xs={4} sm={4} md={4}>
+                  <h6
+                    style={{
+                      fontFamily: "monospace",
+                      fontWeight: "bold",
+                      color: "black",
+                      textAlign: 'center'
+                    }}
+                  >
+                    29
+                  </h6>
+                  </GridItem>
+                </GridContainer>
+                <Divider  style={{ marginLeft: -30, marginRight: -30}} />
+                  <GridContainer justify="center">
+
+                    <GridItem xs={12} sm={12} md={12}>
+                      <h6
+                      style={{
+                        fontFamily: "cursive",
+                        color: "black",
+                        textAlign: 'center'
+                      }}
+                    >
+                      Note moyenne
+                    </h6>
+                    </GridItem>
+                    <GridItem xs={3} sm={3} md={3}>
+                    <Tooltip
+                        disableFocusListener
+                        disableTouchListener
+                        title={
+                          // histoire.noteHistoireMoy
+                          //   ? parseFloat(
+                          //       Math.round(
+                          //         histoire.noteHistoireMoy * 100
+                          //       ) / 100
+                          //     ).toFixed(2) + "/5"
+                          //   : 0
+                          4.4
+                        }
+                      >
+                      <ButtonBase>
+                      <CircularProgressbar value={parseFloat(
+                                Math.round(
+                                  4.4 * 100
+                                ) / 100
+                              ).toFixed(2)} maxValue={5} text={parseFloat( Math.round( 4.4* 100) / 100).toFixed(1)} />
+                      </ButtonBase>
+                      </Tooltip>
+                    </GridItem>
+                    <GridItem xs={2} sm={2} md={2} style={{textAlign:'left', paddingLeft: 0}}><div style={{height:40, paddingTop: 8}}><CreateIcon style={{width:20}} /></div></GridItem>
+                    <GridItem xs={3} sm={3} md={3}>
+                    <Tooltip
+                        disableFocusListener
+                        disableTouchListener
+                        title={
+                          // histoire.noteHistoireMoy
+                          //   ? parseFloat(
+                          //       Math.round(
+                          //         histoire.noteDessinMoy * 100
+                          //       ) / 100
+                          //     ).toFixed(2) + "/5"
+                          //   : 0
+                          4.4
+                        }
+                      >
+                      <ButtonBase>
+                    <CircularProgressbar value={parseFloat(
+                                Math.round(
+                                  4.3 * 100
+                                ) / 100
+                              ).toFixed(2)} maxValue={5} text={parseFloat(
+                                Math.round(
+                                  4.4 * 100
+                                ) / 100
+                              ).toFixed(1)} />
+                      </ButtonBase>
+                    </Tooltip>
+                    </GridItem>
+                    <GridItem xs={2} sm={2} md={2} style={{textAlign:'left', paddingLeft: 0}}><div style={{height:40, paddingTop: 8}}> <BrushIcon style={{width:20}} /></div> </GridItem>
+                    </GridContainer>
+                  <Divider  style={{marginTop: '2%', marginLeft: -30, marginRight: -30}} />
+                  <GridContainer justify="center">
+                    
+                    <GridItem xs={12} sm={12} md={12}>
+                      <h5
+                        style={{
+                          fontFamily: "cursive",
+                          fontWeight: "bold",
+                          color: "black",
+                          margin: 0,
+                          marginTop: '2%',
+                          textAlign: 'center'
+                        }}
+                      >
+                        Mon Reseau
+                      </h5>
+                    </GridItem>
+                    </GridContainer>
+                    <Divider  style={{marginTop: '2%', marginLeft: -30, marginRight: -30}} />
+                   
+                    <GridContainer justify="center">
+                    <GridItem xs={12} sm={12} md={12}>
+                      <h5
+                        style={{
+                          fontFamily: "cursive",
+                          fontWeight: "bold",
+                          color: "black",
+                          margin: 0,
+                          marginTop: '2%',
+                          textAlign: 'center'
+                        }}
+                      >
+                        Mes Oeuvres
+                      </h5>
+                    </GridItem>
+                  </GridContainer>
+                </CardBody>
+              </Card>
+              </GridItem>
+              
+            </GridContainer>
+            </div> )}
+          </GridItem>
+          {isMobile ? (
+          <GridItem xs={12} sm={12} md={9} position="center">
+            <div>
+            <MonCompte /></div>
+            
+          </GridItem>
+          ):(
+          <GridItem xs={12} sm={12} md={9} position="end">
           <MonCompte />
-        </div>
+        </GridItem>
+        )}
+        </GridContainer>
       </div>
-      <Footer />
+      
     </div>
   );
 }

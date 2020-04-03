@@ -55,6 +55,9 @@ class MonCompte extends React.Component {
       imgProfil: "",
       dataImgProfil: "",
       lienImgProfil: "",
+      imgCov: "",
+      dataImgCov: "",
+      lienImgCov: "",
       change: false,
       testNextText: 0,
       nom: "",
@@ -69,6 +72,7 @@ class MonCompte extends React.Component {
       updatePassword: false,
       updateVille: false,
       updatePhoto: 0,
+      updatePhotoCov: 0,
       password: "",
       passwordA: "",
       Npassword: "",
@@ -85,7 +89,17 @@ class MonCompte extends React.Component {
     this.saveUsers = this.saveUsers.bind(this);
     this.fetchUser();
   }
-
+  componentDidMount() {
+    subscriber.subscribe(v => {
+      if(v.profil instanceof Blob){
+        this.savePhotoProfil(v.profil)
+      }
+      if(v.couverture instanceof Blob){
+        console.log("sssssssssssssssssssss")
+        this.savePhotoCov(v.couverture)
+      }
+    });
+  }
   checkPass() {
     if (this.state.Npassword == this.state.Rpassword) {
       this.setState({ checkPassword: 1 });
@@ -108,22 +122,41 @@ class MonCompte extends React.Component {
   // save image histoire
   savePhotoProfil(file) {
     this.setState({
-      lienInputUpload: file[0].name,
+      lienInputUpload: file.name,
       change: true,
       updatePhoto: 1
     });
     var reader = new FileReader();
-    var url = reader.readAsDataURL(file[0]);
+    var url = reader.readAsDataURL(file);
     let data = new FormData();
-    data.append("file", file[0]);
+    data.append("file", file);
     reader.onloadend = function(e) {
       this.setState({
         imgProfil: [reader.result],
         dataImgProfil: data,
-        lienImgProfil: "images/photoProfile/" + file[0].name
-      });
+        lienImgProfil: "images/photoProfile/" + file.name
+      }, ()=> {subscriber.next({imgProfil:this.state.imgProfil}); console.log(reader.result);});
     }.bind(this);
-    console.log(file[0].name); // Would see a path?
+    console.log(file.name); // Would see a path?
+  }
+  savePhotoCov(file) {
+    this.setState({
+      lienInputUpload: file.name,
+      change: true,
+      updatePhotoCov: 1
+    });
+    var reader = new FileReader();
+    var url = reader.readAsDataURL(file);
+    let data = new FormData();
+    data.append("file", file);
+    reader.onloadend = function(e) {
+      this.setState({
+        imgCov: [reader.result],
+        dataImgCov: data,
+        lienImgCov: "images/photoProfile/" + file.name
+      }, ()=> {subscriber.next({imgCov:this.state.imgCov});});
+    }.bind(this);
+    // console.log(file.name); // Would see a path?
   }
   fetchUser() {
     Axios.get(config.API_URL + "users/" + this.state.idUser, {}).then(res => {
@@ -141,6 +174,7 @@ class MonCompte extends React.Component {
           imgProfil: res.data[0].lienPhoto
         },
         () => {
+          subscriber.next({user:this.state.user});
           this.forceUpdate();
         }
       );
@@ -182,14 +216,32 @@ class MonCompte extends React.Component {
     if (_this.state.ville !== _this.state.user.ville) {
       _this.state.user.ville = _this.state.ville;
     }
+    if (_this.state.updatePhotoCov == 1) {
+      return Axios.post(
+        config.API_URL + "sendImage/photoProfile/",
+        this.state.dataImgCov
+      ).then(res => {
+        let s = res.data.filePath.replace("\\", "/").replace("\\", "/");
+        _this.state.user.lienCouverture = config.API_URL + s;
+        return Axios.put(config.API_URL + "users", _this.state.user).then(res => {_this.fetchUser();
+          _this.setState({ change: false }, ()=> {_this.forceUpdate()});
+        })
+        .catch(
+          function(error) {
+            console.log(error);
+          }
+        );
+      });
+      }
     if (_this.state.updatePhoto == 1) {
+      
       return Axios.post(
         config.API_URL + "sendImage/photoProfile/",
         this.state.dataImgProfil
       ).then(res => {
         let s = res.data.filePath.replace("\\", "/").replace("\\", "/");
         _this.state.user.lienPhoto = config.API_URL + s;
-        return Axios.put(config.API_URL + "users", _this.state.user).then(res => {
+        return Axios.put(config.API_URL + "users", _this.state.user).then(res => {_this.fetchUser();
           _this.setState({ change: false }, ()=> {_this.forceUpdate()});
         })
         .catch(
@@ -199,7 +251,7 @@ class MonCompte extends React.Component {
         );
       });
     } else {
-      return Axios.put(config.API_URL + "users", _this.state.user).then(res => {
+      return Axios.put(config.API_URL + "users", _this.state.user).then(res => {_this.fetchUser();
         _this.setState({ change: false }, ()=> {_this.forceUpdate()});
       }).catch(
         function(error) {
@@ -213,13 +265,8 @@ class MonCompte extends React.Component {
     const { classes } = this.props;
     const { selectedIndex } = this.state;
     return (
-      <div className={classes.section}>
-        <GridContainer justify="center">
-          <GridItem xs={12} sm={12} md={8}>
-            <h2 className={classes.title}>Mon Profil</h2>
-          </GridItem>
-        </GridContainer>
-        <GridContainer
+      <div className={classes.section} style={{paddingTop: 0}}>
+        {/* <GridContainer
           justify="center"
           spacing={2}
           style={{ color: "#3C4858" }}
@@ -339,29 +386,36 @@ class MonCompte extends React.Component {
               </GridItem>
             </GridContainer>
           </GridItem>
-        </GridContainer>
+        </GridContainer> */}
 
+        
         <GridContainer justify="center">
           <GridItem xs={12} sm={12} md={12}>
             <Card style={{ backgroundColor: "#fff" }}>
-              <div
-                className={classes.cardTitle}
-                style={{
-                  fontFamily: "monospace",
-                  fontWeight: "bold",
-                  backgroundColor: "#594f76",
-                  color: "white",
-                  paddingTop: "10px",
-                  paddingBottom: "10px",
-                  margin: 0
-                }}
-              >
-                <GridContainer justify="center">
-                  <GridItem xs={8} sm={8} md={6}>
+              <CardBody>
+                <GridContainer justify="flex-end">
+                <GridItem
+                    xs={12}
+                    sm={12}
+                    md={6}
+                    style={{ textAlign: "left" }}
+                  >
+                    <span
+                      style={{
+                        fontFamily: "monospace",
+                        fontWeight: "bold",
+                        color: "#594f76",
+                        fontSize: "x-large"
+                      }}
+                    >
+                      Pseudo
+                    </span>
+                  </GridItem>
+                <GridItem xs={12}
+                    sm={12}
+                    md={6}>
                     {this.state.updatePseudo ? (
                       <CustomInput
-                        white
-                        labelText="Pseudo"
                         id="material"
                         formControlProps={{
                           fullWidth: true
@@ -390,7 +444,7 @@ class MonCompte extends React.Component {
                               }}
                             >
                               <InputAdornment position="end">
-                                <DoneOutlineIcon style={{ color: "white" }} />
+                                <DoneOutlineIcon style={{ color: "black" }} />
                               </InputAdornment>
                             </ButtonBase>
                           )
@@ -398,9 +452,7 @@ class MonCompte extends React.Component {
                       />
                     ) : (
                       <CustomInput
-                        white
                         readOnly={true}
-                        labelText="Pseudo"
                         id="material"
                         formControlProps={{
                           fullWidth: true
@@ -422,7 +474,7 @@ class MonCompte extends React.Component {
                               }}
                             >
                               <InputAdornment position="end">
-                                <EditIcon style={{ color: "white" }} />
+                                <EditIcon style={{ color: "black" }} />
                               </InputAdornment>
                             </ButtonBase>
                           )
@@ -430,10 +482,6 @@ class MonCompte extends React.Component {
                       />
                     )}
                   </GridItem>
-                </GridContainer>
-              </div>
-              <CardBody>
-                <GridContainer justify="flex-end">
                   <GridItem
                     xs={12}
                     sm={12}
@@ -1033,7 +1081,7 @@ class MonCompte extends React.Component {
             </Card>
           </GridItem>
         </GridContainer>
-        <GridContainer justify="center" style={{ marginTop: 20 }}>
+        <GridContainer justify="center" style={{ marginTop: 10 }}>
           <GridItem xs={12} sm={12} md={4} style={{ width: "auto" }}>
             <Button
               color="white"

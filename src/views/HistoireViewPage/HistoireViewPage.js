@@ -65,8 +65,8 @@ export default function HistoireViewPage(props) {
         {...rest}
       />
       <div style={{ backgroundColor: "white" }}>
-        <GridContainer justify="flex-end" style={{margin:0}}>
-          <GridItem xs={12} sm={12} md={12}>
+        <GridContainer justify="flex-end" style={{marginLeft:0,marginRight:0}}>
+          <GridItem xs={12} sm={12} md={12}style={{padding: 0}}>
             <HistoireView />
           </GridItem>
         </GridContainer>
