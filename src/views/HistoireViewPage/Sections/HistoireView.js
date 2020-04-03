@@ -3,6 +3,8 @@ import PropTypes from "prop-types";
 // react component for creating beautiful carousel
 import Slider from "react-slick";
 // @material-ui/core components
+
+import AddIcon from "@material-ui/icons/ArrowBackOutlined";
 import { withStyles } from "@material-ui/core/styles";
 import Rating from "@material-ui/lab/Rating";
 import CustomInput from "components/CustomInput/CustomInput.js";
@@ -39,6 +41,7 @@ import SnackbarContent from "@material-ui/core/SnackbarContent";
 import CustomTabs from "components/CustomTabs/CustomTabs.js";
 import Parallax from "components/Parallax/Parallax.js";
 import { isMobile } from "react-device-detect";
+import Fab from "@material-ui/core/Fab";
 //scroll bare text
 import Avatar from "@material-ui/core/Avatar";
 import List from "@material-ui/core/List";
@@ -66,7 +69,6 @@ import Contacts from "@material-ui/icons/Contacts";
 import AccountBoxIcon from "@material-ui/icons/AccountBox";
 import TitleIcon from "@material-ui/icons/Title";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
-import Fab from "@material-ui/core/Fab";
 import Divider from "@material-ui/core/Divider";
 import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
 import CommentIcon from "@material-ui/icons/Comment";
@@ -227,7 +229,6 @@ class HistoireView extends React.Component {
     this.handleChange = this.handleChange.bind(this);
     this.handleChangePage = this.handleChangePage.bind(this);
     this.fetchHistoire();
-    
   }
   componentDidMount() {
     subscriber.subscribe(v => {
@@ -259,19 +260,36 @@ class HistoireView extends React.Component {
     if (id) {
       Axios.get(config.API_URL + "histoires/byId/" + id).then(histoire => {
         console.log(JSON.stringify(histoire));
-        this.setState({ histoire: histoire.data[0] });
-        Axios.get(config.API_URL + "planches/histoire/" + id).then(planches => {
-          this.setState({ planches: planches.data });
-          if (this.state.planches.lenght > 18) {
-            this.state.settings.dots = false;
-          } else {
-            this.state.settings.dots = true;
-          }
-        });
-        Axios.get(
-          config.API_URL + "impressions/histoire/" + id + "/take/" + 3 + "/" + 0
-        ).then(commentaires => {
-          this.setState({ commentaires: commentaires.data, commentaireNbr: 1 });
+        this.setState({ histoire: histoire.data[0] }, () => {
+          this.state.histoire.nombreVue = this.state.histoire.nombreVue + 1;
+          Axios.put(config.API_URL + "histoires/", this.state.histoire).then(
+            res => {
+              Axios.get(config.API_URL + "planches/histoire/" + id).then(
+                planches => {
+                  this.setState({ planches: planches.data });
+                  if (this.state.planches.lenght > 18) {
+                    this.state.settings.dots = false;
+                  } else {
+                    this.state.settings.dots = true;
+                  }
+                }
+              );
+              Axios.get(
+                config.API_URL +
+                  "impressions/histoire/" +
+                  id +
+                  "/take/" +
+                  3 +
+                  "/" +
+                  0
+              ).then(commentaires => {
+                this.setState({
+                  commentaires: commentaires.data,
+                  commentaireNbr: 1
+                });
+              });
+            }
+          );
         });
       });
     }
@@ -853,6 +871,53 @@ class HistoireView extends React.Component {
     this.slider.slickGoTo(index - 1);
     this.setState({ counter: 1 });
   }
+  functionDate(date) {
+    ///.format("dddd D MMMM YYYY HH:mm:ss")
+    const momentDate = Moment(Moment(date).format());
+    const dateNow = Moment(new Date());
+    let t = Moment.duration(dateNow - momentDate);
+    if (t.years() >= 1) {
+      let y = "";
+      let m = "";
+      if (t.years() === 1) y = "un an";
+      else y = t.years() + " ans";
+      if (t.months() == 1) m = " et un mois";
+      else if (t.months() > 1) m = " et " + t.months() + " mois";
+      return y + m;
+    } else if (t.months() >= 1) {
+      let y = "";
+      let m = "";
+      if (t.months() === 1) y = "un mois";
+      else y = t.months() + " mois";
+      if (t.days() == 1) m = " et un jour";
+      else if (t.days() > 1) m = " et " + t.days() + " jours";
+      return y + m;
+    } else if (t.days() >= 1) {
+      let y = "";
+      let m = "";
+      if (t.days() === 1) y = "un jour";
+      else y = t.days() + " jours";
+      if (t.hours() == 1) m = " et une heure";
+      else if (t.hours() > 1) m = " et " + t.hours() + " heures";
+      return y + m;
+    } else if (t.hours() >= 1) {
+      let y = "";
+      let m = "";
+      if (t.hours() === 1) y = "une heure";
+      else y = t.hours() + " heures";
+      if (t.minutes() == 1) m = " et une minute";
+      else if (t.minutes() > 1) m = " et " + t.minutes() + " minutes";
+      return y + m;
+    } else if (t.minutes() >= 1) {
+      let y = "";
+      let m = "";
+      if (t.minutes() === 1) y = "une minute";
+      else y = t.minutes() + " minutes";
+      if (t.seconds() == 1) m = " et une seconde";
+      else if (t.seconds() > 1) m = " et " + t.seconds() + " secondes";
+      return y + m;
+    } else return "a l'instant";
+  }
   //modal - carousel
   render() {
     const { settings, modal } = this.state;
@@ -863,11 +928,16 @@ class HistoireView extends React.Component {
       month: "long",
       day: "numeric"
     };
+    console.log(this.props.history);
     //Moment.locale("fr");
-    console.log(new Date().getTimezoneOffset());
     if (this.state.histoire !== "")
       return (
         <div className={classes.section}>
+          <ButtonBase onClick={() => this.props.history.goBack()}>
+            <Fab aria-label={fab.label} style={fab.style} color={fab.color}>
+              {fab.icon}
+            </Fab>
+          </ButtonBase>
           {this.state.isOpen ? (
             <Lightbox
               mainSrc={this.state.imgUrl}
@@ -1176,12 +1246,13 @@ class HistoireView extends React.Component {
                               color: "white",
                               textAlign: "left",
                               width: "100%",
-                              paddingLeft: 15
+                              paddingLeft: 15,
+                              fontSize: 13
                             }}
                           >
-                            {new Date(
+                            {this.functionDate(
                               this.state.histoire.dateDeCreation
-                            ).toLocaleDateString("fr-FR", dateFormat)}
+                            )}
                           </p>
                         </div>
                       </Card>
@@ -1638,7 +1709,9 @@ class HistoireView extends React.Component {
                               </ListItemAvatar>
                               <ListItemText
                                 primary={commentaire.user.pseudo}
-                                secondary={"1 Hour ago"}
+                                secondary={this.functionDate(
+                                  commentaire.dateDeCreation
+                                )}
                               />
                             </ListItem>
                           </GridItem>
@@ -2143,6 +2216,17 @@ function SamplePrevArrow(props) {
     </IconButton>
   );
 }
+const fab = {
+  style: {
+    top: "100px",
+    left: "10px",
+    position: "fixed",
+    zIndex: 10000
+  },
+  color: "primary",
+  icon: <AddIcon />,
+  label: "Add"
+};
 HistoireView.propTypes = {
   classes: PropTypes.object.isRequired
 };
