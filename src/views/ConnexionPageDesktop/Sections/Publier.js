@@ -181,8 +181,8 @@ class Publier extends React.Component {
     }).then(res => {
       let s = res.data.filePath.replace("\\", "/").replace("\\", "/");
       return Axios.post(config.API_URL + "histoires", {
-        userText: { id: "5448c755-5085-4652-88fa-ffcac3987071" },
-        userDessin: { id: "5448c755-5085-4652-88fa-ffcac3987071" },
+        userText: { id: "4305f81f-8e67-45df-80eb-54a646387457" },
+        userDessin: { id: "4305f81f-8e67-45df-80eb-54a646387457" },
         // userText: { id: "3c500b25-cb58-4be3-861e-2bb2926bd75f" },
         // userDessin: { id: "3c500b25-cb58-4be3-861e-2bb2926bd75f" },
         lienIllustration: config.API_URL + s,

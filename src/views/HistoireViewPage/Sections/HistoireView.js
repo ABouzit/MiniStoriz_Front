@@ -6,10 +6,6 @@ import Slider from "react-slick";
 
 import AddIcon from "@material-ui/icons/ArrowBackOutlined";
 import { withStyles } from "@material-ui/core/styles";
-import Rating from "@material-ui/lab/Rating";
-import CustomInput from "components/CustomInput/CustomInput.js";
-import InputAdornment from "@material-ui/core/InputAdornment";
-import Search from "@material-ui/icons/Search";
 import { Link, withRouter } from "react-router-dom";
 // core components
 import Tooltip from "@material-ui/core/Tooltip";
@@ -226,16 +222,8 @@ class HistoireView extends React.Component {
     console.log(this.state.commentaires);
     this.next = this.next.bind(this);
     this.previous = this.previous.bind(this);
-    this.handleChange = this.handleChange.bind(this);
-    this.handleChangePage = this.handleChangePage.bind(this);
-    this.fetchHistoire();
   }
   componentDidMount() {
-    subscriber.subscribe(v => {
-      this.setState({ search: v.search, currentFiltre: v.filtre }, () => {
-        this.searchCheck();
-      });
-    });
     this.fetchHistoireAndPlanchesAndCommentes();
   }
   fetchCommentaires() {
@@ -294,538 +282,6 @@ class HistoireView extends React.Component {
       });
     }
   }
-
-  handleChangePage() {
-    // this.setState({ page: this.state.page + 1 });
-    if (this.state.numberPage == this.state.page) {
-      this.setState({ showMore: false });
-    }
-
-    if (this.state.search == "") {
-      Axios.get(
-        config.API_URL +
-          "histoires/take/6/" +
-          (this.state.page - 1) * 6 +
-          "/" +
-          this.state.currentFiltre +
-          "/xxxx",
-        {}
-      ).then(res => {
-        this.setState({
-          histoires: this.state.histoires.concat(res.data)
-        });
-
-        this.forceUpdate();
-      });
-    } else {
-      Axios.get(
-        config.API_URL +
-          "histoires/take/6/" +
-          (this.state.page - 1) * 6 +
-          "/" +
-          this.state.currentFiltre +
-          "/" +
-          this.state.search,
-        {}
-      ).then(res => {
-        this.setState({
-          histoires: this.state.histoires.concat(res.data)
-        });
-        this.forceUpdate();
-      });
-    }
-  }
-  handleChangePageUsers() {
-    if (this.state.numberPageUsers == this.state.pageUsers) {
-      this.setState({ showMoreUsers: false });
-    }
-    if (this.state.search == "") {
-      Axios.get(
-        config.API_URL +
-          "histoires/takeUsers/6/" +
-          (this.state.pageUsers - 1) * 6 +
-          "/" +
-          this.state.currentFiltre +
-          "/xxxx",
-        {}
-      ).then(res => {
-        this.setState({
-          histoireUsers: this.state.histoireUsers.concat(res.data)
-        });
-        this.forceUpdate();
-      });
-    } else {
-      Axios.get(
-        config.API_URL +
-          "histoires/takeUsers/6/" +
-          (this.state.pageUsers - 1) * 6 +
-          "/" +
-          this.state.currentFiltre +
-          "/" +
-          this.state.search,
-        {}
-      ).then(res => {
-        this.setState({
-          histoireUsers: this.state.histoireUsers.concat(res.data)
-        });
-        this.forceUpdate();
-      });
-    }
-  }
-  fetchHistoire() {
-    console.log("URL api" + config.API_URL);
-    Axios.get(
-      config.API_URL +
-        "histoires/take/6/" +
-        (this.state.page - 1) * 6 +
-        "/1/xxxx",
-      {}
-    ).then(res => {
-      this.setState({ histoires: res.data });
-    });
-    Axios.get(config.API_URL + "histoires/numberHistoires", {}).then(res => {
-      this.setState({ numberPage: Math.ceil(res.data / 6) }, () => {
-        if (res.data <= 6) {
-          this.setState({ showMore: false });
-        }
-      });
-    });
-  }
-  CircularColor(number) {
-    return this.state.avtivityIndicatorColors[Math.round(number * 2)];
-  }
-  handleChange = e => {
-    this.setState({ selectedFiltre: e.target.value });
-    console.log(this.state.selectedFiltre);
-  };
-  searchCheck() {
-    this.setState({ page: 1, showMore: true }, () => {
-      if (this.state.currentFiltre == 1) {
-        if (this.state.search !== "") {
-          this.setState({ histoireUsers: [] });
-          Axios.get(
-            config.API_URL +
-              "histoires/numberHistoiresSearch/" +
-              this.state.search,
-            {}
-          ).then(res => {
-            this.setState({ numberPage: Math.ceil(res.data / 6) }, () => {
-              if (res.data <= 6) {
-                this.setState({ showMore: false });
-              }
-            });
-          });
-          Axios.get(
-            config.API_URL +
-              "histoires/numberHistoiresSearchUsers/" +
-              this.state.search,
-            {}
-          ).then(res => {
-            this.setState({ numberPageUsers: Math.ceil(res.data / 6) }, () => {
-              if (res.data <= 6) {
-                this.setState({ showMoreUsers: false });
-              }
-            });
-          });
-          Axios.get(
-            config.API_URL +
-              "histoires/takeUsers/6/" +
-              (this.state.pageUsers - 1) * 6 +
-              "/1/" +
-              this.state.search,
-            {}
-          ).then(res => {
-            this.setState({ histoireUsers: res.data });
-          });
-          Axios.get(
-            config.API_URL +
-              "histoires/take/6/" +
-              (this.state.page - 1) +
-              "/" +
-              this.state.currentFiltre +
-              "/" +
-              this.state.search,
-            {}
-          ).then(res => {
-            this.setState({ histoires: res.data, currentFiltre: 1 });
-            this.forceUpdate();
-            console.log(this.state.histoires);
-          });
-        }
-        if (this.state.search === "") {
-          Axios.get(
-            config.API_URL +
-              "histoires/take/6/" +
-              (this.state.page - 1) +
-              "/" +
-              this.state.currentFiltre +
-              "/xxxx",
-            {}
-          ).then(res => {
-            this.setState({ histoires: res.data, currentFiltre: 1 });
-            this.forceUpdate();
-            console.log(this.state.histoires);
-          });
-          Axios.get(config.API_URL + "histoires/numberHistoires", {}).then(
-            res => {
-              this.setState(
-                {
-                  numberPage: Math.ceil(res.data / 6),
-                  histoireUsers: []
-                },
-                () => {
-                  if (res.data <= 6) {
-                    this.setState({ showMore: false });
-                  }
-                }
-              );
-            }
-          );
-        }
-      } else if (this.state.currentFiltre == 2) {
-        if (this.state.search !== "") {
-          this.setState({ histoireUsers: [] });
-          Axios.get(
-            config.API_URL +
-              "histoires/numberHistoiresSearch/" +
-              this.state.search,
-            {}
-          ).then(res => {
-            this.setState({ numberPage: Math.ceil(res.data / 6) }, () => {
-              if (res.data <= 6) {
-                this.setState({ showMore: false });
-              }
-            });
-          });
-          Axios.get(
-            config.API_URL +
-              "histoires/numberHistoiresSearchUsers/" +
-              this.state.search,
-            {}
-          ).then(res => {
-            this.setState({ numberPageUsers: Math.ceil(res.data / 6) }, () => {
-              if (res.data <= 6) {
-                this.setState({ showMoreUsers: false });
-              }
-            });
-          });
-          Axios.get(
-            config.API_URL +
-              "histoires/takeUsers/6/" +
-              (this.state.pageUsers - 1) * 6 +
-              "/2/" +
-              this.state.search,
-            {}
-          ).then(res => {
-            this.setState({ histoireUsers: res.data });
-          });
-          Axios.get(
-            config.API_URL +
-              "histoires/take/6/" +
-              (this.state.page - 1) * 6 +
-              "/" +
-              this.state.currentFiltre +
-              "/" +
-              this.state.search,
-            {}
-          ).then(res => {
-            this.setState({ histoires: res.data, currentFiltre: 2 });
-            this.forceUpdate();
-          });
-        }
-        if (this.state.search === "") {
-          Axios.get(
-            config.API_URL +
-              "histoires/take/6/" +
-              (this.state.page - 1) * 6 +
-              "/" +
-              this.state.currentFiltre +
-              "/xxxx",
-            {}
-          ).then(res => {
-            this.setState({ histoires: res.data, currentFiltre: 2 });
-            this.forceUpdate();
-          });
-          Axios.get(config.API_URL + "histoires/numberHistoires", {}).then(
-            res => {
-              this.setState(
-                {
-                  numberPage: Math.ceil(res.data / 6),
-                  histoireUsers: []
-                },
-                () => {
-                  if (res.data <= 6) {
-                    this.setState({ showMore: false });
-                  }
-                }
-              );
-            }
-          );
-        }
-      } else if (this.state.currentFiltre == 3) {
-        if (this.state.search !== "") {
-          this.setState({ histoireUsers: [] });
-          Axios.get(
-            config.API_URL +
-              "histoires/numberHistoiresSearch/" +
-              this.state.search,
-            {}
-          ).then(res => {
-            this.setState({ numberPage: Math.ceil(res.data / 6) }, () => {
-              if (res.data <= 6) {
-                this.setState({ showMore: false });
-              }
-            });
-          });
-          Axios.get(
-            config.API_URL +
-              "histoires/numberHistoiresSearchUsers/" +
-              this.state.search,
-            {}
-          ).then(res => {
-            this.setState({ numberPageUsers: Math.ceil(res.data / 6) }, () => {
-              if (res.data <= 6) {
-                this.setState({ showMoreUsers: false });
-              }
-            });
-          });
-          Axios.get(
-            config.API_URL +
-              "histoires/takeUsers/6/" +
-              (this.state.pageUsers - 1) * 6 +
-              "/3/" +
-              this.state.search,
-            {}
-          ).then(res => {
-            this.setState({ histoireUsers: res.data });
-          });
-          Axios.get(
-            config.API_URL +
-              "histoires/take/6/" +
-              (this.state.page - 1) * 6 +
-              "/" +
-              this.state.currentFiltre +
-              "/" +
-              this.state.search,
-            {}
-          ).then(res => {
-            this.setState({ histoires: res.data, currentFiltre: 3 });
-            this.forceUpdate();
-          });
-        }
-        if (this.state.search === "") {
-          Axios.get(
-            config.API_URL +
-              "histoires/take/6/" +
-              (this.state.page - 1) * 6 +
-              "/" +
-              this.state.currentFiltre +
-              "/xxxx",
-            {}
-          ).then(res => {
-            this.setState({ histoires: res.data, currentFiltre: 3 });
-            this.forceUpdate();
-          });
-          Axios.get(config.API_URL + "histoires/numberHistoires", {}).then(
-            res => {
-              this.setState(
-                {
-                  numberPage: Math.ceil(res.data / 6),
-                  histoireUsers: []
-                },
-                () => {
-                  if (res.data <= 6) {
-                    this.setState({ showMore: false });
-                  }
-                }
-              );
-            }
-          );
-        }
-      } else if (this.state.currentFiltre == 4) {
-        if (this.state.search !== "") {
-          this.setState({ histoireUsers: [] });
-          Axios.get(
-            config.API_URL +
-              "histoires/numberHistoiresSearch/" +
-              this.state.search,
-            {}
-          ).then(res => {
-            this.setState({ numberPage: Math.ceil(res.data / 6) }, () => {
-              if (res.data <= 6) {
-                this.setState({ showMore: false });
-              }
-            });
-          });
-          Axios.get(
-            config.API_URL +
-              "histoires/numberHistoiresSearchUsers/" +
-              this.state.search,
-            {}
-          ).then(res => {
-            this.setState({ numberPageUsers: Math.ceil(res.data / 6) }, () => {
-              if (res.data <= 6) {
-                this.setState({ showMoreUsers: false });
-              }
-            });
-          });
-          Axios.get(
-            config.API_URL +
-              "histoires/takeUsers/6/" +
-              (this.state.pageUsers - 1) * 6 +
-              "/4/" +
-              this.state.search,
-            {}
-          ).then(res => {
-            this.setState({ histoireUsers: res.data });
-          });
-          Axios.get(
-            config.API_URL +
-              "histoires/take/6/" +
-              (this.state.page - 1) * 6 +
-              "/" +
-              this.state.currentFiltre +
-              "/" +
-              this.state.search,
-            {}
-          ).then(res => {
-            this.setState({ histoires: res.data, currentFiltre: 4 });
-            this.forceUpdate();
-          });
-        }
-        if (this.state.search === "") {
-          Axios.get(
-            config.API_URL +
-              "histoires/take/6/" +
-              (this.state.page - 1) * 6 +
-              "/" +
-              this.state.currentFiltre +
-              "/xxxx",
-            {}
-          ).then(res => {
-            this.setState({ histoires: res.data, currentFiltre: 4 });
-            this.forceUpdate();
-          });
-          Axios.get(config.API_URL + "histoires/numberHistoires", {}).then(
-            res => {
-              this.setState(
-                {
-                  numberPage: Math.ceil(res.data / 6),
-                  histoireUsers: []
-                },
-                () => {
-                  if (res.data <= 6) {
-                    this.setState({ showMore: false });
-                  }
-                }
-              );
-            }
-          );
-        }
-      }
-    });
-  }
-
-  handleCheck(e) {
-    if (e.currentTarget.dataset.id == 1) {
-      this.setState({ currentFiltre: 1 }, () => {
-        this.searchCheck();
-        this.forceUpdate();
-      });
-
-      if (this.state.search !== "") {
-        Axios.get(
-          config.API_URL +
-            "histoires/takeUsers/6/" +
-            (this.state.pageUsers - 1) * 6 +
-            "/1/" +
-            this.state.search,
-          {}
-        ).then(res => {
-          this.setState({ histoireUsers: res.data });
-        });
-      }
-    } else if (e.currentTarget.dataset.id == 2) {
-      this.setState({ currentFiltre: 2 }, () => {
-        this.searchCheck();
-        this.forceUpdate();
-      });
-      if (this.state.search !== "") {
-        Axios.get(
-          config.API_URL +
-            "histoires/takeUsers/6/" +
-            (this.state.pageUsers - 1) * 6 +
-            "/1/" +
-            this.state.search,
-          {}
-        ).then(res => {
-          this.setState({ histoireUsers: res.data });
-        });
-      }
-    } else if (e.currentTarget.dataset.id == 3) {
-      this.setState({ currentFiltre: 3 }, () => {
-        this.searchCheck();
-        this.forceUpdate();
-      });
-      if (this.state.search !== "") {
-        Axios.get(
-          config.API_URL +
-            "histoires/takeUsers/6/" +
-            (this.state.pageUsers - 1) * 6 +
-            "/1/" +
-            this.state.search,
-          {}
-        ).then(res => {
-          this.setState({ histoireUsers: res.data });
-        });
-      }
-    } else if (e.currentTarget.dataset.id == 4) {
-      this.setState({ currentFiltre: 4 }, () => {
-        this.searchCheck();
-        this.forceUpdate();
-      });
-      if (this.state.search !== "") {
-        Axios.get(
-          config.API_URL +
-            "histoires/takeUsers/6/" +
-            (this.state.pageUsers - 1) * 6 +
-            "/1/" +
-            this.state.search,
-          {}
-        ).then(res => {
-          this.setState({ histoireUsers: res.data });
-        });
-      }
-    }
-  }
-
-  fetchPlanche(histoire) {
-    Axios.get(config.API_URL + "planches/histoire/" + histoire.id, {}).then(
-      res => {
-        this.setState({ planches: res.data });
-        histoire.nombreVue = histoire.nombreVue + 1;
-        console.log(histoire);
-        Axios.put(config.API_URL + "histoires/", histoire).then(res => {
-          this.forceUpdate();
-        });
-      }
-    );
-  }
-  getDay(date) {
-    const d = moment(new Date());
-    const dHistoire = moment(date);
-    let dt = "";
-    if (d.diff(dHistoire, "days") > 30) {
-      dt =
-        Math.floor(d.diff(dHistoire, "month")) +
-        " mois " +
-        (d.diff(dHistoire, "days") - d.diff(dHistoire, "month") * 30) +
-        " jours ";
-    } else {
-      dt = d.diff(dHistoire, "days") + " jours";
-    }
-    return dt;
-  }
   submitCommantaire() {
     this.setState({ commentaire: this.state.commentaire.trim() }, () => {
       if (this.state.commentaire !== "")
@@ -835,7 +291,7 @@ class HistoireView extends React.Component {
           noteHistoire: parseFloat(this.state.ratingText),
           noteDessin: parseFloat(this.state.ratingDessin),
           isActive: true,
-          user: { id: "5448c755-5085-4652-88fa-ffcac3987071" }
+          user: { id: "4305f81f-8e67-45df-80eb-54a646387457" }
         }).then(res => {
           this.setState({
             ratingDessin: 0,
@@ -866,10 +322,6 @@ class HistoireView extends React.Component {
   }
   previous() {
     this.slider.slickPrev();
-  }
-  gotToIndex(index) {
-    this.slider.slickGoTo(index - 1);
-    this.setState({ counter: 1 });
   }
   functionDate(date) {
     ///.format("dddd D MMMM YYYY HH:mm:ss")
@@ -928,7 +380,8 @@ class HistoireView extends React.Component {
       month: "long",
       day: "numeric"
     };
-    console.log(this.props.history);
+
+    console.log(this.props.match);
     //Moment.locale("fr");
     if (this.state.histoire !== "")
       return (
@@ -1064,29 +517,29 @@ class HistoireView extends React.Component {
               </Button>
             </DialogActions>
           </Dialog>
-          <GridContainer
-            justify="center"
-            alignItems="center"
-            style={{ margin: 0 }}
-          >
+          <GridContainer justify="center" style={{ margin: 0, width: "100%" }}>
             <GridItem xs={12} sm={12} md={12}>
               <Paper
                 variant="outlined"
-                style={isMobile ? {
-                  position: "relative",
-                  width: "100%",
-                  marginTop: "5%",
-                  marginLeft: "auto",
-                  marginRight: "auto"
-                } : {
-                  position: "relative",
-                  width: "90%",
-                  marginTop: "5%",
-                  marginLeft: "auto",
-                  marginRight: "auto"
-                }}
+                style={
+                  isMobile
+                    ? {
+                        position: "relative",
+                        width: "100%",
+                        marginTop: "5%",
+                        marginLeft: "auto",
+                        marginRight: "auto"
+                      }
+                    : {
+                        position: "relative",
+                        width: "90%",
+                        marginTop: "5%",
+                        marginLeft: "auto",
+                        marginRight: "auto"
+                      }
+                }
               >
-                {this.state.planches.lenght > 18 ? (
+                 {this.state.planches.lenght > 18 ? (
                   <SampleNextArrow
                     onClick={() => this.next()}
                     style={Styles.NextArrow}
@@ -1103,7 +556,7 @@ class HistoireView extends React.Component {
                   />
                 ) : (
                   <div></div>
-                )}
+                  )}
                 <GridContainer
                   justify="center"
                   alignItems="center"
@@ -1117,8 +570,8 @@ class HistoireView extends React.Component {
                   <GridItem xs={12} sm={12} md={6} style={{ padding: 0 }}>
                     <ListItem>
                       <ListItemAvatar>
-                        {this.state.histoire.userDessin.lienPhoto == "" ||
-                        this.state.histoire.userDessin.lienPhoto == null ? (
+                        {this.state.histoire.userDessin.imgProfil == "" ||
+                        this.state.histoire.userText.imgProfil == null ? (
                           <Avatar
                             alt=""
                             src={
@@ -1128,7 +581,7 @@ class HistoireView extends React.Component {
                         ) : (
                           <Avatar
                             alt=""
-                            src={this.state.histoire.userDessin.lienPhoto}
+                            src={this.state.histoire.userDessin.imgProfil}
                           />
                         )}
                       </ListItemAvatar>
@@ -1153,8 +606,8 @@ class HistoireView extends React.Component {
                   <GridItem xs={12} sm={12} md={6} style={{ padding: 0 }}>
                     <ListItem>
                       <ListItemAvatar>
-                        {this.state.histoire.userText.lienPhoto == "" ||
-                        this.state.histoire.userText.lienPhoto == null ? (
+                        {this.state.histoire.userText.imgProfil == "" ||
+                        this.state.histoire.userText.imgProfil == null ? (
                           <Avatar
                             alt=""
                             src={
@@ -1164,7 +617,7 @@ class HistoireView extends React.Component {
                         ) : (
                           <Avatar
                             alt=""
-                            src={this.state.histoire.userText.lienPhoto}
+                            src={this.state.histoire.userText.imgProfil}
                           />
                         )}
                       </ListItemAvatar>
@@ -1265,6 +718,7 @@ class HistoireView extends React.Component {
                     </ButtonBase>
                   </GridItem>
                 </GridContainer>
+                
                 <div
                   style={{
                     width: "90%",
@@ -1625,6 +1079,7 @@ class HistoireView extends React.Component {
                         }}
                   </Slider>
                 </div>
+                
                 {this.state.planches.lenght > 18 ? (
                   <SamplePrevArrow
                     onClick={() => this.previous()}
@@ -1638,7 +1093,7 @@ class HistoireView extends React.Component {
                 ) : (
                   <div></div>
                 )}
-
+                
                 <Divider
                   style={{
                     height: 2,
@@ -1648,6 +1103,7 @@ class HistoireView extends React.Component {
                     marginRight: "auto"
                   }}
                 />
+                
                 <GridContainer
                   justify="flex-end"
                   style={{
@@ -1670,12 +1126,14 @@ class HistoireView extends React.Component {
                     </small>
                   </GridItem>
                 </GridContainer>
+                
                 <Divider
                   style={{
                     width: "100%",
                     height: "2px"
                   }}
                 />
+                
                 <List
                   className={classes.root}
                   style={{ background: "#d6d6d6", padding: 0 }}
@@ -1695,8 +1153,8 @@ class HistoireView extends React.Component {
                               }}
                             >
                               <ListItemAvatar>
-                                {commentaire.user.lienPhoto == "" ||
-                                commentaire.user.lienPhoto == null ? (
+                                {commentaire.user.imgProfil == "" ||
+                                commentaire.user.imgProfil == null ? (
                                   <Avatar
                                     alt=""
                                     src={
@@ -1708,7 +1166,7 @@ class HistoireView extends React.Component {
                                   <Avatar
                                     alt=""
                                     src={
-                                      this.state.histoire.userDessin.lienPhoto
+                                      this.state.histoire.userDessin.imgProfil
                                     }
                                   />
                                 )}
@@ -1727,7 +1185,7 @@ class HistoireView extends React.Component {
                               style={{
                                 width: "100%",
                                 margin: "auto",
-                                marginLeft: 50
+                                paddingLeft: 50
                               }}
                               spacing={1}
                             >
@@ -1875,7 +1333,7 @@ class HistoireView extends React.Component {
                     );
                   })}
                 </List>
-
+                
                 <Button2
                   style={{ width: "100%", height: 60 }}
                   onClick={() => this.fetchCommentaires()}
@@ -1934,14 +1392,14 @@ class HistoireView extends React.Component {
                     }
                   />
                 </ListItem>
-                <GridContainer style={{ marginRight: 0 }}>
+                 <GridContainer style={{ marginRight: 0 }}>
                   <GridItem xs={12} sm={12} md={12}>
                     <GridContainer
                       justify="flex-start"
                       style={{
                         width: "100%",
                         margin: "auto",
-                        marginLeft: 50
+                        paddingLeft: 50
                       }}
                       spacing={1}
                     >
@@ -2128,18 +1586,6 @@ class HistoireView extends React.Component {
     else return <p>mazal matchargat</p>;
   }
 }
-const StyledRating = withStyles({
-  decimal: { display: "flex" },
-  iconFilled: {
-    color: "#ffb400",
-    fontSize: "24px"
-  },
-  iconHover: {
-    color: "#ffb400",
-    fontSize: "24px"
-  }
-})(Rating);
-
 const Styles = {};
 const styles1 = theme => ({
   root: {
@@ -2227,7 +1673,7 @@ const fab = {
     top: "100px",
     left: "10px",
     position: "fixed",
-    zIndex: 10000
+    zIndex: 1999
   },
   color: "primary",
   icon: <AddIcon />,
@@ -2237,479 +1683,3 @@ HistoireView.propTypes = {
   classes: PropTypes.object.isRequired
 };
 export default withRouter(withStyles(styles)(HistoireView));
-/*  <SampleNextArrow
-                onClick={() => this.next()}
-                style={Styles.NextArrow}
-                Color={
-                  this.state.counter === this.state.planches.length + 1
-                    ? "rgba(0, 0, 0, 0.26)"
-                    : "#332861"
-                }
-                disabled={
-                  this.state.counter === this.state.planches.length + 1
-                    ? true
-                    : false
-                }
-              />
-  <Slider
-                ref={slider => (this.slider = slider)}
-                {...settings}
-                style={{
-                  height: "100%",
-                  paddingLeft: 30,
-                  paddingRight: 30,
-                  marginLeft: 20,
-                  marginRight: 20
-                }}
-              >
-                {this.state.planches !== []
-                  ? this.state.planches.map((planche, index) => {
-                      console.log("histoire" + this.state.histoire);
-                      return (
-                        <div key={1}>
-                          <GridContainer justify="center" alignItems="center">
-                            <GridItem xs={12} sm={12} md={12}>
-                              <h5
-                                style={{
-                                  textAlign: "center",
-                                  fontSize: "17px",
-                                  fontWeight: "400",
-                                  color: "#332861"
-                                }}
-                              >
-                                Texts par
-                                <strong>
-                                  {" "}
-                                  {this.state.selectedHistoire.userText.pseudo +
-                                    " - "}
-                                </strong>
-                                Dessins par
-                                <strong>
-                                  {" "}
-                                  {
-                                    this.state.selectedHistoire.userDessin
-                                      .pseudo
-                                  }
-                                </strong>
-                              </h5>
-                            </GridItem>
-                          </GridContainer>
-                          {planche.text === "" ? (
-                            <GridContainer
-                              style={{ height: "365px" }}
-                              justify="center"
-                              alignItems="center"
-                            >
-                              <GridItem
-                                xs={12}
-                                sm={12}
-                                md={12}
-                                justify="center"
-                                alignItems="center"
-                              >
-                                <div
-                                  style={{
-                                    height: "365px",
-                                    width: "100%",
-                                    textAlign: "center",
-                                    display: "block"
-                                  }}
-                                >
-                                  <img
-                                    src={planche.lienDessin}
-                                    style={{
-                                      height: "365px",
-                                      maxWidth: "800px",
-                                      marginLeft: "auto",
-                                      marginRight: "auto",
-                                      display: "block"
-                                    }}
-                                  />
-                                </div>
-                              </GridItem>
-                            </GridContainer>
-                          ) : planche.lienDessin === null ||
-                            planche.lienDessin === "" ? (
-                            <GridContainer
-                              style={{ height: "365px" }}
-                              justify="center"
-                              alignItems="center"
-                            >
-                              <GridItem
-                                xs={12}
-                                sm={12}
-                                md={12}
-                                justify="center"
-                                alignItems="center"
-                                style={{ paddingRight: "20px" }}
-                              >
-                                {" "}
-                                <SimpleBar style={{ maxHeight: "365px" }}>
-                                  <h5
-                                    style={{
-                                      color: "#332861",
-                                      width: "100%",
-                                      maxHeight: "365px",
-                                      margin: "0px",
-                                      paddingLeft: "10px",
-                                      paddingRight: "10px",
-                                      fontSize: "16px"
-                                    }}
-                                  >
-                                    {planche.text}
-                                  </h5>
-                                </SimpleBar>
-                              </GridItem>
-                            </GridContainer>
-                          ) : (
-                            <GridContainer
-                              style={{ height: "365px" }}
-                              justify="center"
-                              alignItems="center"
-                            >
-                              <GridItem
-                                xs={7}
-                                sm={7}
-                                md={7}
-                                justify="center"
-                                alignItems="center"
-                                style={{ paddingRight: "20px" }}
-                              >
-                                {" "}
-                                <SimpleBar style={{ maxHeight: "365px" }}>
-                                  <h5
-                                    style={{
-                                      color: "#332861",
-                                      width: "100%",
-                                      maxHeight: "365px",
-                                      margin: "0px",
-                                      paddingLeft: "10px",
-                                      paddingRight: "10px",
-                                      fontSize: "16px"
-                                    }}
-                                  >
-                                    {planche.text}
-                                  </h5>
-                                </SimpleBar>
-                              </GridItem>
-                              <GridItem
-                                xs={5}
-                                sm={5}
-                                md={5}
-                                justify="center"
-                                alignItems="center"
-                              >
-                                <div style={{ textAlign: "-webkit-center" }}>
-                                  <img
-                                    src={planche.lienDessin}
-                                    alt="First slide"
-                                    className=""
-                                    style={{
-                                      alignSelf: "center",
-                                      maxHeight: "365px",
-                                      height: "auto",
-                                      maxWidth: "330px",
-                                      width: "auto",
-                                      paddingRight: "10px"
-                                    }}
-                                  />
-                                </div>
-                              </GridItem>
-                            </GridContainer>
-                          )}
-                        </div>
-                      );
-                    })
-                  : () => {
-                      console.log(this.state.histoire);
-                      return (
-                        <div>
-                          <p>mazal maja</p>
-                        </div>
-                      );
-                    }}
-                <div key={this.state.planches.length + 1}>
-                  <GridContainer style={{ height: "411px" }}>
-                    <GridItem
-                      xs={12}
-                      sm={12}
-                      md={12}
-                      justify="center"
-                      alignItems="center"
-                      style={{ marginTop: "40px" }}
-                    >
-                      <p
-                        style={{
-                          fontSize: 16,
-                          fontWeight: 400,
-                          textAlign: "center",
-                          color: "#332861"
-                        }}
-                      >
-                        L’histoire est terminée. Encourage les auteurs en leur
-                        attribuant une note !
-                      </p>
-                    </GridItem>
-
-                    <GridItem
-                      xs={6}
-                      sm={6}
-                      md={6}
-                      style={{ textAlign: "center", marginTop: "20px" }}
-                    >
-                      <GridContainer>
-                        <GridItem xs={2} sm={2} md={2}></GridItem>
-                        <GridItem xs={3} sm={3} md={3}>
-                          <p style={{ color: "#332861" }}>Text :</p>
-                        </GridItem>
-                        <GridItem xs={5} sm={5} md={5}>
-                          <StyledRating
-                            style={{ fontSize: "20px" }}
-                            name="rating-Text"
-                            value={this.state.ratingText}
-                            emptyIcon={<StarBorderIcon fontSize="24px" />}
-                            onChange={(event, newValue1) => {
-                              this.setState({ ratingText: newValue1 });
-                            }}
-                            precision={0.5}
-                          />
-                        </GridItem>
-                        <GridItem xs={1} sm={1} md={1}></GridItem>
-                      </GridContainer>
-                    </GridItem>
-                    <GridItem
-                      xs={6}
-                      sm={6}
-                      md={6}
-                      style={{ textAlign: "center", marginTop: "20px" }}
-                    >
-                      <GridContainer>
-                        <GridItem xs={2} sm={2} md={2}></GridItem>
-                        <GridItem xs={3} sm={3} md={3}>
-                          <p style={{ color: "#332861" }}>Dessins :</p>
-                        </GridItem>
-                        <GridItem xs={5} sm={5} md={5}>
-                          <StyledRating
-                            name="simple-controlled"
-                            value={this.state.ratingDessin}
-                            emptyIcon={<StarBorderIcon fontSize="24px" />}
-                            size="large"
-                            onChange={(event, newValue) => {
-                              this.setState({ ratingDessin: newValue });
-                            }}
-                            precision={0.5}
-                          />
-                        </GridItem>
-                        <GridItem xs={1} sm={1} md={1}></GridItem>
-                      </GridContainer>
-                    </GridItem>
-                    <GridItem
-                      xs={12}
-                      sm={12}
-                      md={12}
-                      justify="center"
-                      alignItems="center"
-                    >
-                      <TextField
-                        id="standard-multiline-static"
-                        placeholder="Laissez un commentaire(facultatif)"
-                        label="commentaire"
-                        multiline
-                        rows="9"
-                        value={this.state.commentaire}
-                        style={{ width: "100%" }}
-                        autoFocus={
-                          this.state.counter !== this.state.planches.length + 1
-                            ? false
-                            : true
-                        }
-                        onChange={(commentaire, event) => {
-                          this.setState({
-                            commentaire: commentaire.target.value
-                          });
-                        }}
-                      />
-                    </GridItem>
-                  </GridContainer>
-                </div>
-                <div key={this.state.planches.length + 2}></div>
-              </Slider>
-              <SamplePrevArrow
-                onClick={() => this.previous()}
-                Color={
-                  this.state.counter === 1 ? "rgba(0, 0, 0, 0.26)" : "#332861"
-                }
-                disabled={this.state.counter === 1 ? true : false}
-              /> */
-////mui Action
-/*  <MuiDialogActions style={{ padding: 0 }}>
-              <h3
-                style={{
-                  height: "49px",
-                  textAlign: "center",
-                  marginTop: "0px",
-                  marginBottom: "0px",
-                  width: "100%",
-                  fontWeight: "400",
-                  backgroundColor: "#e3f3fd",
-                  color: "#332861"
-                }}
-              >
-                {this.state.counter !== this.state.planches.length + 1 ? (
-                  this.state.counter
-                ) : (
-                  <Button
-                    color="white"
-                    style={{
-                      color: "rgb(89, 79, 118)",
-                      fontWeight: "bold",
-                      margin: 0
-                    }}
-                    onClick={() => {
-                      this.setState({
-                        modal: false,
-                        ratingDessin: 0,
-                        ratingText: 0,
-                        commentaire: ""
-                      });
-                      this.gotToIndex(1);
-                      this.submitCommantaire();
-                    }}
-                  >
-                    Terminée
-                  </Button>
-                )}
-              </h3>
-            </MuiDialogActions> */
-///asdhj
-{
-  /* <GridItem xs={12} sm={12} md={12}>
-  <h5
-    style={{
-      textAlign: "center",
-      fontSize: "17px",
-      fontWeight: "400",
-      color: "#332861"
-    }}
-  >
-    Texts par
-                                    <strong>
-      {" "}
-      {this.state.histoire.userText.pseudo +
-        " - "}
-    </strong>
-                                    Dessins par
-                                    <strong>
-      {" "}
-      {this.state.histoire.userDessin.pseudo}
-    </strong>
-  </h5>
-</GridItem> */
-}
-{
-  /* <div key={this.state.planches.length + 1}>
-  <GridContainer style={{ height: "411px" }}>
-    <GridItem
-      xs={12}
-      sm={12}
-      md={12}
-      justify="center"
-      alignItems="center"
-      style={{ marginTop: "40px" }}
-    >
-      <p
-        style={{
-          fontSize: 16,
-          fontWeight: 400,
-          textAlign: "center",
-          color: "#332861"
-        }}
-      >
-        L’histoire est terminée. Encourage les auteurs en
-        leur attribuant une note !
-                          </p>
-    </GridItem>
-
-    <GridItem
-      xs={6}
-      sm={6}
-      md={6}
-      style={{ textAlign: "center", marginTop: "20px" }}
-    >
-      <GridContainer>
-        <GridItem xs={2} sm={2} md={2}></GridItem>
-        <GridItem xs={3} sm={3} md={3}>
-          <p style={{ color: "#332861" }}>Text :</p>
-        </GridItem>
-        <GridItem xs={5} sm={5} md={5}>
-          <StyledRating
-            style={{ fontSize: "20px" }}
-            name="rating-Text"
-            value={this.state.ratingText}
-            emptyIcon={<StarBorderIcon fontSize="24px" />}
-            onChange={(event, newValue1) => {
-              this.setState({ ratingText: newValue1 });
-            }}
-            precision={0.5}
-          />
-        </GridItem>
-        <GridItem xs={1} sm={1} md={1}></GridItem>
-      </GridContainer>
-    </GridItem>
-    <GridItem
-      xs={6}
-      sm={6}
-      md={6}
-      style={{ textAlign: "center", marginTop: "20px" }}
-    >
-      <GridContainer>
-        <GridItem xs={2} sm={2} md={2}></GridItem>
-        <GridItem xs={3} sm={3} md={3}>
-          <p style={{ color: "#332861" }}>Dessins :</p>
-        </GridItem>
-        <GridItem xs={5} sm={5} md={5}>
-          <StyledRating
-            name="simple-controlled"
-            value={this.state.ratingDessin}
-            emptyIcon={<StarBorderIcon fontSize="24px" />}
-            size="large"
-            onChange={(event, newValue) => {
-              this.setState({ ratingDessin: newValue });
-            }}
-            precision={0.5}
-          />
-        </GridItem>
-        <GridItem xs={1} sm={1} md={1}></GridItem>
-      </GridContainer>
-    </GridItem>
-    <GridItem
-      xs={12}
-      sm={12}
-      md={12}
-      justify="center"
-      alignItems="center"
-    >
-      <TextField
-        id="standard-multiline-static"
-        placeholder="Laissez un commentaire(facultatif)"
-        label="commentaire"
-        multiline
-        rows="9"
-        value={this.state.commentaire}
-        style={{ width: "100%" }}
-        autoFocus={
-          this.state.counter !==
-            this.state.planches.length + 1
-            ? false
-            : true
-        }
-        onChange={(commentaire, event) => {
-          this.setState({
-            commentaire: commentaire.target.value
-          });
-        }}
-      />
-    </GridItem>
-  </GridContainer>
-</div> */
-}

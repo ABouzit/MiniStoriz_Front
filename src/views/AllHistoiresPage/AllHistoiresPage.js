@@ -52,6 +52,7 @@ export default function AllHistoiresPage(props) {
         color="info"
         routes={dashboardRoutes}
         // brand="Mateeeerial Kit React"
+        brand="Navbar with notifications"
         leftLinks={
           <img
             src={config.API_URL + "images/asset/logo.png"}
@@ -82,140 +83,188 @@ export default function AllHistoiresPage(props) {
                         Bienvenue à toi, Azzedine le mini-artiste
                       </h4>
       </div> */}
-      <div style={{backgroundColor: 'white'}}>
-        <GridContainer justify="flex-end" style={{margin: 0}}>
+      <div style={{ backgroundColor: "white" }}>
+        <GridContainer justify="flex-end" style={{ margin: 0 }}>
           <GridItem xs={12} sm={12} md={3}>
             {isMobile ? (
-            <div style={{ display: 'contents'}}>
-              <GridContainer justify="center" style={{marginTop: '40%'}}>
-              <GridItem xs={10} sm={10} md={10} >
-                <CustomInput
-                  labelText="Recherche"
-                  id="material"
-                  formControlProps={{
-                    fullWidth: true
-                  }}
-                  value={search}
-                  onChange={(search, event) => {
-                    setSearch(
-                      search.target.value
-                    );
-                    window.scrollTo(0, 0)
-                  }}
-                  inputProps={{
-                    endAdornment: (
-                      <ButtonBase onClick={subscriber.next({search: search, filtre: filtre})}>
-                        <InputAdornment position="end">
-                          <Search />
-                        </InputAdornment>
-                      </ButtonBase>
-                    )
-                  }}
-                />
-              </GridItem>
-              <GridItem xs={10} sm={10} style={{ marginTop: '5%'}}>
-                <ButtonGroup
-                    orientation="vertical"
-                    // color="secondary"
-                    aria-label="Les filtres"
-                    variant="contained"
-                    style={{ width: "-webkit-fill-available" }}
+              <div style={{ display: "contents" }}>
+                <GridContainer justify="center" style={{ marginTop: "40%" }}>
+                  <GridItem xs={10} sm={10} md={10}>
+                    <CustomInput
+                      labelText="Recherche"
+                      id="material"
+                      formControlProps={{
+                        fullWidth: true
+                      }}
+                      value={search}
+                      onChange={(search, event) => {
+                        setSearch(search.target.value);
+                        window.scrollTo(0, 0);
+                      }}
+                      inputProps={{
+                        endAdornment: (
+                          <ButtonBase
+                            onClick={subscriber.next({
+                              search: search,
+                              filtre: filtre
+                            })}
+                          >
+                            <InputAdornment position="end">
+                              <Search />
+                            </InputAdornment>
+                          </ButtonBase>
+                        )
+                      }}
+                    />
+                  </GridItem>
+                  <GridItem xs={10} sm={10} style={{ marginTop: "5%" }}>
+                    <ButtonGroup
+                      orientation="vertical"
+                      // color="secondary"
+                      aria-label="Les filtres"
+                      variant="contained"
+                      style={{ width: "-webkit-fill-available" }}
+                    >
+                      <Button
+                        onClick={() => {
+                          subscriber.next({ search: search, filtre: 1 });
+                          setFiltre(1);
+                          window.scrollTo(0, 0);
+                        }}
+                      >
+                        Les plus lues
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          subscriber.next({ search: search, filtre: 2 });
+                          setFiltre(2);
+                          window.scrollTo(0, 0);
+                        }}
+                      >
+                        Les plus populaires
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          subscriber.next({ search: search, filtre: 3 });
+                          setFiltre(3);
+                          window.scrollTo(0, 0);
+                        }}
+                      >
+                        Les plus recentes
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          subscriber.next({ search: search, filtre: 4 });
+                          setFiltre(4);
+                          window.scrollTo(0, 0);
+                        }}
+                      >
+                        Les plus anciennes
+                      </Button>
+                    </ButtonGroup>
+                  </GridItem>
+                </GridContainer>
+              </div>
+            ) : (
+              <div style={{ position: "fixed" }}>
+                <GridContainer
+                  justify="center"
+                  style={{ marginTop: "40%", width: "90%" }}
+                >
+                  <GridItem xs={10} sm={10} md={10}>
+                    <CustomInput
+                      labelText="Recherche"
+                      id="material"
+                      formControlProps={{
+                        fullWidth: true
+                      }}
+                      value={search}
+                      onChange={(search, event) => {
+                        setSearch(search.target.value);
+                        window.scrollTo(0, 0);
+                      }}
+                      inputProps={{
+                        endAdornment: (
+                          <ButtonBase
+                            onClick={subscriber.next({
+                              search: search,
+                              filtre: filtre
+                            })}
+                          >
+                            <InputAdornment position="end">
+                              <Search />
+                            </InputAdornment>
+                          </ButtonBase>
+                        )
+                      }}
+                    />
+                  </GridItem>
+                  <GridItem
+                    xs={12}
+                    sm={12}
+                    md={10}
+                    style={{ textAlign: "center", marginTop: "5%" }}
                   >
-                    <Button
-                      onClick={() => {
-                        subscriber.next({ search: search, filtre: 1 });
-                        setFiltre(1);
-                        window.scrollTo(0, 0);
-                      }}
+                    <ButtonGroup
+                      orientation="vertical"
+                      // color="secondary"
+                      aria-label="Les filtres"
+                      variant="contained"
+                      style={{ width: "-webkit-fill-available" }}
                     >
-                      Les plus lues
-                    </Button>
-                    <Button
-                      onClick={() => {
-                        subscriber.next({ search: search, filtre: 2 });
-                        setFiltre(2);
-                        window.scrollTo(0, 0);
-                      }}
-                    >
-                      Les plus populaires
-                    </Button>
-                    <Button
-                      onClick={() => {
-                        subscriber.next({ search: search, filtre: 3 });
-                        setFiltre(3);
-                        window.scrollTo(0, 0);
-                      }}
-                    >
-                      Les plus recentes
-                    </Button>
-                    <Button
-                      onClick={() => {
-                        subscriber.next({ search: search, filtre: 4 });
-                        setFiltre(4);
-                        window.scrollTo(0, 0);
-                      }}
-                    >
-                      Les plus anciennes
-                    </Button>
-                  </ButtonGroup>
-                </GridItem>
-              </GridContainer>
-            </div>
-              ) : (
-            <div style={{position:'fixed'}}> 
-            <GridContainer justify="center" style={{marginTop: '40%', width: '90%'}}>
-              <GridItem xs={10} sm={10} md={10} >
-                <CustomInput
-                  labelText="Recherche"
-                  id="material"
-                  formControlProps={{
-                    fullWidth: true
-                  }}
-                  value={search}
-                  onChange={(search, event) => {
-                    setSearch(
-                      search.target.value
-                    );
-                    window.scrollTo(0, 0)
-                  }}
-                  inputProps={{
-                    endAdornment: (
-                      <ButtonBase onClick={subscriber.next({search: search, filtre: filtre})}>
-                        <InputAdornment position="end">
-                          <Search />
-                        </InputAdornment>
-                      </ButtonBase>
-                    )
-                  }}
-                />
-              </GridItem>
-              <GridItem xs={12} sm={12} md={10} style={{textAlign: 'center', marginTop: '5%'}}>
-                <ButtonGroup
-                    orientation="vertical"
-                    // color="secondary"
-                    aria-label="Les filtres"
-                    variant="contained"
-                    style={{width : '-webkit-fill-available'}}
-                  >
-                  <Button onClick={()=> {subscriber.next({search: search, filtre: 1}); setFiltre(1); window.scrollTo(0, 0)}}>Les plus lues</Button>
-                  <Button onClick={()=> {subscriber.next({search: search, filtre: 2}); setFiltre(2); window.scrollTo(0, 0)}}>Les plus populaires</Button>
-                  <Button onClick={()=> {subscriber.next({search: search, filtre: 3}); setFiltre(3); window.scrollTo(0, 0)}}>Les plus recentes</Button>
-                  <Button onClick={()=> {subscriber.next({search: search, filtre: 4}); setFiltre(4); window.scrollTo(0, 0)}}>Les plus anciennes</Button>
-                </ButtonGroup>
-              </GridItem>
-            </GridContainer>
-            </div> )}
+                      <Button
+                        onClick={() => {
+                          subscriber.next({ search: search, filtre: 1 });
+                          setFiltre(1);
+                          window.scrollTo(0, 0);
+                        }}
+                      >
+                        Les plus lues
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          subscriber.next({ search: search, filtre: 2 });
+                          setFiltre(2);
+                          window.scrollTo(0, 0);
+                        }}
+                      >
+                        Les plus populaires
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          subscriber.next({ search: search, filtre: 3 });
+                          setFiltre(3);
+                          window.scrollTo(0, 0);
+                        }}
+                      >
+                        Les plus recentes
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          subscriber.next({ search: search, filtre: 4 });
+                          setFiltre(4);
+                          window.scrollTo(0, 0);
+                        }}
+                      >
+                        Les plus anciennes
+                      </Button>
+                    </ButtonGroup>
+                  </GridItem>
+                </GridContainer>
+              </div>
+            )}
           </GridItem>
           {isMobile ? (
-          <GridItem xs={12} sm={12} md={9} position="center">
-            <div>
-            <AllHistoires /></div>
-          </GridItem>
-          ):(
-          <GridItem xs={12} sm={12} md={9} position="end">
-          <AllHistoires />
-        </GridItem>
-        )}
+            <GridItem xs={12} sm={12} md={9} position="center">
+              <div>
+                <AllHistoires />
+              </div>
+            </GridItem>
+          ) : (
+            <GridItem xs={12} sm={12} md={9} position="end">
+              <AllHistoires />
+            </GridItem>
+          )}
         </GridContainer>
       </div>
       {/* <div

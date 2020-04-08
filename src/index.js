@@ -7,6 +7,7 @@ import "assets/scss/material-kit-react.scss?v=1.8.0";
 
 // pages for this product
 import Components from "views/Components/Components.js";
+import PublierViewPage from "views/PublierViewPage/PublierViewPage.js";
 import AllHistoiresPage from "views/AllHistoiresPage/AllHistoiresPage.js";
 import HistoireViewPage from "views/HistoireViewPage/HistoireViewPage.js";
 import MesOeuvresPage from "views/MesOeuvresPage/MesOeuvresPage.js";
@@ -21,6 +22,7 @@ ReactDOM.render(
     <Switch>
       <Route path="/material" component={Components} />
       {/* <Route path="/landing-page" component={AllHistoires} /> */}
+      <Route path="/Publier/:type" component={PublierViewPage} />
       <Route path="/Histoire/:histoireId" component={HistoireViewPage} />
       <Route path="/LesHistoires" component={AllHistoiresPage} />
       <Route path="/MesOeuvres" component={MesOeuvresPage} />

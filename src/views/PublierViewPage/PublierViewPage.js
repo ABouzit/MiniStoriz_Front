@@ -23,14 +23,14 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import Search from "@material-ui/icons/Search";
 import ButtonBase from "@material-ui/core/ButtonBase";
 // Sections for this page
-import HistoireView from "./Sections/HistoireView";
+import PublierView from "./Sections/PublierView";
 import { subscriber, messageService } from "./../../services/messageService";
 
 const dashboardRoutes = [];
 
 const useStyles = makeStyles(styles);
 
-export default function HistoireViewPage(props) {
+export default function PublierViewPage(props) {
   const [refresh, setRefresh] = React.useState(false);
   const [search, setSearch] = React.useState("");
   const [filtre, setFiltre] = React.useState(1);
@@ -41,7 +41,7 @@ export default function HistoireViewPage(props) {
   const classes = useStyles();
   const { ...rest } = props;
   return (
-    <div style={{ backgroundColor: "white" }}>
+    <div>
       <Header
         color="info"
         routes={dashboardRoutes}
@@ -64,8 +64,17 @@ export default function HistoireViewPage(props) {
         }}
         {...rest}
       />
-       <HistoireView /> 
-     
+      <div style={{ backgroundColor: "white" }}>
+        <GridContainer
+          justify="flex-end"
+          style={{ marginLeft: 0, marginRight: 0 }}
+        >
+          <GridItem xs={12} sm={12} md={12} style={{ padding: 0 }}>
+            <PublierView />
+          </GridItem>
+        </GridContainer>
+        <div style={{ marginTop: 200 }}></div>
+      </div>
       {/* <div
         className={classNames(classes.main, classes.mainRaised)}
         style={{ marginTop: 81, backgroundImage: 'url("'+config.API_URL+'images/asset/bg1.jpg")' }}
