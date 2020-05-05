@@ -94,14 +94,17 @@ import {
 import Moment from "moment";
 import * as Core from "@material-ui/core";
 import "react-circular-progressbar/dist/styles.css";
-
+import { Redirect } from 'react-router-dom';
 class PublierView extends React.Component {
   constructor(props) {
     super(props);
     // Don't call this.setState() here!
     this.state = {
       textHistoire: "",
+      userLocal: "",
       testNext: 0,
+      redirect: 0,
+      typePage: this.props.match.params.type,
       testNextText: 0,
       planche: [{ text: "", img: "", data: "", lien: "" }],
       imgSrc: "",
@@ -116,7 +119,7 @@ class PublierView extends React.Component {
       pendingValueText: "",
       pendingValueDessin: "",
       reseauUsers: "",
-      id: "4305f81f-8e67-45df-80eb-54a646387457",
+      id: "",
       userText: "",
       submit: false,
       userDessin: "",
@@ -180,23 +183,21 @@ class PublierView extends React.Component {
     this.handleCloseBackDrop = this.handleCloseBackDrop.bind(this);
     this.handleVisibility = this.handleVisibility.bind(this);
   }
-  saveHistoire(file) {
-    console.log(file);
-    var reader = new FileReader();
-    var url = reader.readAsDataURL(file[0]);
-    let data = new FormData();
-    data.append("file", file[0]);
-    reader.onloadend = function(e) {
-      this.setState({
-        imgHistoire: reader.result,
-        dataImgHistoire: data,
-        lienImgHistoire: "images/histoires/" + file[0].name
-      });
-    }.bind(this);
-    console.log(this.state.imgHistoire); // Would see a path?
-  }
+
   componentDidMount() {
-    Axios.get(config.API_URL + "users/", {}).then(res => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (!user) {
+      this.setState({  redirect: 1 }, ()=> {this.forceUpdate()});
+    }else{
+      if (typeof this.props.match.params.histoireId === 'undefined') {
+        this.setState({  id: user.id, userLocal: user }, ()=> {this.forceUpdate()});
+      } else {
+      this.setState({  id: user.id, userLocal: user }, ()=> {this.fetchHistoire(this.props.match.params.histoireId);this.forceUpdate()});
+      }
+    }
+    Axios.get(config.API_URL +
+      "users/relations/"+user.id, {}).then(res => {
+      console.log(res.data)
       this.setState({ reseauUsers: res.data });
       if (this.props.match.params.type == "1")
         this.setState({
@@ -216,6 +217,39 @@ class PublierView extends React.Component {
     });
 
     this.next();
+  }
+
+  fetchHistoire(id){
+    Axios.get(config.API_URL + "histoires/byId/" + id).then(histoire => {
+      if (histoire.data[0].userText.id !== this.state.userLocal.id && histoire.data[0].userDessin.id !== this.state.userLocal.id) {
+        this.props.history.push("/Histoire/"+id)
+      } else {
+      Axios.get(config.API_URL + "planches/histoires/" + id).then(
+        planches => {
+          console.log(planches)
+            this.setState({ planche: planches.data,histoire: histoire.data[0], titreHistoire: histoire.data[0].titreHistoire,
+                        imgHistoire: histoire.data[0].lienIllustration,textHistoire: planches.data[1].text,
+                        userText:  histoire.data[0].userText, userDessin: histoire.data[0].userDessin,
+                      testNext: 1,testNextText: 1,lienImgPlanche: planches.data[1].lien},()=>{this.forceUpdate()})
+            });
+       }
+      
+    })
+  }
+  saveHistoire(file) {
+    console.log(file);
+    var reader = new FileReader();
+    var url = reader.readAsDataURL(file[0]);
+    let data = new FormData();
+    data.append("file", file[0]);
+    reader.onloadend = function(e) {
+      this.setState({
+        imgHistoire: reader.result,
+        dataImgHistoire: data,
+        lienImgHistoire: "images/histoires/" + file[0].name
+      });
+    }.bind(this);
+    console.log(this.state.imgHistoire); // Would see a path?
   }
 
   next() {
@@ -250,7 +284,7 @@ class PublierView extends React.Component {
       this.setState({ testNextText: 1 });
       this.forceUpdate();
     }
-    if (this.state.imgSrc === "") {
+    if (this.state.imgSrc === "" && this.state.lienImgPlanche === "") {
       this.setState({ testNext: 0 });
       this.forceUpdate();
     } else {
@@ -259,8 +293,6 @@ class PublierView extends React.Component {
     }
 
     this.slider.slickNext();
-    console.log(this.state.planche);
-    console.log(this.state.counter);
   }
   previous() {
     this.state.planche[this.state.counter - 1].img = this.state.imgSrc;
@@ -322,9 +354,8 @@ class PublierView extends React.Component {
       return;
     }
     if (
-      this.state.userText.id !== "4305f81f-8e67-45df-80eb-54a646387457" &&
-      this.state.pendingValueDessin.id !==
-        "4305f81f-8e67-45df-80eb-54a646387457"
+      this.state.userText.id !== this.state.id &&
+      this.state.pendingValueDessin.id !== this.state.id
     ) {
       this.setState({
         userText: this.state.userDessin,
@@ -335,6 +366,11 @@ class PublierView extends React.Component {
     }
     if (this.state.anchorElDessin) {
       this.state.anchorElDessin.focus();
+    }
+    if (this.state.userLocal.id !== this.state.pendingValueDessin.id) {
+      this.setState({ typePage: 3 },()=>{this.forceUpdate()});
+    }else{
+      this.setState({ typePage: 1 },()=>{this.forceUpdate()});
     }
     this.setState({ anchorElDessin: null });
   };
@@ -351,8 +387,8 @@ class PublierView extends React.Component {
       return;
     }
     if (
-      this.state.userDessin.id !== "4305f81f-8e67-45df-80eb-54a646387457" &&
-      this.state.pendingValueText.id !== "4305f81f-8e67-45df-80eb-54a646387457"
+      this.state.userDessin.id !== this.state.id &&
+      this.state.pendingValueText.id !== this.state.id
     ) {
       this.setState({
         userDessin: this.state.userText,
@@ -365,10 +401,147 @@ class PublierView extends React.Component {
     if (this.state.anchorElText) {
       this.state.anchorElText.focus();
     }
+    if (this.state.userLocal.id !== this.state.pendingValueText.id) {
+      this.setState({ typePage: 2 },()=>{this.forceUpdate()});
+    }else{
+      this.setState({ typePage: 1 },()=>{this.forceUpdate()});
+    }
     this.setState({ anchorElText: null });
   };
   submit() {
     const _this = this;
+    let idHistoire = ""; 
+    if (this.state.dataImgHistoire == "") {
+    
+      if (typeof this.props.match.params.histoireId === 'indefined') {
+        
+      return Axios.post(config.API_URL + "histoires", {
+        userText: this.state.userText,
+        userDessin: this.state.userDessin,
+        lienIllustration: this.state.imgHistoire,
+        titreHistoire: this.state.titreHistoire
+      })
+        .then(function(response) {
+          Promise.all(
+            _this.state.planche.map((planch, index) => {
+              if (index > 0) {
+                console.log(planch);
+                if (planch.data !== "") {
+                  return Axios.post(
+                    config.API_URL + "sendImage/planches/",
+                    planch.data
+                  ).then(res => {
+                    let s = res.data.filePath
+                      .replace("\\", "/")
+                      .replace("\\", "/");
+                    return Axios.post(config.API_URL + "planches", {
+                      histoire: response.data.id,
+                      lienDessin: config.API_URL + s,
+                      text: planch.text,
+                      index: index
+                    });
+                  });
+                } else {
+                  return Axios.post(config.API_URL + "planches", {
+                    histoire: response.data.id,
+                    text: planch.text,
+                    index: index
+                  });
+                }
+              }
+            })
+          ).then(res => {
+            _this.setState(
+              {
+                imgSrc: "",
+                dataImgPlanche: "",
+                lienImgPlanche: "",
+                testNext: 0,
+                testNextText: 0,
+                textHistoire: "",
+                titreHistoire: "",
+                imgHistoire: "",
+                lienImgHistoire: "",
+                dataImgHistoire: "",
+                planche: [{ text: "", img: "", data: "", lien: "" }],
+                lienInputUpload: "",
+                lienInputUploadhistoire: "",
+                submit: false
+              },
+              () => _this.props.history.push("/lesHistoires")
+            );
+          });
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+      } else {
+        idHistoire = this.props.match.params.histoireId;
+        return Axios.put(config.API_URL + "histoires", {
+          id: idHistoire,
+          userText: this.state.userText,
+          userDessin: this.state.userDessin,
+          lienIllustration: this.state.imgHistoire,
+          titreHistoire: this.state.titreHistoire
+        })
+          .then(function(response) {
+            Promise.all(
+              _this.state.planche.map((planch, index) => {
+                if (index > 0) {
+                  console.log(planch);
+                  if (planch.data !== "") {
+                    return Axios.post(
+                      config.API_URL + "sendImage/planches/",
+                      planch.data
+                    ).then(res => {
+                      let s = res.data.filePath
+                        .replace("\\", "/")
+                        .replace("\\", "/");
+                      return Axios.post(config.API_URL + "planches", {
+                        histoire: response.data.id,
+                        lienDessin: config.API_URL + s,
+                        text: planch.text,
+                        index: index
+                      });
+                    });
+                  } else {
+                    return Axios.put(config.API_URL + "planches", {
+                      histoire: response.data.id,
+                      text: planch.text,
+                      index: index
+                    });
+                  }
+                }
+              })
+            ).then(res => {
+              _this.setState(
+                {
+                  imgSrc: "",
+                  dataImgPlanche: "",
+                  lienImgPlanche: "",
+                  testNext: 0,
+                  testNextText: 0,
+                  textHistoire: "",
+                  titreHistoire: "",
+                  imgHistoire: "",
+                  lienImgHistoire: "",
+                  dataImgHistoire: "",
+                  planche: [{ text: "", img: "", data: "", lien: "" }],
+                  lienInputUpload: "",
+                  lienInputUploadhistoire: "",
+                  submit: false
+                },
+                () => _this.props.history.push("/lesHistoires")
+              );
+            });
+          })
+          .catch(function(error) {
+            console.log(error);
+          });
+      }
+  } else {
+    if (typeof this.props.match.params.histoireId === 'indefined') {
+      
     return Axios({
       method: "post",
       url: config.API_URL + "sendImage/histoires/",
@@ -437,6 +610,79 @@ class PublierView extends React.Component {
           console.log(error);
         });
     });
+  } else {
+    idHistoire = this.props.match.params.histoireId;
+    return Axios({
+      method: "post",
+      url: config.API_URL + "sendImage/histoires/",
+      data: this.state.dataImgHistoire,
+      headers: { "Content-Type": "multipart/form-data" }
+    }).then(res => {
+      let s = res.data.filePath.replace("\\", "/").replace("\\", "/");
+      return Axios.put(config.API_URL + "histoires", {
+        id: idHistoire,
+        userText: this.state.userText,
+        userDessin: this.state.userDessin,
+        lienIllustration: config.API_URL + s,
+        titreHistoire: this.state.titreHistoire
+      })
+        .then(function(response) {
+          Promise.all(
+            _this.state.planche.map((planch, index) => {
+              if (index > 0) {
+                console.log(planch);
+                if (planch.data !== "") {
+                  return Axios.post(
+                    config.API_URL + "sendImage/planches/",
+                    planch.data
+                  ).then(res => {
+                    let s = res.data.filePath
+                      .replace("\\", "/")
+                      .replace("\\", "/");
+                    return Axios.post(config.API_URL + "planches", {
+                      histoire: response.data.id,
+                      lienDessin: config.API_URL + s,
+                      text: planch.text,
+                      index: index
+                    });
+                  });
+                } else {
+                  return Axios.put(config.API_URL + "planches", {
+                    histoire: response.data.id,
+                    text: planch.text,
+                    index: index
+                  });
+                }
+              }
+            })
+          ).then(res => {
+            _this.setState(
+              {
+                imgSrc: "",
+                dataImgPlanche: "",
+                lienImgPlanche: "",
+                testNext: 0,
+                testNextText: 0,
+                textHistoire: "",
+                titreHistoire: "",
+                imgHistoire: "",
+                lienImgHistoire: "",
+                dataImgHistoire: "",
+                planche: [{ text: "", img: "", data: "", lien: "" }],
+                lienInputUpload: "",
+                lienInputUploadhistoire: "",
+                submit: false
+              },
+              () => _this.props.history.push("/lesHistoires")
+            );
+          });
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    });
+    }
+  }
   }
   saveHistoireWithPlanche() {
     this.setState({ submit: true });
@@ -445,168 +691,82 @@ class PublierView extends React.Component {
     const _this = this;
     const tab = _this.state.planche[_this.state.planche.length - 1];
     console.log(this.props.match.params);
-    if (this.props.match.params.type == 1) {
-      if (
-        tab.text !== "" &&
-        tab.img !== "" &&
-        tab.data !== "" &&
-        tab.lien !== "" &&
-        this.state.dataImgHistoire !== "" &&
-        this.state.titreHistoire !== ""
-      ) {
-        this.submit();
-      } else {
-        this.handleClick();
+    if (typeof this.props.match.params.histoireId === 'indefined') {
+
+      if (this.state.typePage == 1) {
+        if (
+          tab.text !== "" &&
+          tab.img !== "" &&
+          tab.data !== "" &&
+          tab.lien !== "" &&
+          this.state.dataImgHistoire !== "" &&
+          this.state.titreHistoire !== ""
+        ) {
+          this.submit();
+        } else {
+          this.handleClick();
+        }
+      } else if (this.state.typePage == 2) {
+        if (
+          tab.img !== "" &&
+          tab.data !== "" &&
+          tab.lien !== "" &&
+          this.state.dataImgHistoire !== "" &&
+          this.state.titreHistoire !== ""
+        ) {
+          this.submit();
+        } else {
+          this.handleClick();
+        }
+      } else if (this.state.typePage == 3) {
+        if (
+          tab.text !== "" &&
+          this.state.dataImgHistoire !== "" &&
+          this.state.titreHistoire !== ""
+        ) {
+          this.submit();
+        } else {
+          this.handleClick();
+        }
       }
-    } else if (this.props.match.params.type == 2) {
-      if (
-        tab.img !== "" &&
-        tab.data !== "" &&
-        tab.lien !== "" &&
-        this.state.dataImgHistoire !== "" &&
-        this.state.titreHistoire !== ""
-      ) {
-        this.submit();
-      } else {
-        this.handleClick();
-      }
-    } else if (this.props.match.params.type == 3) {
-      if (
-        tab.text !== "" &&
-        this.state.dataImgHistoire !== "" &&
-        this.state.titreHistoire !== ""
-      ) {
-        this.submit();
-      } else {
-        this.handleClick();
+      
+    } else {
+      if (this.state.typePage == 1) {
+        if (
+          tab.text !== "" &&
+          (tab.img !== "" ||
+          tab.data !== "" ||
+          tab.lien !== "") &&
+          this.state.titreHistoire !== ""
+        ) {
+          this.submit();
+        } else {
+          this.handleClick();
+        }
+      } else if (this.state.typePage == 2) {
+        if (
+          (tab.img !== "" ||
+          tab.data !== "" ||
+          tab.lien !== "") &&
+          this.state.titreHistoire !== ""
+        ) {
+          this.submit();
+        } else {
+          this.handleClick();
+        }
+      } else if (this.state.typePage == 3) {
+        if (
+          tab.text !== "" &&
+          this.state.titreHistoire !== ""
+        ) {
+          this.submit();
+        } else {
+          this.handleClick();
+        }
       }
     }
   }
-  // redirectFunction(index) {
-  //   if (this.props.match.params.type == 1) {
-  //     this.setState(
-  //       {
-  //         imgSrc: "",
-  //         dataImgPlanche: "",
-  //         lienImgPlanche: "",
-  //         testNext: 0,
-  //         testNextText: 0,
-  //         textHistoire: "",
-  //         titreHistoire: "",
-  //         imgHistoire: "",
-  //         lienImgHistoire: "",
-  //         dataImgHistoire: "",
-  //         planche: [{ text: "", img: "", data: "", lien: "" }],
-  //         lienInputUpload: "",
-  //         lienInputUploadhistoire: "",
-  //         submit: false
-  //       },
-  //       () => {
-  //         if (index + 2 === 2) {
-  //           this.setState({
-  //             userDessin: this.state.reseauUsers[0],
-  //             userText: null
-  //           });
-  //           this.props.history.replace("/Publier/2");
-  //         } else {
-  //           this.setState({
-  //             userDessin: null,
-  //             userText: this.state.reseauUsers[0]
-  //           });
-  //           this.props.history.replace("/Publier/3");
-  //         }
-  //       }
-  //     );
-  //   } else if (this.props.match.params.type == 2) {
-  //     if (index == 0) {
-  //       this.setState(
-  //         {
-  //           imgSrc: "",
-  //           dataImgPlanche: "",
-  //           lienImgPlanche: "",
-  //           testNext: 0,
-  //           testNextText: 0,
-  //           textHistoire: "",
-  //           titreHistoire: "",
-  //           imgHistoire: "",
-  //           lienImgHistoire: "",
-  //           dataImgHistoire: "",
-  //           planche: [{ text: "", img: "", data: "", lien: "" }],
-  //           lienInputUpload: "",
-  //           lienInputUploadhistoire: "",
-  //           submit: false
-  //         },
-  //         () => {
-  //           this.setState({
-  //             userText: this.state.reseauUsers[0],
-  //             userDessin: this.state.reseauUsers[0]
-  //           });
-  //           this.props.history.replace("/Publier/1");
-  //         }
-  //       );
-  //     } else {
-  //       this.setState(
-  //         {
-  //           imgSrc: "",
-  //           dataImgPlanche: "",
-  //           lienImgPlanche: "",
-  //           testNext: 0,
-  //           testNextText: 0,
-  //           textHistoire: "",
-  //           titreHistoire: "",
-  //           imgHistoire: "",
-  //           lienImgHistoire: "",
-  //           dataImgHistoire: "",
-  //           planche: [{ text: "", img: "", data: "", lien: "" }],
-  //           lienInputUpload: "",
-  //           lienInputUploadhistoire: "",
-  //           submit: false
-  //         },
-  //         () => {
-  //           this.setState({
-  //             userDessin: null,
-  //             userText: this.state.reseauUsers[0]
-  //           });
-  //           this.props.history.replace("/Publier/3");
-  //         }
-  //       );
-  //     }
-  //   } else if (this.props.match.params.type == 3) {
-  //     this.setState(
-  //       {
-  //         imgSrc: "",
-  //         dataImgPlanche: "",
-  //         lienImgPlanche: "",
-  //         testNext: 0,
-  //         testNextText: 0,
-  //         textHistoire: "",
-  //         titreHistoire: "",
-  //         imgHistoire: "",
-  //         lienImgHistoire: "",
-  //         dataImgHistoire: "",
-  //         planche: [{ text: "", img: "", data: "", lien: "" }],
-  //         lienInputUpload: "",
-  //         lienInputUploadhistoire: "",
-  //         submit: false
-  //       },
-  //       () => {
-  //         if (index + 2 === 2) {
-  //           this.setState({
-  //             userDessin: this.state.reseauUsers[0],
-  //             userText: null
-  //           });
-  //           this.props.history.replace("/Publier/2");
-  //         } else {
-  //           this.setState({
-  //             userDessin: this.state.reseauUsers[0],
-  //             userText: this.state.reseauUsers[0]
-  //           });
-  //           this.props.history.replace("/Publier/1");
-  //         }
-  //       }
-  //     );
-  //   }
-  // }
+  
   redirectFunction(index) {
     if (this.props.match.params.type == 1) {
       this.props.history.push("/publier/back");
@@ -728,14 +888,16 @@ class PublierView extends React.Component {
     const idText = openText ? "Text" : undefined;
     const { settings, modal } = this.state;
     const { classes } = this.props;
-    console.log(this.props.match.params.type);
+    console.log(this.state.planche);
     const dateFormat = {
       weekday: "long",
       year: "numeric",
       month: "long",
       day: "numeric"
     };
-
+    if (this.state.redirect == 1) {
+      return <Redirect to='/Connexion' />
+    }
     return (
       <div style={styles.section}>
         {this.state.isOpen ? (
@@ -764,6 +926,7 @@ class PublierView extends React.Component {
           </Alert>
         </Snackbar>
         <GridContainer style={{ margin: 0, paddingTop: "20px" }}>
+          
           <GridItem xs={12} sm={12} md={12} style={{ textAlign: "left" }}>
             <Paper
               variant="outlined"
@@ -785,26 +948,104 @@ class PublierView extends React.Component {
                     }
               }
             >
-              {/* {this.state.planches.lenght > 18 ? (
-                <SampleNextArrow
-                  onClick={() => this.next()}
-                  style={Styles.NextArrow}
-                  Color={
-                    this.state.counter === this.state.planches.length
-                      ? "rgba(0, 0, 0, 0.26)"
-                      : "#332861"
-                  }
-                  disabled={
-                    this.state.counter === this.state.planches.length
-                      ? true
-                      : false
-                  }
-                />
-              ) : (
-                <div></div>
-              )}
-               */}
-
+            {!(typeof this.props.match.params.histoireId === 'undefined') ? (
+            <GridContainer
+              style={{
+              width: "90%",
+              marginTop: 20,
+              marginLeft: "auto",
+              marginRight: "auto"
+              }}
+            >
+            {this.state.userDessin ? (
+            <GridItem xs={12} sm={12} md={6} style={{ padding: 0 }}>
+              <ListItem>
+                <Link to={this.state.userDessin.id !== this.state.userLocal.id ?
+                   '/LesOeuvres/'+this.state.userDessin.id : null}>
+                <ListItemAvatar>
+                  {this.state.userDessin.lienPhoto == "" ||
+                  this.state.userDessin.lienPhoto == null ? (
+                    <Avatar
+                      alt=""
+                      src={
+                        config.API_URL + "images/defaultPhotoProfil.jpg"
+                      }
+                    />
+                  ) : (
+                    <Avatar
+                      alt=""
+                      src={this.state.userDessin.lienPhoto}
+                    />
+                  )}
+                </ListItemAvatar>
+                </Link>
+                <Link to={'/LesOeuvres/'+this.state.userDessin.id}>
+                <ListItemText
+                  style={{
+                    paddingBottom: 8
+                  }}
+                >
+                  <p
+                    style={{
+                      color: "#5a517f",
+                      fontWeight: "bold",
+                      fontSize: 17,
+                      margin: 0
+                    }}
+                  >
+                    {this.state.userDessin.pseudo}
+                  </p>
+                </ListItemText>
+                </Link>
+              </ListItem>
+            </GridItem>
+            ):(<GridItem xs={0} sm={0} md={0} style={{ padding: 0 }}></GridItem>)}
+            {this.state.userText ? (
+            <GridItem xs={12} sm={12} md={6} style={{ padding: 0 }}>
+              <ListItem>
+              <Link to={this.state.userText.id !== this.state.userLocal.id ?
+                '/LesOeuvres/'+this.state.userText.id : null}>
+                <ListItemAvatar>
+                  {this.state.userText.lienPhoto == "" ||
+                  this.state.userText.lienPhoto == null ? (
+                    <Avatar
+                      alt=""
+                      src={
+                        config.API_URL + "images/defaultPhotoProfil.jpg"
+                      }
+                    />
+                  ) : (
+                    <Avatar
+                      alt=""
+                      src={this.state.userText.lienPhoto}
+                    />
+                  )}
+                </ListItemAvatar>
+                </Link>
+                <Link to={'/LesOeuvres/'+this.state.userText.id}>
+                <ListItemText
+                  style={{
+                    paddingBottom: 8
+                  }}
+                >
+                  <p
+                    style={{
+                      color: "#5a517f",
+                      fontWeight: "bold",
+                      fontSize: 17,
+                      margin: 0
+                    }}
+                  >
+                    {this.state.userText.pseudo}
+                  </p>
+                </ListItemText>
+                </Link>
+              </ListItem>
+            </GridItem>
+            ):(<GridItem xs={0} sm={0} md={0} style={{ padding: 0 }}></GridItem>)}
+            </GridContainer>
+            ):(
+              <div>
               {this.props.match.params.type == "1" ? (
                 <GridContainer
                   style={{
@@ -826,8 +1067,8 @@ class PublierView extends React.Component {
                     >
                       <ListItem className={classes.avatarPseudo}>
                         <ListItemAvatar>
-                          {this.state.userDessin.imgProfil == "" ||
-                          this.state.userDessin.imgProfil == null ? (
+                          {this.state.userDessin.lienPhoto == "" ||
+                          this.state.userDessin.lienPhoto == null ? (
                             <Avatar
                               alt=""
                               src={
@@ -837,7 +1078,7 @@ class PublierView extends React.Component {
                           ) : (
                             <Avatar
                               alt=""
-                              src={this.state.userDessin.imgProfil}
+                              src={this.state.userDessin.lienPhoto}
                             />
                           )}
                         </ListItemAvatar>
@@ -896,8 +1137,8 @@ class PublierView extends React.Component {
                             />
                             <ListItem>
                               <ListItemAvatar>
-                                {option.imgProfil == "" ||
-                                option.imgProfil == null ? (
+                                {option.lienPhoto == "" ||
+                                option.lienPhoto == null ? (
                                   <Avatar
                                     alt=""
                                     src={
@@ -906,7 +1147,7 @@ class PublierView extends React.Component {
                                     }
                                   />
                                 ) : (
-                                  <Avatar alt="" src={option.imgProfil} />
+                                  <Avatar alt="" src={option.lienPhoto} />
                                 )}
                               </ListItemAvatar>
                               <ListItemText
@@ -962,8 +1203,8 @@ class PublierView extends React.Component {
                     >
                       <ListItem className={classes.avatarPseudo}>
                         <ListItemAvatar>
-                          {this.state.userText.imgProfil == "" ||
-                          this.state.userText.imgProfil == null ? (
+                          {this.state.userText.lienPhoto == "" ||
+                          this.state.userText.lienPhoto == null ? (
                             <Avatar
                               alt=""
                               src={
@@ -973,7 +1214,7 @@ class PublierView extends React.Component {
                           ) : (
                             <Avatar
                               alt=""
-                              src={this.state.userText.imgProfil}
+                              src={this.state.userText.lienPhoto}
                             />
                           )}
                         </ListItemAvatar>
@@ -1031,8 +1272,8 @@ class PublierView extends React.Component {
                             />
                             <ListItem>
                               <ListItemAvatar>
-                                {option.imgProfil == "" ||
-                                option.imgProfil == null ? (
+                                {option.lienPhoto == "" ||
+                                option.lienPhoto == null ? (
                                   <Avatar
                                     alt=""
                                     src={
@@ -1041,7 +1282,7 @@ class PublierView extends React.Component {
                                     }
                                   />
                                 ) : (
-                                  <Avatar alt="" src={option.imgProfil} />
+                                  <Avatar alt="" src={option.lienPhoto} />
                                 )}
                               </ListItemAvatar>
                               <ListItemText
@@ -1105,8 +1346,8 @@ class PublierView extends React.Component {
                   <GridItem xs={12} sm={12} md={12} style={{ padding: 0 }}>
                     <ListItem className={classes.avatarPseudo1}>
                       <ListItemAvatar>
-                        {this.state.userDessin.imgProfil == "" ||
-                        this.state.userDessin.imgProfil == null ? (
+                        {this.state.userDessin.lienPhoto == "" ||
+                        this.state.userDessin.lienPhoto == null ? (
                           <Avatar
                             alt=""
                             src={
@@ -1116,7 +1357,7 @@ class PublierView extends React.Component {
                         ) : (
                           <Avatar
                             alt=""
-                            src={this.state.userDessin.imgProfil}
+                            src={this.state.userDessin.lienPhoto}
                           />
                         )}
                       </ListItemAvatar>
@@ -1155,8 +1396,8 @@ class PublierView extends React.Component {
                   <GridItem xs={12} sm={12} md={12} style={{ padding: 0 }}>
                     <ListItem className={classes.avatarPseudo1}>
                       <ListItemAvatar>
-                        {this.state.userText.imgProfil == "" ||
-                        this.state.userText.imgProfil == null ? (
+                        {this.state.userText.lienPhoto == "" ||
+                        this.state.userText.lienPhoto == null ? (
                           <Avatar
                             alt=""
                             src={
@@ -1164,7 +1405,7 @@ class PublierView extends React.Component {
                             }
                           />
                         ) : (
-                          <Avatar alt="" src={this.state.userText.imgProfil} />
+                          <Avatar alt="" src={this.state.userText.lienPhoto} />
                         )}
                       </ListItemAvatar>
                       <ListItemText
@@ -1188,6 +1429,8 @@ class PublierView extends React.Component {
                 </GridContainer>
               ) : (
                 <div></div>
+              )}
+              </div>
               )}
               <GridContainer
                 style={{
@@ -1369,7 +1612,7 @@ class PublierView extends React.Component {
                   position: "relative"
                 }}
               >
-                {this.props.match.params.type == "1" ? (
+                {this.state.typePage == "1" ? (
                   <SampleNextArrow
                     onClick={() => this.next()}
                     style={Styles.NextArrow}
@@ -1389,7 +1632,7 @@ class PublierView extends React.Component {
                 ) : (
                   <div></div>
                 )}
-                {this.props.match.params.type == "2" ? (
+                {this.state.typePage == "2" ? (
                   <SampleNextArrow
                     onClick={() => this.next()}
                     style={Styles.NextArrow}
@@ -1405,7 +1648,7 @@ class PublierView extends React.Component {
                 ) : (
                   <div></div>
                 )}
-                {this.props.match.params.type == "3" ? (
+                {this.state.typePage == "3" ? (
                   <SampleNextArrow
                     onClick={() => this.next()}
                     style={Styles.NextArrow}
@@ -1436,7 +1679,7 @@ class PublierView extends React.Component {
                               justify="center"
                               alignItems="center"
                             ></GridContainer>
-                            {this.props.match.params.type == "2" ? (
+                            {this.state.typePage == "2" ? (
                               <GridContainer
                                 style={{
                                   margin: 0,
@@ -1492,11 +1735,17 @@ class PublierView extends React.Component {
                                             isOpen: true,
                                             imgUrl: planche.img
                                           });
+                                        else if(planche.lien !== ""){
+                                          this.setState({
+                                            isOpen: true,
+                                            imgUrl: planche.lien
+                                          });
+                                        }
                                       }}
                                       style={{ width: "100%" }}
                                     >
                                       <Parallax
-                                        image={planche.img}
+                                        image={planche.img !== "" ? planche.img : planche.lien}
                                         style={
                                           isMobile
                                             ? {
@@ -1572,7 +1821,7 @@ class PublierView extends React.Component {
                                   </div>
                                 </GridItem>
                               </GridContainer>
-                            ) : this.props.match.params.type == "3" ? (
+                            ) : this.state.typePage == "3" ? (
                               <GridContainer
                                 style={
                                   isMobile
@@ -1734,11 +1983,17 @@ class PublierView extends React.Component {
                                             isOpen: true,
                                             imgUrl: planche.img
                                           });
+                                        else if(planche.lien !== ""){
+                                          this.setState({
+                                            isOpen: true,
+                                            imgUrl: planche.lien
+                                          });
+                                        }
                                       }}
                                       style={{ width: "100%" }}
                                     >
                                       <Parallax
-                                        image={planche.img}
+                                        image={planche.img !== "" ? planche.img : planche.lien}
                                         style={
                                           isMobile
                                             ? {
@@ -1759,6 +2014,7 @@ class PublierView extends React.Component {
                                               }
                                         }
                                       >
+                                        <div>
                                         <input
                                           accept="image/*"
                                           className={classes.input}
@@ -1809,6 +2065,7 @@ class PublierView extends React.Component {
                                             <PhotoCamera />
                                           </IconButton>
                                         </label>
+                                        </div>
                                       </Parallax>
                                     </ButtonBase>
                                   </div>
@@ -1851,6 +2108,7 @@ class PublierView extends React.Component {
                                       marginRight: "auto"
                                     }}
                                   >
+                                    
                                     <TextField
                                       primary
                                       id="standard-multiline-static"
@@ -1917,82 +2175,7 @@ class PublierView extends React.Component {
                   left={isMobile ? "-11%" : "-5%"}
                 />
               </div>
-              {/* <GridItem
-                xs={12}
-                sm={12}
-                md={12}
-                style={{ padding: 0, display: "flex" }}
-              >
-                <ButtonBase
-                  onClick={() =>
-                    this.setState({
-                      isOpen: true,
-                      imgUrl: this.state.histoire.lienIllustration
-                    })
-                  }
-                  style={isMobile ? { width: "100%" } : { width: "30%" }}
-                >
-                  <Card
-                    style={{
-                      backgroundColor: "black",
-                      margin: 0,
-                      borderRadius: "15px 15px 15px 15px"
-                    }}
-                  >
-                    <Parallax
-                      style={
-                        (imagesStyles.imgCard,
-                        {
-                          opacity: 0.7,
-                          height: 150,
-                          borderRadius: "15px 15px 15px 15px"
-                        })
-                      }
-                      image={this.state.histoire.lienIllustration}
-                    ></Parallax>
-
-                    <div
-                      style={
-                        (imagesStyles.imgCardOverlay,
-                        {
-                          alignItems: "center",
-                          position: "absolute",
-                          top: 0,
-                          right: 0,
-                          left: 0,
-                          height: "100%"
-                        })
-                      }
-                    >
-                      <h3
-                        style={
-                          (cardTitle.cardTitle,
-                          {
-                            width: "100%",
-                            paddingLeft: 15,
-                            color: "white",
-                            textAlign: "left"
-                          })
-                        }
-                      >
-                        {this.state.histoire.titreHistoire}
-                      </h3>
-
-                      <p
-                        style={{
-                          color: "white",
-                          textAlign: "left",
-                          width: "100%",
-                          paddingLeft: 15,
-                          fontSize: 13
-                        }}
-                      >
-                        {this.functionDate(this.state.histoire.dateDeCreation)}
-                      </p>
-                    </div>
-                  </Card>
-                </ButtonBase>
-              </GridItem> */}
+             
               <GridContainer
                 style={{
                   width: "90%",
@@ -2026,1563 +2209,9 @@ class PublierView extends React.Component {
             </Paper>
           </GridItem>
         </GridContainer>
-        {/*<div
-          style={{
-            width: "90%",
-            marginLeft: "auto",
-            marginRight: "auto",
-
-            borderRadius: 15
-          }}
-        >
-          <Slider
-            ref={slider => (this.slider = slider)}
-            {...settings}
-            style={{
-              height: "100%"
-            }}
-          >
-            {this.state.planches != []
-              ? this.state.planches.map((planche, index) => {
-                  console.log("histoire" + this.state.histoire);
-                  return (
-                    <div key={1}>
-                      <GridContainer
-                        justify="center"
-                        alignItems="center"
-                      ></GridContainer>
-                      {planche.text === "" ? (
-                        <GridContainer
-                          style={{
-                            margin: 0,
-                            marginBottom: 30,
-                            marginTop: 20
-                          }}
-                          justify="center"
-                          alignItems="center"
-                        >
-                          <GridItem
-                            xs={12}
-                            sm={12}
-                            md={12}
-                            justify="center"
-                            alignItems="center"
-                            style={
-                              isMobile
-                                ? {
-                                    height: 400,
-                                    borderRadius: "15px 15px 15px 15px",
-                                    padding: 0
-                                  }
-                                : {
-                                    height: 550,
-                                    borderRadius: "15px 15px 15px 15px",
-                                    padding: 0
-                                  }
-                            }
-                          >
-                            <div
-                              style={
-                                isMobile
-                                  ? {
-                                      textAlign: "-webkit-center",
-                                      background: "#5a517f",
-                                      borderRadius: "15px 15px 15px 15px",
-                                      height: "100%",
-                                      width: "100%"
-                                    }
-                                  : {
-                                      textAlign: "-webkit-center",
-                                      background: "#5a517f",
-                                      borderRadius: "15px 15px 15px 15px",
-                                      height: "100%",
-                                      width: "100%"
-                                    }
-                              }
-                            >
-                              <ButtonBase
-                                onClick={() =>
-                                  this.setState({
-                                    isOpen: true,
-                                    imgUrl: planche.lienDessin
-                                  })
-                                }
-                                style={{ width: "100%" }}
-                              >
-                                <Parallax
-                                  image={planche.lienDessin}
-                                  style={
-                                    isMobile
-                                      ? {
-                                          height: 400,
-                                          borderRadius: "15px 15px 15px 15px",
-                                          display: "block",
-                                          width: "100%"
-                                        }
-                                      : {
-                                          height: 550,
-
-                                          display: "block",
-                                          width: "70%",
-                                          marginLeft: "auto",
-                                          marginRight: "auto"
-                                        }
-                                  }
-                                ></Parallax>
-                              </ButtonBase>
-                            </div>
-                          </GridItem>
-                        </GridContainer>
-                      ) : planche.lienDessin === null ||
-                        planche.lienDessin === "" ? (
-                        <GridContainer
-                          style={
-                            isMobile
-                              ? {
-                                  width: "100%",
-                                  margin: 0,
-                                  marginBottom: 30,
-                                  marginTop: 20
-                                }
-                              : {
-                                  width: "100%",
-                                  margin: 0,
-                                  marginBottom: 30,
-                                  marginTop: 20,
-                                  marginLeft: "auto",
-                                  marginRight: "auto"
-                                }
-                          }
-                          justify="center"
-                          alignItems="center"
-                        >
-                          <GridItem
-                            xs={12}
-                            sm={12}
-                            md={12}
-                            justify="center"
-                            alignItems="center"
-                            style={
-                              isMobile
-                                ? {
-                                    height: 400,
-                                    backgroundColor: "rgb(227, 243, 253)",
-                                    borderRadius: "15px 15px 15px 15px",
-                                    borderRadiusTopLeft: 15,
-                                    padding: 0,
-                                    display: "flex",
-                                    justifyContent: "center",
-                                    alignItems: "center"
-                                  }
-                                : {
-                                    height: 550,
-                                    backgroundColor: "rgb(227, 243, 253)",
-                                    borderRadius: "15px 15px 15px 15px",
-                                    borderRadiusTopLeft: 15,
-                                    padding: 0,
-                                    display: "flex",
-                                    justifyContent: "center",
-                                    alignItems: "center"
-                                  }
-                            }
-                          >
-                            {" "}
-                            <SimpleBar
-                              style={
-                                isMobile
-                                  ? {
-                                      maxHeight: "350px",
-                                      width: "100%"
-                                    }
-                                  : {
-                                      maxHeight: "450px",
-                                      width: "70%",
-                                      marginLeft: "auto",
-                                      marginRight: "auto"
-                                    }
-                              }
-                            >
-                              <h5
-                                style={{
-                                  color: "#332861",
-                                  width: "100%",
-                                  maxHeight: "450px",
-                                  margin: "0px",
-                                  paddingLeft: "30px",
-                                  paddingRight: "30px",
-                                  fontSize: "17px"
-                                }}
-                              >
-                                {planche.text}
-                              </h5>
-                            </SimpleBar>
-                          </GridItem>
-                        </GridContainer>
-                      ) : (
-                        <GridContainer
-                          justify="center"
-                          alignItems="center"
-                          style={{
-                            margin: 0,
-                            marginBottom: 30,
-                            marginTop: 20
-                          }}
-                        >
-                          <GridItem
-                            xs={12}
-                            sm={12}
-                            md={6}
-                            justify="center"
-                            alignItems="center"
-                            style={
-                              isMobile
-                                ? {
-                                    height: 400,
-                                    borderRadius: "15px 15px 0px 0px",
-                                    padding: 0
-                                  }
-                                : {
-                                    height: 550,
-                                    borderRadius: "15px 0px 0px 15px",
-                                    padding: 0
-                                  }
-                            }
-                          >
-                            <div
-                              style={
-                                isMobile
-                                  ? {
-                                      textAlign: "-webkit-center",
-                                      background: "#5a517f",
-                                      borderRadius: "15px 15px 0px 0px",
-                                      height: "100%"
-                                    }
-                                  : {
-                                      textAlign: "-webkit-center",
-                                      background: "#5a517f",
-                                      borderRadius: "15px 0px 0px 15px",
-                                      height: "100%"
-                                    }
-                              }
-                            >
-                              <ButtonBase
-                                onClick={() =>
-                                  this.setState({
-                                    isOpen: true,
-                                    imgUrl: planche.lienDessin
-                                  })
-                                }
-                                style={{ width: "100%" }}
-                              >
-                                <Parallax
-                                  image={planche.lienDessin}
-                                  style={
-                                    isMobile
-                                      ? {
-                                          height: 400,
-                                          borderRadius: "15px 15px 0px 0px",
-                                          display: "block",
-                                          width: "100%"
-                                        }
-                                      : {
-                                          height: 550,
-                                          borderRadius: "15px 0px 0px 15px",
-                                          display: "block",
-                                          width: "100%"
-                                        }
-                                  }
-                                ></Parallax>
-                              </ButtonBase>
-                            </div>
-                          </GridItem>
-
-                          <GridItem
-                            xs={12}
-                            sm={12}
-                            md={6}
-                            justify="center"
-                            alignItems="center"
-                            style={
-                              isMobile
-                                ? {
-                                    height: 400,
-                                    backgroundColor: "rgb(227, 243, 253)",
-                                    borderRadius: "0px 0px 15px 15px",
-                                    borderRadiusTopLeft: 15,
-                                    padding: 0,
-                                    display: "flex",
-                                    justifyContent: "center",
-                                    alignItems: "center"
-                                  }
-                                : {
-                                    height: 550,
-                                    backgroundColor: "rgb(227, 243, 253)",
-                                    borderRadius: "0px 15px 15px 0px",
-                                    borderRadiusTopLeft: 15,
-                                    padding: 0,
-                                    display: "flex",
-                                    justifyContent: "center",
-                                    alignItems: "center"
-                                  }
-                            }
-                          >
-                            <div
-                              style={{
-                                width: "100%"
-                              }}
-                            >
-                              <SimpleBar
-                                style={
-                                  isMobile
-                                    ? {
-                                        maxHeight: "350px",
-                                        width: "100%"
-                                      }
-                                    : {
-                                        maxHeight: "450px",
-                                        width: "100%",
-                                        marginLeft: "auto",
-                                        marginRight: "auto"
-                                      }
-                                }
-                              >
-                                <h5
-                                  style={{
-                                    color: "#332861",
-                                    width: "100%",
-                                    maxHeight: "450px",
-                                    margin: "0px",
-                                    paddingLeft: "30px",
-                                    paddingRight: "30px",
-                                    fontSize: "17px"
-                                  }}
-                                >
-                                  {planche.text}
-                                </h5>
-                              </SimpleBar>
-                            </div>
-                          </GridItem>
-                        </GridContainer>
-                      )}
-                    </div>
-                  );
-                })
-              : () => {
-                  console.log(this.state.histoire);
-                  return (
-                    <div>
-                      <p>mazal maja</p>
-                    </div>
-                  );
-                }}
-          </Slider>
-        </div>
-        {this.state.planches.lenght > 18 ? (
-          <SamplePrevArrow
-            onClick={() => this.previous()}
-            Color={this.state.counter === 1 ? "rgba(0, 0, 0, 0.26)" : "#332861"}
-            disabled={this.state.counter === 1 ? true : false}
-          />
-        ) : (
-          <div></div>
-        )} 
-            </Paper>
-          </GridItem>
-        </GridContainer> */}
-      </div>
+   </div>
     );
-    //   //Moment.locale("fr");
-    //   if (this.state.histoire !== "")
-    //     return (
-    //       <div className={classes.section}>
-    //         <ButtonBase onClick={() => this.props.history.goBack()}>
-    //           <Fab aria-label={fab.label} style={fab.style} color={fab.color}>
-    //             {fab.icon}
-    //           </Fab>
-    //         </ButtonBase>
-    //         {this.state.isOpen ? (
-    //           <Lightbox
-    //             mainSrc={this.state.imgUrl}
-    //             onCloseRequest={() =>
-    //               this.setState({ isOpen: false, imgUrl: "" })
-    //             }
-    //             reactModalStyle={{
-    //               overlay: { zIndex: 2000 }
-    //             }}
-    //           />
-    //         ) : (
-    //           <div></div>
-    //         )}
-    //         <Dialog
-    //           fullWidth={false}
-    //           maxWidth={"lg"}
-    //           open={modal}
-    //           onClose={() => {
-    //             this.setState({ modal: false });
-    //           }}
-    //           aria-labelledby="max-width-dialog-title"
-    //         >
-    //           <DialogTitle
-    //             id="max-width-dialog-title"
-    //             style={{ textAlign: "center" }}
-    //           >
-    //             Notez les Dessins
-    //           </DialogTitle>
-    //           <DialogContent style={{ paddingTop: 50 }}>
-    //             <Core.Slider
-    //               style={{ color: "rgb(26, 153, 170)" }}
-    //               defaultValue={0}
-    //               value={this.state.ratingDessinTemp}
-    //               onChange={(event, value) =>
-    //                 this.setState({ ratingDessinTemp: value })
-    //               }
-    //               aria-labelledby="discrete-slider-small-steps"
-    //               step={0.5}
-    //               marks
-    //               min={0}
-    //               max={5}
-    //               valueLabelDisplay="auto"
-    //               color="#121212"
-    //             />
-    //           </DialogContent>
-    //           <DialogActions>
-    //             <Button
-    //               onClick={() =>
-    //                 this.setState({
-    //                   modal: false,
-    //                   ratingDessinTemp: this.state.ratingDessin
-    //                 })
-    //               }
-    //               color="default"
-    //             >
-    //               Annuler
-    //             </Button>
-    //             <Button
-    //               onClick={() =>
-    //                 this.setState({
-    //                   modal: false,
-    //                   ratingDessin: this.state.ratingDessinTemp
-    //                 })
-    //               }
-    //               style={{ backgroundColor: "rgb(26, 153, 170)" }}
-    //             >
-    //               Confirmer
-    //             </Button>
-    //           </DialogActions>
-    //         </Dialog>
-    //         <Dialog
-    //           fullWidth={false}
-    //           maxWidth={"lg"}
-    //           open={this.state.modal2}
-    //           onClose={() => {
-    //             this.setState({ modal2: false });
-    //           }}
-    //           aria-labelledby="max-width-dialog-title"
-    //         >
-    //           <DialogTitle
-    //             id="max-width-dialog-title"
-    //             style={{ textAlign: "center" }}
-    //           >
-    //             Notez les Textes
-    //           </DialogTitle>
-    //           <DialogContent style={{ paddingTop: 50 }}>
-    //             <Core.Slider
-    //               defaultValue={0}
-    //               style={{ color: "rgb(223, 108, 79)" }}
-    //               value={this.state.ratingTextTemp}
-    //               onChange={(event, value) =>
-    //                 this.setState({ ratingTextTemp: value })
-    //               }
-    //               aria-labelledby="discrete-slider-small-steps"
-    //               step={0.5}
-    //               marks
-    //               min={0}
-    //               max={5}
-    //               valueLabelDisplay="auto"
-    //             />
-    //           </DialogContent>
-    //           <DialogActions>
-    //             <Button
-    //               onClick={() =>
-    //                 this.setState({
-    //                   modal2: false,
-    //                   ratingTextTemp: this.state.ratingText
-    //                 })
-    //               }
-    //               color="default"
-    //             >
-    //               Annuler
-    //             </Button>
-    //             <Button
-    //               onClick={() =>
-    //                 this.setState({
-    //                   modal2: false,
-    //                   ratingText: this.state.ratingTextTemp
-    //                 })
-    //               }
-    //               style={{ backgroundColor: "rgb(223, 108, 79)" }}
-    //             >
-    //               Confirmer
-    //             </Button>
-    //           </DialogActions>
-    //         </Dialog>
-    //         <GridContainer
-    //           justify="center"
-    //           alignItems="center"
-    //           style={{ margin: 0 }}
-    //         >
-    //           <GridItem xs={12} sm={12} md={12}>
-    //             <Paper
-    //               variant="outlined"
-    //               style={{
-    //                 position: "relative",
-    //                 width: "90%",
-    //                 marginTop: "5%",
-    //                 marginLeft: "auto",
-    //                 marginRight: "auto"
-    //               }}
-    //             >
-    //               {this.state.planches.lenght > 18 ? (
-    //                 <SampleNextArrow
-    //                   onClick={() => this.next()}
-    //                   style={Styles.NextArrow}
-    //                   Color={
-    //                     this.state.counter === this.state.planches.length
-    //                       ? "rgba(0, 0, 0, 0.26)"
-    //                       : "#332861"
-    //                   }
-    //                   disabled={
-    //                     this.state.counter === this.state.planches.length
-    //                       ? true
-    //                       : false
-    //                   }
-    //                 />
-    //               ) : (
-    //                 <div></div>
-    //               )}
-    //               <GridContainer
-    //                 justify="center"
-    //                 alignItems="center"
-    //                 style={{
-    //                   width: "90%",
-    //                   marginTop: 20,
-    //                   marginLeft: "auto",
-    //                   marginRight: "auto"
-    //                 }}
-    //               >
-    //                 <GridItem xs={12} sm={12} md={6} style={{ padding: 0 }}>
-    //                   <ListItem>
-    //                     <ListItemAvatar>
-    //                       {this.state.histoire.userDessin.imgProfil == "" ||
-    //                       this.state.histoire.userText.imgProfil == null ? (
-    //                         <Avatar
-    //                           alt=""
-    //                           src={
-    //                             config.API_URL + "images/defaultPhotoProfil.jpg"
-    //                           }
-    //                         />
-    //                       ) : (
-    //                         <Avatar
-    //                           alt=""
-    //                           src={this.state.histoire.userDessin.imgProfil}
-    //                         />
-    //                       )}
-    //                     </ListItemAvatar>
-    //                     <ListItemText
-    //                       style={{
-    //                         paddingBottom: 20
-    //                       }}
-    //                     >
-    //                       <p
-    //                         style={{
-    //                           color: "#5a517f",
-    //                           fontWeight: "bold",
-    //                           fontSize: 17,
-    //                           margin: 0
-    //                         }}
-    //                       >
-    //                         {this.state.histoire.userDessin.pseudo}
-    //                       </p>
-    //                     </ListItemText>
-    //                   </ListItem>
-    //                 </GridItem>
-    //                 <GridItem xs={12} sm={12} md={6} style={{ padding: 0 }}>
-    //                   <ListItem>
-    //                     <ListItemAvatar>
-    //                       {this.state.histoire.userText.imgProfil == "" ||
-    //                       this.state.histoire.userText.imgProfil == null ? (
-    //                         <Avatar
-    //                           alt=""
-    //                           src={
-    //                             config.API_URL + "images/defaultPhotoProfil.jpg"
-    //                           }
-    //                         />
-    //                       ) : (
-    //                         <Avatar
-    //                           alt=""
-    //                           src={this.state.histoire.userText.imgProfil}
-    //                         />
-    //                       )}
-    //                     </ListItemAvatar>
-    //                     <ListItemText
-    //                       style={{
-    //                         paddingBottom: 20
-    //                       }}
-    //                     >
-    //                       <p
-    //                         style={{
-    //                           color: "#5a517f",
-    //                           fontWeight: "bold",
-    //                           fontSize: 17,
-    //                           margin: 0
-    //                         }}
-    //                       >
-    //                         {this.state.histoire.userText.pseudo}
-    //                       </p>
-    //                     </ListItemText>
-    //                   </ListItem>
-    //                 </GridItem>
-    //                 <GridItem
-    //                   xs={12}
-    //                   sm={12}
-    //                   md={12}
-    //                   style={{ padding: 0, display: "flex" }}
-    //                 >
-    //                   <ButtonBase
-    //                     onClick={() =>
-    //                       this.setState({
-    //                         isOpen: true,
-    //                         imgUrl: this.state.histoire.lienIllustration
-    //                       })
-    //                     }
-    //                     style={isMobile ? { width: "100%" } : { width: "30%" }}
-    //                   >
-    //                     <Card
-    //                       style={{
-    //                         backgroundColor: "black",
-    //                         margin: 0,
-    //                         borderRadius: "15px 15px 15px 15px"
-    //                       }}
-    //                     >
-    //                       <Parallax
-    //                         style={
-    //                           (imagesStyles.imgCard,
-    //                           {
-    //                             opacity: 0.7,
-    //                             height: 150,
-    //                             borderRadius: "15px 15px 15px 15px"
-    //                           })
-    //                         }
-    //                         image={this.state.histoire.lienIllustration}
-    //                       ></Parallax>
-
-    //                       <div
-    //                         style={
-    //                           (imagesStyles.imgCardOverlay,
-    //                           {
-    //                             alignItems: "center",
-    //                             position: "absolute",
-    //                             top: 0,
-    //                             right: 0,
-    //                             left: 0,
-    //                             height: "100%"
-    //                           })
-    //                         }
-    //                       >
-    //                         <h3
-    //                           style={
-    //                             (cardTitle.cardTitle,
-    //                             {
-    //                               width: "100%",
-    //                               paddingLeft: 15,
-    //                               color: "white",
-    //                               textAlign: "left"
-    //                             })
-    //                           }
-    //                         >
-    //                           {this.state.histoire.titreHistoire}
-    //                         </h3>
-
-    //                         <p
-    //                           style={{
-    //                             color: "white",
-    //                             textAlign: "left",
-    //                             width: "100%",
-    //                             paddingLeft: 15,
-    //                             fontSize: 13
-    //                           }}
-    //                         >
-    //                           {this.functionDate(
-    //                             this.state.histoire.dateDeCreation
-    //                           )}
-    //                         </p>
-    //                       </div>
-    //                     </Card>
-    //                   </ButtonBase>
-    //                 </GridItem>
-    //               </GridContainer>
-    //               <div
-    //                 style={{
-    //                   width: "90%",
-    //                   marginLeft: "auto",
-    //                   marginRight: "auto",
-
-    //                   borderRadius: 15
-    //                 }}
-    //               >
-    //                 <Slider
-    //                   ref={slider => (this.slider = slider)}
-    //                   {...settings}
-    //                   style={{
-    //                     height: "100%"
-    //                   }}
-    //                 >
-    //                   {this.state.planches != []
-    //                     ? this.state.planches.map((planche, index) => {
-    //                         console.log("histoire" + this.state.histoire);
-    //                         return (
-    //                           <div key={1}>
-    //                             <GridContainer
-    //                               justify="center"
-    //                               alignItems="center"
-    //                             ></GridContainer>
-    //                             {planche.text === "" ? (
-    //                               <GridContainer
-    //                                 style={{
-    //                                   margin: 0,
-    //                                   marginBottom: 30,
-    //                                   marginTop: 20
-    //                                 }}
-    //                                 justify="center"
-    //                                 alignItems="center"
-    //                               >
-    //                                 <GridItem
-    //                                   xs={12}
-    //                                   sm={12}
-    //                                   md={12}
-    //                                   justify="center"
-    //                                   alignItems="center"
-    //                                   style={
-    //                                     isMobile
-    //                                       ? {
-    //                                           height: 400,
-    //                                           borderRadius: "15px 15px 15px 15px",
-    //                                           padding: 0
-    //                                         }
-    //                                       : {
-    //                                           height: 550,
-    //                                           borderRadius: "15px 15px 15px 15px",
-    //                                           padding: 0
-    //                                         }
-    //                                   }
-    //                                 >
-    //                                   <div
-    //                                     style={
-    //                                       isMobile
-    //                                         ? {
-    //                                             textAlign: "-webkit-center",
-    //                                             background: "#5a517f",
-    //                                             borderRadius:
-    //                                               "15px 15px 15px 15px",
-    //                                             height: "100%",
-    //                                             width: "100%"
-    //                                           }
-    //                                         : {
-    //                                             textAlign: "-webkit-center",
-    //                                             background: "#5a517f",
-    //                                             borderRadius:
-    //                                               "15px 15px 15px 15px",
-    //                                             height: "100%",
-    //                                             width: "100%"
-    //                                           }
-    //                                     }
-    //                                   >
-    //                                     <ButtonBase
-    //                                       onClick={() =>
-    //                                         this.setState({
-    //                                           isOpen: true,
-    //                                           imgUrl: planche.lienDessin
-    //                                         })
-    //                                       }
-    //                                       style={{ width: "100%" }}
-    //                                     >
-    //                                       <Parallax
-    //                                         image={planche.lienDessin}
-    //                                         style={
-    //                                           isMobile
-    //                                             ? {
-    //                                                 height: 400,
-    //                                                 borderRadius:
-    //                                                   "15px 15px 15px 15px",
-    //                                                 display: "block",
-    //                                                 width: "100%"
-    //                                               }
-    //                                             : {
-    //                                                 height: 550,
-
-    //                                                 display: "block",
-    //                                                 width: "70%",
-    //                                                 marginLeft: "auto",
-    //                                                 marginRight: "auto"
-    //                                               }
-    //                                         }
-    //                                       ></Parallax>
-    //                                     </ButtonBase>
-    //                                   </div>
-    //                                 </GridItem>
-    //                               </GridContainer>
-    //                             ) : planche.lienDessin === null ||
-    //                               planche.lienDessin === "" ? (
-    //                               <GridContainer
-    //                                 style={
-    //                                   isMobile
-    //                                     ? {
-    //                                         width: "100%",
-    //                                         margin: 0,
-    //                                         marginBottom: 30,
-    //                                         marginTop: 20
-    //                                       }
-    //                                     : {
-    //                                         width: "100%",
-    //                                         margin: 0,
-    //                                         marginBottom: 30,
-    //                                         marginTop: 20,
-    //                                         marginLeft: "auto",
-    //                                         marginRight: "auto"
-    //                                       }
-    //                                 }
-    //                                 justify="center"
-    //                                 alignItems="center"
-    //                               >
-    //                                 <GridItem
-    //                                   xs={12}
-    //                                   sm={12}
-    //                                   md={12}
-    //                                   justify="center"
-    //                                   alignItems="center"
-    //                                   style={
-    //                                     isMobile
-    //                                       ? {
-    //                                           height: 400,
-    //                                           backgroundColor:
-    //                                             "rgb(227, 243, 253)",
-    //                                           borderRadius: "15px 15px 15px 15px",
-    //                                           borderRadiusTopLeft: 15,
-    //                                           padding: 0,
-    //                                           display: "flex",
-    //                                           justifyContent: "center",
-    //                                           alignItems: "center"
-    //                                         }
-    //                                       : {
-    //                                           height: 550,
-    //                                           backgroundColor:
-    //                                             "rgb(227, 243, 253)",
-    //                                           borderRadius: "15px 15px 15px 15px",
-    //                                           borderRadiusTopLeft: 15,
-    //                                           padding: 0,
-    //                                           display: "flex",
-    //                                           justifyContent: "center",
-    //                                           alignItems: "center"
-    //                                         }
-    //                                   }
-    //                                 >
-    //                                   {" "}
-    //                                   <SimpleBar
-    //                                     style={
-    //                                       isMobile
-    //                                         ? {
-    //                                             maxHeight: "350px",
-    //                                             width: "100%"
-    //                                           }
-    //                                         : {
-    //                                             maxHeight: "450px",
-    //                                             width: "70%",
-    //                                             marginLeft: "auto",
-    //                                             marginRight: "auto"
-    //                                           }
-    //                                     }
-    //                                   >
-    //                                     <h5
-    //                                       style={{
-    //                                         color: "#332861",
-    //                                         width: "100%",
-    //                                         maxHeight: "450px",
-    //                                         margin: "0px",
-    //                                         paddingLeft: "30px",
-    //                                         paddingRight: "30px",
-    //                                         fontSize: "17px"
-    //                                       }}
-    //                                     >
-    //                                       {planche.text}
-    //                                     </h5>
-    //                                   </SimpleBar>
-    //                                 </GridItem>
-    //                               </GridContainer>
-    //                             ) : (
-    //                               <GridContainer
-    //                                 justify="center"
-    //                                 alignItems="center"
-    //                                 style={{
-    //                                   margin: 0,
-    //                                   marginBottom: 30,
-    //                                   marginTop: 20
-    //                                 }}
-    //                               >
-    //                                 <GridItem
-    //                                   xs={12}
-    //                                   sm={12}
-    //                                   md={6}
-    //                                   justify="center"
-    //                                   alignItems="center"
-    //                                   style={
-    //                                     isMobile
-    //                                       ? {
-    //                                           height: 400,
-    //                                           borderRadius: "15px 15px 0px 0px",
-    //                                           padding: 0
-    //                                         }
-    //                                       : {
-    //                                           height: 550,
-    //                                           borderRadius: "15px 0px 0px 15px",
-    //                                           padding: 0
-    //                                         }
-    //                                   }
-    //                                 >
-    //                                   <div
-    //                                     style={
-    //                                       isMobile
-    //                                         ? {
-    //                                             textAlign: "-webkit-center",
-    //                                             background: "#5a517f",
-    //                                             borderRadius: "15px 15px 0px 0px",
-    //                                             height: "100%"
-    //                                           }
-    //                                         : {
-    //                                             textAlign: "-webkit-center",
-    //                                             background: "#5a517f",
-    //                                             borderRadius: "15px 0px 0px 15px",
-    //                                             height: "100%"
-    //                                           }
-    //                                     }
-    //                                   >
-    //                                     <ButtonBase
-    //                                       onClick={() =>
-    //                                         this.setState({
-    //                                           isOpen: true,
-    //                                           imgUrl: planche.lienDessin
-    //                                         })
-    //                                       }
-    //                                       style={{ width: "100%" }}
-    //                                     >
-    //                                       <Parallax
-    //                                         image={planche.lienDessin}
-    //                                         style={
-    //                                           isMobile
-    //                                             ? {
-    //                                                 height: 400,
-    //                                                 borderRadius:
-    //                                                   "15px 15px 0px 0px",
-    //                                                 display: "block",
-    //                                                 width: "100%"
-    //                                               }
-    //                                             : {
-    //                                                 height: 550,
-    //                                                 borderRadius:
-    //                                                   "15px 0px 0px 15px",
-    //                                                 display: "block",
-    //                                                 width: "100%"
-    //                                               }
-    //                                         }
-    //                                       ></Parallax>
-    //                                     </ButtonBase>
-    //                                   </div>
-    //                                 </GridItem>
-
-    //                                 <GridItem
-    //                                   xs={12}
-    //                                   sm={12}
-    //                                   md={6}
-    //                                   justify="center"
-    //                                   alignItems="center"
-    //                                   style={
-    //                                     isMobile
-    //                                       ? {
-    //                                           height: 400,
-    //                                           backgroundColor:
-    //                                             "rgb(227, 243, 253)",
-    //                                           borderRadius: "0px 0px 15px 15px",
-    //                                           borderRadiusTopLeft: 15,
-    //                                           padding: 0,
-    //                                           display: "flex",
-    //                                           justifyContent: "center",
-    //                                           alignItems: "center"
-    //                                         }
-    //                                       : {
-    //                                           height: 550,
-    //                                           backgroundColor:
-    //                                             "rgb(227, 243, 253)",
-    //                                           borderRadius: "0px 15px 15px 0px",
-    //                                           borderRadiusTopLeft: 15,
-    //                                           padding: 0,
-    //                                           display: "flex",
-    //                                           justifyContent: "center",
-    //                                           alignItems: "center"
-    //                                         }
-    //                                   }
-    //                                 >
-    //                                   <div
-    //                                     style={{
-    //                                       width: "100%"
-    //                                     }}
-    //                                   >
-    //                                     <SimpleBar
-    //                                       style={
-    //                                         isMobile
-    //                                           ? {
-    //                                               maxHeight: "350px",
-    //                                               width: "100%"
-    //                                             }
-    //                                           : {
-    //                                               maxHeight: "450px",
-    //                                               width: "100%",
-    //                                               marginLeft: "auto",
-    //                                               marginRight: "auto"
-    //                                             }
-    //                                       }
-    //                                     >
-    //                                       <h5
-    //                                         style={{
-    //                                           color: "#332861",
-    //                                           width: "100%",
-    //                                           maxHeight: "450px",
-    //                                           margin: "0px",
-    //                                           paddingLeft: "30px",
-    //                                           paddingRight: "30px",
-    //                                           fontSize: "17px"
-    //                                         }}
-    //                                       >
-    //                                         {planche.text}
-    //                                       </h5>
-    //                                     </SimpleBar>
-    //                                   </div>
-    //                                 </GridItem>
-    //                               </GridContainer>
-    //                             )}
-    //                           </div>
-    //                         );
-    //                       })
-    //                     : () => {
-    //                         console.log(this.state.histoire);
-    //                         return (
-    //                           <div>
-    //                             <p>mazal maja</p>
-    //                           </div>
-    //                         );
-    //                       }}
-    //                 </Slider>
-    //               </div>
-    //               {this.state.planches.lenght > 18 ? (
-    //                 <SamplePrevArrow
-    //                   onClick={() => this.previous()}
-    //                   Color={
-    //                     this.state.counter === 1
-    //                       ? "rgba(0, 0, 0, 0.26)"
-    //                       : "#332861"
-    //                   }
-    //                   disabled={this.state.counter === 1 ? true : false}
-    //                 />
-    //               ) : (
-    //                 <div></div>
-    //               )}
-
-    //               <Divider
-    //                 style={{
-    //                   height: 2,
-    //                   marginBottom: 15,
-    //                   width: "90%",
-    //                   marginLeft: "auto",
-    //                   marginRight: "auto"
-    //                 }}
-    //               />
-    //               <GridContainer
-    //                 justify="flex-end"
-    //                 style={{
-    //                   width: "90%",
-    //                   marginLeft: "auto",
-    //                   marginRight: "auto",
-    //                   marginBottom: 15
-    //                 }}
-    //               >
-    //                 <GridItem xs={2} sm={1} md={1}>
-    //                   <small>
-    //                     <CommentIcon style={{ width: 20 }} />
-    //                     {this.state.histoire.nombreComment}
-    //                   </small>
-    //                 </GridItem>
-    //                 <GridItem xs={2} sm={1} md={1}>
-    //                   <small>
-    //                     <VisibilityIcon style={{ width: 20 }} />
-    //                     {this.state.histoire.nombreVue}
-    //                   </small>
-    //                 </GridItem>
-    //               </GridContainer>
-    //               <Divider
-    //                 style={{
-    //                   width: "100%",
-    //                   height: "2px"
-    //                 }}
-    //               />
-    //               <List
-    //                 className={classes.root}
-    //                 style={{ background: "#d6d6d6", padding: 0 }}
-    //               >
-    //                 {this.state.commentaires.map((commentaire, index) => {
-    //                   return (
-    //                     <div key={index}>
-    //                       <GridContainer>
-    //                         <GridItem xs={12} sm={12} md={12}>
-    //                           <ListItem
-    //                             alignItems="flex-start"
-    //                             className={classes.card}
-    //                             style={{
-    //                               width: "100%",
-    //                               minHeight: 50,
-    //                               maxHeight: "auto"
-    //                             }}
-    //                           >
-    //                             <ListItemAvatar>
-    //                               {commentaire.user.imgProfil == "" ||
-    //                               commentaire.user.imgProfil == null ? (
-    //                                 <Avatar
-    //                                   alt=""
-    //                                   src={
-    //                                     config.API_URL +
-    //                                     "images/defaultPhotoProfil.jpg"
-    //                                   }
-    //                                 />
-    //                               ) : (
-    //                                 <Avatar
-    //                                   alt=""
-    //                                   src={
-    //                                     this.state.histoire.userDessin.imgProfil
-    //                                   }
-    //                                 />
-    //                               )}
-    //                             </ListItemAvatar>
-    //                             <ListItemText
-    //                               primary={commentaire.user.pseudo}
-    //                               secondary={this.functionDate(
-    //                                 commentaire.dateDeCreation
-    //                               )}
-    //                             />
-    //                           </ListItem>
-    //                         </GridItem>
-    //                         <GridItem xs={12} sm={12} md={12}>
-    //                           <GridContainer
-    //                             justify="flex-start"
-    //                             style={{
-    //                               width: "100%",
-    //                               margin: "auto",
-    //                               marginLeft: 50
-    //                             }}
-    //                             spacing={1}
-    //                           >
-    //                             <GridItem
-    //                               xs={3}
-    //                               sm={2}
-    //                               md={1}
-    //                               style={{
-    //                                 display: "flex",
-    //                                 justifyContent: "center",
-    //                                 textAlign: "-webkit-center"
-    //                               }}
-    //                             >
-    //                               <div
-    //                                 style={{
-    //                                   height: 50,
-    //                                   width: 50
-    //                                 }}
-    //                               >
-    //                                 <Tooltip
-    //                                   disableFocusListener
-    //                                   disableTouchListener
-    //                                   title={"Dessin"}
-    //                                 >
-    //                                   <ButtonBase style={{ borderRadius: 50 }}>
-    //                                     <CircularProgressbarWithChildren
-    //                                       text={
-    //                                         commentaire.noteDessin === 0
-    //                                           ? "0"
-    //                                           : commentaire.noteDessin
-    //                                       }
-    //                                       maxValue={5}
-    //                                       minValue={0}
-    //                                       strokeWidth={3}
-    //                                       value={commentaire.noteDessin}
-    //                                       styles={buildStyles({
-    //                                         textColor: "transparent",
-    //                                         pathColor: "#1a99aa",
-    //                                         trailColor: "#d6d6d6",
-    //                                         strokeLinecap: "butt"
-    //                                       })}
-    //                                     >
-    //                                       <div
-    //                                         style={{
-    //                                           height: "100%",
-    //                                           justifyContent: "center",
-    //                                           alignItems: "center",
-    //                                           display: "flex"
-    //                                         }}
-    //                                       >
-    //                                         <p
-    //                                           style={{
-    //                                             color: "#1a99aa",
-    //                                             fontSize: "20px",
-    //                                             margin: 0
-    //                                           }}
-    //                                         >
-    //                                           {commentaire.noteDessin}
-    //                                         </p>
-    //                                       </div>
-    //                                     </CircularProgressbarWithChildren>
-    //                                   </ButtonBase>
-    //                                 </Tooltip>
-    //                               </div>
-    //                             </GridItem>
-    //                             <GridItem
-    //                               xs={3}
-    //                               sm={2}
-    //                               md={1}
-    //                               style={{
-    //                                 textAlign: "-webkit-center",
-    //                                 display: "flex",
-    //                                 justifyContent: "center"
-    //                               }}
-    //                             >
-    //                               <div
-    //                                 style={{
-    //                                   height: 50,
-    //                                   width: 50
-    //                                 }}
-    //                               >
-    //                                 <Tooltip
-    //                                   disableFocusListener
-    //                                   disableTouchListener
-    //                                   title={"Text"}
-    //                                 >
-    //                                   <ButtonBase style={{ borderRadius: 50 }}>
-    //                                     <CircularProgressbarWithChildren
-    //                                       maxValue={5}
-    //                                       minValue={0}
-    //                                       strokeWidth={3}
-    //                                       value={commentaire.noteHistoire}
-    //                                       text={
-    //                                         commentaire.noteHistoire === 0
-    //                                           ? "0"
-    //                                           : commentaire.noteHistoire
-    //                                       }
-    //                                       styles={buildStyles({
-    //                                         textColor: "transparent",
-    //                                         pathColor: "#df6c4f",
-    //                                         trailColor: "#d6d6d6",
-    //                                         strokeLinecap: "butt"
-    //                                       })}
-    //                                     >
-    //                                       <div
-    //                                         style={{
-    //                                           height: "100%",
-    //                                           justifyContent: "center",
-    //                                           alignItems: "center",
-    //                                           display: "flex"
-    //                                         }}
-    //                                       >
-    //                                         <p
-    //                                           style={{
-    //                                             color: "#df6c4f",
-    //                                             fontSize: "20px",
-    //                                             margin: 0
-    //                                           }}
-    //                                         >
-    //                                           {commentaire.noteHistoire}
-    //                                         </p>
-    //                                       </div>
-    //                                     </CircularProgressbarWithChildren>
-    //                                   </ButtonBase>
-    //                                 </Tooltip>
-    //                               </div>
-    //                             </GridItem>
-    //                           </GridContainer>
-    //                         </GridItem>
-    //                       </GridContainer>
-
-    //                       <p
-    //                         style={{
-    //                           color: "#808080",
-    //                           fontSize: 17,
-    //                           textAlign: "left",
-    //                           paddingLeft: 72,
-    //                           paddingRight: 16
-    //                         }}
-    //                       >
-    //                         {commentaire.commentaire}
-    //                       </p>
-    //                       <Divider />
-    //                     </div>
-    //                   );
-    //                 })}
-    //               </List>
-
-    //               <Button2
-    //                 style={{ width: "100%", height: 60 }}
-    //                 onClick={() => this.fetchCommentaires()}
-    //               >
-    //                 Voir plus de commentaires +
-    //               </Button2>
-
-    //               <Divider />
-    //               <ListItem
-    //                 alignItems="flex-start"
-    //                 className={classes.card}
-    //                 style={{ width: "100%", minHeight: 50, maxHeight: "auto" }}
-    //               >
-    //                 <ListItemAvatar>
-    //                   <Avatar
-    //                     alt="Travis Howard"
-    //                     src={require("assets/img/faces/avatar.jpg")}
-    //                   />
-    //                 </ListItemAvatar>
-    //                 <ListItemText
-    //                   primary={
-    //                     <React.Fragment>
-    //                       {!this.state.errorCommentaire ? (
-    //                         <TextField
-    //                           style={{ width: "100%" }}
-    //                           id="nomContact"
-    //                           variant="outlined"
-    //                           rows="1"
-    //                           value={this.state.commentaire}
-    //                           onChange={commentaire =>
-    //                             this.setState({
-    //                               commentaire: commentaire.target.value,
-    //                               errorCommentaire: false
-    //                             })
-    //                           }
-    //                           multiline
-    //                         />
-    //                       ) : (
-    //                         <TextField
-    //                           style={{ width: "100%" }}
-    //                           id="nomContact"
-    //                           variant="outlined"
-    //                           rows="1"
-    //                           value={this.state.commentaire}
-    //                           onChange={commentaire =>
-    //                             this.setState({
-    //                               commentaire: commentaire.target.value,
-    //                               errorCommentaire: false
-    //                             })
-    //                           }
-    //                           multiline
-    //                           error
-    //                         />
-    //                       )}
-    //                     </React.Fragment>
-    //                   }
-    //                 />
-    //               </ListItem>
-    //               <GridContainer style={{ marginRight: 0 }}>
-    //                 <GridItem xs={12} sm={12} md={12}>
-    //                   <GridContainer
-    //                     justify="flex-start"
-    //                     style={{
-    //                       width: "100%",
-    //                       margin: "auto",
-    //                       marginLeft: 50
-    //                     }}
-    //                     spacing={1}
-    //                   >
-    //                     <GridItem
-    //                       xs={3}
-    //                       sm={2}
-    //                       md={1}
-    //                       style={{
-    //                         display: "flex",
-    //                         justifyContent: "center",
-    //                         textAlign: "-webkit-center"
-    //                       }}
-    //                     >
-    //                       <div
-    //                         style={{
-    //                           height: 50,
-    //                           width: 50
-    //                         }}
-    //                       >
-    //                         <Tooltip
-    //                           disableFocusListener
-    //                           disableTouchListener
-    //                           title={"Dessin"}
-    //                         >
-    //                           <ButtonBase
-    //                             style={{ borderRadius: 50 }}
-    //                             onClick={() =>
-    //                               this.setState({
-    //                                 modal: true
-    //                               })
-    //                             }
-    //                           >
-    //                             <CircularProgressbarWithChildren
-    //                               text={
-    //                                 this.state.ratingDessin === 0
-    //                                   ? "0"
-    //                                   : this.state.ratingDessin
-    //                               }
-    //                               maxValue={5}
-    //                               minValue={0}
-    //                               strokeWidth={3}
-    //                               value={this.state.ratingDessin}
-    //                               styles={buildStyles({
-    //                                 textColor: "transparent",
-    //                                 pathColor: "#1a99aa",
-    //                                 trailColor: "#d6d6d6",
-    //                                 strokeLinecap: "butt"
-    //                               })}
-    //                             >
-    //                               <div
-    //                                 style={{
-    //                                   height: "100%",
-    //                                   justifyContent: "center",
-    //                                   alignItems: "center",
-    //                                   display: "flex"
-    //                                 }}
-    //                               >
-    //                                 <p
-    //                                   style={{
-    //                                     color: "#1a99aa",
-    //                                     fontSize: "20px",
-    //                                     margin: 0
-    //                                   }}
-    //                                 >
-    //                                   {this.state.ratingDessin}
-    //                                 </p>
-    //                               </div>
-    //                             </CircularProgressbarWithChildren>
-    //                           </ButtonBase>
-    //                         </Tooltip>
-    //                       </div>
-    //                     </GridItem>
-    //                     <GridItem
-    //                       xs={3}
-    //                       sm={2}
-    //                       md={1}
-    //                       style={{
-    //                         textAlign: "-webkit-center"
-    //                       }}
-    //                     >
-    //                       <div
-    //                         style={{
-    //                           height: 50,
-    //                           width: 50
-    //                         }}
-    //                       >
-    //                         <Tooltip
-    //                           disableFocusListener
-    //                           disableTouchListener
-    //                           title={"Text"}
-    //                         >
-    //                           <ButtonBase
-    //                             style={{ borderRadius: 50 }}
-    //                             onClick={() =>
-    //                               this.setState({
-    //                                 modal2: true
-    //                               })
-    //                             }
-    //                           >
-    //                             <CircularProgressbarWithChildren
-    //                               maxValue={5}
-    //                               minValue={0}
-    //                               strokeWidth={3}
-    //                               value={this.state.ratingText}
-    //                               text={
-    //                                 this.state.ratingText === 0
-    //                                   ? "0"
-    //                                   : this.state.ratingText
-    //                               }
-    //                               styles={buildStyles({
-    //                                 textColor: "transparent",
-    //                                 pathColor: "#df6c4f",
-    //                                 trailColor: "#d6d6d6",
-    //                                 strokeLinecap: "butt"
-    //                               })}
-    //                             >
-    //                               <div
-    //                                 style={{
-    //                                   height: "100%",
-    //                                   justifyContent: "center",
-    //                                   alignItems: "center",
-    //                                   display: "flex"
-    //                                 }}
-    //                               >
-    //                                 <p
-    //                                   style={{
-    //                                     color: "#df6c4f",
-    //                                     fontSize: "20px",
-    //                                     margin: 0
-    //                                   }}
-    //                                 >
-    //                                   {this.state.ratingText}
-    //                                 </p>
-    //                               </div>
-    //                             </CircularProgressbarWithChildren>
-    //                           </ButtonBase>
-    //                         </Tooltip>
-    //                       </div>
-    //                     </GridItem>
-    //                   </GridContainer>
-    //                 </GridItem>
-    //                 <GridItem
-    //                   xs={12}
-    //                   sm={12}
-    //                   md={12}
-    //                   style={{
-    //                     display: "flex",
-    //                     justifyContent: "flex-end",
-    //                     paddingBottom: "15px"
-    //                   }}
-    //                 >
-    //                   <Button
-    //                     onClick={() => {
-    //                       this.setState({
-    //                         ratingDessin: 0,
-    //                         ratingText: 0,
-    //                         ratingDessinTemp: 0,
-    //                         ratingTextTemp: 0,
-    //                         commentaire: ""
-    //                       });
-    //                     }}
-    //                     color="default"
-    //                   >
-    //                     Annuler
-    //                   </Button>
-    //                   <Button
-    //                     variant="contained"
-    //                     style={{
-    //                       backgroundColor: "rgb(90, 81, 127)",
-    //                       marginLeft: 15
-    //                     }}
-    //                     color="rgb(90, 81, 127)"
-    //                     onClick={() => this.submitCommantaire()}
-    //                   >
-    //                     Commenter
-    //                   </Button>
-    //                 </GridItem>
-    //               </GridContainer>
-    //             </Paper>
-    //           </GridItem>
-    //         </GridContainer>
-    //       </div>
-    //     );
-    //   else return <p>mazal matchargat</p>;
-    // }
+   
   }
 }
 const Styles = {};

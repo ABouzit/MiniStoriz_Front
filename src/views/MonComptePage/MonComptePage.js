@@ -29,11 +29,12 @@ import {
   isBrowser,
   isMobile
 } from "react-device-detect";
+import { Link, withRouter } from "react-router-dom";
 import Fab from '@material-ui/core/Fab';
 import NavigationIcon from '@material-ui/icons/Navigation';
 import CreateIcon from '@material-ui/icons/Create';
 import BrushIcon from '@material-ui/icons/Brush';
-import { CircularProgressbar } from 'react-circular-progressbar';
+import { CircularProgressbar,CircularProgressbarWithChildren,buildStyles  } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import Card from "components/Card/Card.js";
 import CardBody from "components/Card/CardBody.js";
@@ -46,6 +47,7 @@ import MonCompte from "./Sections/MonCompte";
 import { Input } from "@material-ui/core";
 import useForceUpdate from 'use-force-update';
 import Badge from '@material-ui/core/Badge';
+import { Redirect } from 'react-router-dom';
 const dashboardRoutes = [];
 
 const useStyles = makeStyles(styles);
@@ -57,6 +59,7 @@ export default function MonComptePage(props) {
   const [imgCov, setImgCov] = React.useState("");
   const [user, setUser] = React.useState("");
   const [filtre, setFiltre] = React.useState(1);
+  const [userCurrent, setUserCurrent] = React.useState(JSON.parse(localStorage.getItem('user')));
   let refreshCallBackFunction = publierData => {
     console.log(publierData);
     setRefresh(true);
@@ -86,10 +89,10 @@ export default function MonComptePage(props) {
       if (windowsScrollTop > 110) {
         document.getElementById("navBarLeft")
           .style.position = "fixed";
+          document.getElementById("navBarLeft1")
+          .style.width = "380px";
         document.getElementById("navBarLeft1")
-          .style.width = "42%";
-        document.getElementById("navBarLeft1")
-          .style.marginTop = "-100px";
+          .style.marginTop = "-103px";
       } else {
         document.getElementById("navBarLeft")
           .style.position = "";
@@ -111,6 +114,9 @@ export default function MonComptePage(props) {
   };
   const classes = useStyles();
   const { ...rest } = props;
+  if (userCurrent == null) {
+    return <Redirect to='/Connexion' />;
+  }
   return (
     <div>
       <Header
@@ -130,7 +136,7 @@ export default function MonComptePage(props) {
         rightLinks={<HeaderUser />}
         fixed
         changeColorOnScroll={{
-          height: 0,
+          height: -1,
           color: "info"
         }}
         {...rest}
@@ -147,12 +153,12 @@ export default function MonComptePage(props) {
                         Bienvenue à toi, Azzedine le mini-artiste
                       </h4>
       </div> */}
-      <div style={{backgroundColor: 'white'}}>
+      <div style={{backgroundColor: "#ecfbfc"}}>
         <GridContainer justify="center" style={{margin: 0, padding: 0}}>
           <GridItem xs={12} sm={12} md={12} style={{margin: 0, padding: 0, boxShadow: '0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12)'}}>
             
             <Parallax image={
-                imgCov == ""
+                imgCov == null
                   ?  config.API_URL + "images/asset/bg1.jpg"
                   : imgCov
                 
@@ -297,7 +303,7 @@ export default function MonComptePage(props) {
                       textAlign: 'center'
                     }}
                   >
-                    Reseau
+                    Réseau
                   </h6>
                   </GridItem>
                   <GridItem xs={4} sm={4} md={4}>
@@ -309,7 +315,7 @@ export default function MonComptePage(props) {
                       textAlign: 'center'
                     }}
                   >
-                    29
+                    {user.nombreReseau}
                   </h6>
                   </GridItem>
                 </GridContainer>
@@ -332,90 +338,170 @@ export default function MonComptePage(props) {
                         disableFocusListener
                         disableTouchListener
                         title={
-                          // histoire.noteHistoireMoy
-                          //   ? parseFloat(
-                          //       Math.round(
-                          //         histoire.noteHistoireMoy * 100
-                          //       ) / 100
-                          //     ).toFixed(2) + "/5"
-                          //   : 0
-                          4.4
+                          user.noteHistoire
+                            ? parseFloat(
+                                Math.round(
+                                  user.noteHistoire * 100
+                                ) / 100
+                              ).toFixed(2) + "/5"
+                            : 0
                         }
                       >
                       <ButtonBase>
-                      <CircularProgressbar value={parseFloat(
+                      <CircularProgressbarWithChildren
+                          maxValue={5}
+                          minValue={0}
+                          strokeWidth={3}
+                          value={parseFloat(
+                            Math.round(
+                              user.noteHistoire * 100
+                            ) / 100
+                          ).toFixed(2)}
+                          text={parseFloat(
+                            Math.round(
+                              user.noteHistoire * 100
+                            ) / 100
+                          ).toFixed(2)}
+                          styles={buildStyles({
+                            textColor: "transparent",
+                            pathColor: "#2e99b0",
+                            trailColor: "#d6d6d6",
+                            strokeLinecap: "butt"
+                          })}
+                        >
+                          <div
+                            style={{
+                              height: "100%",
+                              justifyContent: "center",
+                              alignItems: "center",
+                              display: "flex"
+                            }}
+                          >
+                            <p
+                              style={{
+                                color: "#2e99b0",
+                                fontSize: 12,
+                                margin: 0
+                              }}
+                            >
+                              {parseFloat(
                                 Math.round(
-                                  4.4 * 100
+                                  user.noteHistoire * 100
                                 ) / 100
-                              ).toFixed(2)} maxValue={5} text={parseFloat( Math.round( 4.4* 100) / 100).toFixed(1)} />
+                              ).toFixed(1)}
+                            </p>
+                          </div>
+                        </CircularProgressbarWithChildren>
                       </ButtonBase>
                       </Tooltip>
                     </GridItem>
-                    <GridItem xs={2} sm={2} md={2} style={{textAlign:'left', paddingLeft: 0}}><div style={{height:40, paddingTop: 8}}><CreateIcon style={{width:20}} /></div></GridItem>
+                    <GridItem xs={2} sm={2} md={2} style={{textAlign:'left', paddingLeft: 0}}><div style={{height:40}}><CreateIcon style={{width:20}} /></div></GridItem>
                     <GridItem xs={3} sm={3} md={3}>
                     <Tooltip
                         disableFocusListener
                         disableTouchListener
                         title={
-                          // histoire.noteHistoireMoy
-                          //   ? parseFloat(
-                          //       Math.round(
-                          //         histoire.noteDessinMoy * 100
-                          //       ) / 100
-                          //     ).toFixed(2) + "/5"
-                          //   : 0
-                          4.4
+                          user.noteDessin
+                            ? parseFloat(
+                                Math.round(
+                                  user.noteDessin * 100
+                                ) / 100
+                              ).toFixed(2) + "/5"
+                            : 0
                         }
                       >
-                      <ButtonBase>
-                    <CircularProgressbar value={parseFloat(
+                  <ButtonBase>
+                  <CircularProgressbarWithChildren
+                    text={parseFloat(
+                      Math.round(
+                        user.noteDessin * 100
+                      ) / 100
+                    ).toFixed(2)}
+                    maxValue={5}
+                    minValue={0}
+                    strokeWidth={3}
+                    value={parseFloat(
+                      Math.round(
+                        user.noteDessin * 100
+                      ) / 100
+                    ).toFixed(2)}
+                    styles={buildStyles({
+                      textColor: "transparent",
+                      pathColor: "#ff2e4c",
+                      trailColor: "#d6d6d6",
+                      strokeLinecap: "butt"
+                    })}
+                  >
+                    <div
+                      style={{
+                        height: "100%",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        display: "flex"
+                      }}
+                    >
+                      <p
+                        style={{
+                          color: "#ff2e4c",
+                          fontSize: 12,
+                          margin: 0
+                        }}
+                      >
+                        {parseFloat(
                                 Math.round(
-                                  4.3 * 100
+                                  user.noteDessin * 100
                                 ) / 100
-                              ).toFixed(2)} maxValue={5} text={parseFloat(
-                                Math.round(
-                                  4.4 * 100
-                                ) / 100
-                              ).toFixed(1)} />
-                      </ButtonBase>
+                              ).toFixed(1)}
+                      </p>
+                    </div>
+                  </CircularProgressbarWithChildren>
+                  </ButtonBase>
                     </Tooltip>
                     </GridItem>
-                    <GridItem xs={2} sm={2} md={2} style={{textAlign:'left', paddingLeft: 0}}><div style={{height:40, paddingTop: 8}}> <BrushIcon style={{width:20}} /></div> </GridItem>
+                    <GridItem xs={2} sm={2} md={2} style={{textAlign:'left', paddingLeft: 0}}><div style={{height:40}}> <BrushIcon style={{width:20}} /></div> </GridItem>
                     </GridContainer>
                   <Divider  style={{marginTop: '2%', marginLeft: -30, marginRight: -30}} />
                   <GridContainer justify="center">
                     
                     <GridItem xs={12} sm={12} md={12}>
+                    <Link to="/MonReseau">
                       <h5
                         style={{
                           fontFamily: "cursive",
                           fontWeight: "bold",
-                          color: "black",
+                          color: "#1e1548",
                           margin: 0,
                           marginTop: '2%',
-                          textAlign: 'center'
+                          textAlign: 'center',
+                          fontVariant: 'unicase',
+                          textDecoration: 'underline'
                         }}
                       >
-                        Mon Reseau
+                        Mon Réseau
                       </h5>
+                      </Link>
                     </GridItem>
                     </GridContainer>
                     <Divider  style={{marginTop: '2%', marginLeft: -30, marginRight: -30}} />
                    
                     <GridContainer justify="center">
                     <GridItem xs={12} sm={12} md={12}>
+                    <Link to="/MesOeuvres">
                       <h5
                         style={{
                           fontFamily: "cursive",
                           fontWeight: "bold",
-                          color: "black",
+                          color: "#1e1548",
                           margin: 0,
                           marginTop: '2%',
-                          textAlign: 'center'
+                          textAlign: 'center',
+                          fontVariant: 'unicase',
+                          textDecoration: 'underline'
                         }}
                       >
                         Mes Oeuvres
                       </h5>
+                      </Link>
                     </GridItem>
                   </GridContainer>
                 </CardBody>
@@ -552,7 +638,7 @@ export default function MonComptePage(props) {
                       textAlign: 'center'
                     }}
                   >
-                    Reseau
+                    Réseau
                   </h6>
                   </GridItem>
                   <GridItem xs={4} sm={4} md={4}>
@@ -564,7 +650,7 @@ export default function MonComptePage(props) {
                       textAlign: 'center'
                     }}
                   >
-                    29
+                    {user.nombreReseau}
                   </h6>
                   </GridItem>
                 </GridContainer>
@@ -587,22 +673,60 @@ export default function MonComptePage(props) {
                         disableFocusListener
                         disableTouchListener
                         title={
-                          // histoire.noteHistoireMoy
-                          //   ? parseFloat(
-                          //       Math.round(
-                          //         histoire.noteHistoireMoy * 100
-                          //       ) / 100
-                          //     ).toFixed(2) + "/5"
-                          //   : 0
-                          4.4
+                          user.noteHistoire
+                            ? parseFloat(
+                                Math.round(
+                                  user.noteHistoire * 100
+                                ) / 100
+                              ).toFixed(2) + "/5"
+                            : 0
                         }
                       >
                       <ButtonBase>
-                      <CircularProgressbar value={parseFloat(
+                      <CircularProgressbarWithChildren
+                          maxValue={5}
+                          minValue={0}
+                          strokeWidth={3}
+                          value={parseFloat(
+                            Math.round(
+                              user.noteHistoire * 100
+                            ) / 100
+                          ).toFixed(2)}
+                          text={parseFloat(
+                            Math.round(
+                              user.noteHistoire * 100
+                            ) / 100
+                          ).toFixed(2)}
+                          styles={buildStyles({
+                            textColor: "transparent",
+                            pathColor: "#2e99b0",
+                            trailColor: "#d6d6d6",
+                            strokeLinecap: "butt"
+                          })}
+                        >
+                          <div
+                            style={{
+                              height: "100%",
+                              justifyContent: "center",
+                              alignItems: "center",
+                              display: "flex"
+                            }}
+                          >
+                            <p
+                              style={{
+                                color: "#2e99b0",
+                                fontSize: 15,
+                                margin: 0
+                              }}
+                            >
+                              {parseFloat(
                                 Math.round(
-                                  4.4 * 100
+                                  user.noteHistoire * 100
                                 ) / 100
-                              ).toFixed(2)} maxValue={5} text={parseFloat( Math.round( 4.4* 100) / 100).toFixed(1)} />
+                              ).toFixed(1)}
+                            </p>
+                          </div>
+                        </CircularProgressbarWithChildren>
                       </ButtonBase>
                       </Tooltip>
                     </GridItem>
@@ -612,27 +736,61 @@ export default function MonComptePage(props) {
                         disableFocusListener
                         disableTouchListener
                         title={
-                          // histoire.noteHistoireMoy
-                          //   ? parseFloat(
-                          //       Math.round(
-                          //         histoire.noteDessinMoy * 100
-                          //       ) / 100
-                          //     ).toFixed(2) + "/5"
-                          //   : 0
-                          4.4
+                          user.noteDessin
+                            ? parseFloat(
+                                Math.round(
+                                  user.noteDessin * 100
+                                ) / 100
+                              ).toFixed(2) + "/5"
+                            : 0
                         }
                       >
-                      <ButtonBase>
-                    <CircularProgressbar value={parseFloat(
+                  <ButtonBase>
+                  <CircularProgressbarWithChildren
+                    text={parseFloat(
+                      Math.round(
+                        user.noteDessin * 100
+                      ) / 100
+                    ).toFixed(2)}
+                    maxValue={5}
+                    minValue={0}
+                    strokeWidth={3}
+                    value={parseFloat(
+                      Math.round(
+                        user.noteDessin * 100
+                      ) / 100
+                    ).toFixed(2)}
+                    styles={buildStyles({
+                      textColor: "transparent",
+                      pathColor: "#ff2e4c",
+                      trailColor: "#d6d6d6",
+                      strokeLinecap: "butt"
+                    })}
+                  >
+                    <div
+                      style={{
+                        height: "100%",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        display: "flex"
+                      }}
+                    >
+                      <p
+                        style={{
+                          color: "#ff2e4c",
+                          fontSize: 15,
+                          margin: 0
+                        }}
+                      >
+                        {parseFloat(
                                 Math.round(
-                                  4.3 * 100
+                                  user.noteDessin * 100
                                 ) / 100
-                              ).toFixed(2)} maxValue={5} text={parseFloat(
-                                Math.round(
-                                  4.4 * 100
-                                ) / 100
-                              ).toFixed(1)} />
-                      </ButtonBase>
+                              ).toFixed(1)}
+                      </p>
+                    </div>
+                  </CircularProgressbarWithChildren>
+                  </ButtonBase>
                     </Tooltip>
                     </GridItem>
                     <GridItem xs={2} sm={2} md={2} style={{textAlign:'left', paddingLeft: 0}}><div style={{height:40, paddingTop: 8}}> <BrushIcon style={{width:20}} /></div> </GridItem>
@@ -641,36 +799,44 @@ export default function MonComptePage(props) {
                   <GridContainer justify="center">
                     
                     <GridItem xs={12} sm={12} md={12}>
+                    <Link to="/MonReseau">
                       <h5
                         style={{
                           fontFamily: "cursive",
                           fontWeight: "bold",
-                          color: "black",
+                          color: "#1e1548",
                           margin: 0,
                           marginTop: '2%',
-                          textAlign: 'center'
+                          textAlign: 'center',
+                          fontVariant: 'unicase',
+                          textDecoration: 'underline'
                         }}
                       >
-                        Mon Reseau
+                        Mon Réseau
                       </h5>
+                      </Link>
                     </GridItem>
                     </GridContainer>
                     <Divider  style={{marginTop: '2%', marginLeft: -30, marginRight: -30}} />
                    
                     <GridContainer justify="center">
                     <GridItem xs={12} sm={12} md={12}>
+                    <Link to="/MesOeuvres">
                       <h5
                         style={{
                           fontFamily: "cursive",
                           fontWeight: "bold",
-                          color: "black",
+                          color: "#1e1548",
                           margin: 0,
                           marginTop: '2%',
-                          textAlign: 'center'
+                          textAlign: 'center',
+                          fontVariant: 'unicase',
+                          textDecoration: 'underline'
                         }}
                       >
                         Mes Oeuvres
                       </h5>
+                      </Link>
                     </GridItem>
                   </GridContainer>
                 </CardBody>

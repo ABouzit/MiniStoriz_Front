@@ -29,25 +29,29 @@ import {
   isMobile
 } from "react-device-detect";
 // Sections for this page
-import AllHistoires from "./Sections/AllHistoires";
+import AllUsers from "./Sections/AllUsers";
 import { subscriber, messageService } from "./../../services/messageService";
-
+import { Redirect } from 'react-router-dom';
+import PersonAddDisabledIcon from '@material-ui/icons/PersonAddDisabled';
 const dashboardRoutes = [];
 
 const useStyles = makeStyles(styles);
 
-export default function AllHistoiresPage(props) {
+export default function UsersPage(props) {
   const [refresh, setRefresh] = React.useState(false);
   const [search, setSearch] = React.useState("");
-  const [filtre, setFiltre] = React.useState(1);
   const [user, setUser] = React.useState(JSON.parse(localStorage.getItem('user')));
   
   let refreshCallBackFunction = publierData => {
     console.log(publierData);
     setRefresh(true);
   };
+  
   const classes = useStyles();
   const { ...rest } = props;
+  if (user == null) {
+    return <Redirect to='/Connexion' />;
+  }
   return (
     <div>
       {user ? (
@@ -90,7 +94,7 @@ export default function AllHistoiresPage(props) {
         }
         fixed
         changeColorOnScroll={{
-          height: -1,
+          height: 0,
           color: "info"
         }}
         {...rest}
@@ -131,8 +135,7 @@ export default function AllHistoiresPage(props) {
                         endAdornment: (
                           <ButtonBase
                             onClick={subscriber.next({
-                              search: search,
-                              filtre: filtre
+                              search: search
                             })}
                           >
                             <InputAdornment position="end">
@@ -143,56 +146,10 @@ export default function AllHistoiresPage(props) {
                       }}
                     />
                   </GridItem>
-                  <GridItem xs={10} sm={10} style={{ marginTop: "5%" }}>
-                    <ButtonGroup
-                      orientation="vertical"
-                      // color="secondary"
-                      aria-label="Les filtres"
-                      variant="contained"
-                      style={{ width: "-webkit-fill-available" }}
-                    >
-                      <Button
-                        onClick={() => {
-                          subscriber.next({ search: search, filtre: 1 });
-                          setFiltre(1);
-                          window.scrollTo(0, 0);
-                        }}
-                      >
-                        Les plus lues
-                      </Button>
-                      <Button
-                        onClick={() => {
-                          subscriber.next({ search: search, filtre: 2 });
-                          setFiltre(2);
-                          window.scrollTo(0, 0);
-                        }}
-                      >
-                        Les plus populaires
-                      </Button>
-                      <Button
-                        onClick={() => {
-                          subscriber.next({ search: search, filtre: 3 });
-                          setFiltre(3);
-                          window.scrollTo(0, 0);
-                        }}
-                      >
-                        Les plus recentes
-                      </Button>
-                      <Button
-                        onClick={() => {
-                          subscriber.next({ search: search, filtre: 4 });
-                          setFiltre(4);
-                          window.scrollTo(0, 0);
-                        }}
-                      >
-                        Les plus anciennes
-                      </Button>
-                    </ButtonGroup>
-                  </GridItem>
                 </GridContainer>
               </div>
             ) : (
-              <div style={{ position: "fixed" }}>
+              <div style={{ position: "fixed", width: 390 }}>
                 <GridContainer
                   justify="center"
                   style={{ marginTop: "40%", width: "90%" }}
@@ -213,8 +170,7 @@ export default function AllHistoiresPage(props) {
                         endAdornment: (
                           <ButtonBase
                             onClick={subscriber.next({
-                              search: search,
-                              filtre: filtre
+                              search: search
                             })}
                           >
                             <InputAdornment position="end">
@@ -225,57 +181,7 @@ export default function AllHistoiresPage(props) {
                       }}
                     />
                   </GridItem>
-                  <GridItem
-                    xs={12}
-                    sm={12}
-                    md={10}
-                    style={{ textAlign: "center", marginTop: "5%" }}
-                  >
-                    <ButtonGroup
-                      orientation="vertical"
-                      // color="secondary"
-                      aria-label="Les filtres"
-                      variant="contained"
-                      style={{ width: "-webkit-fill-available" }}
-                    >
-                      <Button
-                        onClick={() => {
-                          subscriber.next({ search: search, filtre: 1 });
-                          setFiltre(1);
-                          window.scrollTo(0, 0);
-                        }}
-                      >
-                        Les plus lues
-                      </Button>
-                      <Button
-                        onClick={() => {
-                          subscriber.next({ search: search, filtre: 2 });
-                          setFiltre(2);
-                          window.scrollTo(0, 0);
-                        }}
-                      >
-                        Les plus populaires
-                      </Button>
-                      <Button
-                        onClick={() => {
-                          subscriber.next({ search: search, filtre: 3 });
-                          setFiltre(3);
-                          window.scrollTo(0, 0);
-                        }}
-                      >
-                        Les plus recentes
-                      </Button>
-                      <Button
-                        onClick={() => {
-                          subscriber.next({ search: search, filtre: 4 });
-                          setFiltre(4);
-                          window.scrollTo(0, 0);
-                        }}
-                      >
-                        Les plus anciennes
-                      </Button>
-                    </ButtonGroup>
-                  </GridItem>
+                  
                 </GridContainer>
               </div>
             )}
@@ -283,12 +189,12 @@ export default function AllHistoiresPage(props) {
           {isMobile ? (
             <GridItem xs={12} sm={12} md={9} position="center">
               <div>
-                <AllHistoires />
+                <AllUsers />
               </div>
             </GridItem>
           ) : (
             <GridItem xs={12} sm={12} md={9} position="end">
-              <AllHistoires />
+              <AllUsers />
             </GridItem>
           )}
         </GridContainer>
@@ -298,7 +204,7 @@ export default function AllHistoiresPage(props) {
         style={{ marginTop: 81, backgroundImage: 'url("'+config.API_URL+'images/asset/bg1.jpg")' }}
       >
         <div className={classes.container}>
-          <AllHistoires />
+          <AllUsers />
         </div>
       </div> */}
       {/* <Footer /> */}

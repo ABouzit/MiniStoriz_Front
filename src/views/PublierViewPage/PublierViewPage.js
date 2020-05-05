@@ -25,6 +25,7 @@ import ButtonBase from "@material-ui/core/ButtonBase";
 // Sections for this page
 import PublierView from "./Sections/PublierView";
 import { subscriber, messageService } from "./../../services/messageService";
+import { Redirect } from 'react-router-dom';
 
 const dashboardRoutes = [];
 
@@ -34,12 +35,16 @@ export default function PublierViewPage(props) {
   const [refresh, setRefresh] = React.useState(false);
   const [search, setSearch] = React.useState("");
   const [filtre, setFiltre] = React.useState(1);
+  const [userCurrent, setUserCurrent] = React.useState(JSON.parse(localStorage.getItem('user')));
   let refreshCallBackFunction = publierData => {
     console.log(publierData);
     setRefresh(true);
   };
   const classes = useStyles();
   const { ...rest } = props;
+  if (userCurrent == null) {
+    return <Redirect to='/Connexion' />;
+  }
   return (
     <div>
       <Header
@@ -59,12 +64,12 @@ export default function PublierViewPage(props) {
         rightLinks={<HeaderUser />}
         fixed
         changeColorOnScroll={{
-          height: 0,
+          height: -1,
           color: "info"
         }}
         {...rest}
       />
-      <div style={{ backgroundColor: "white" }}>
+      <div style={{ backgroundColor: "#ecfbfc" }}>
         <GridContainer
           justify="flex-end"
           style={{ marginLeft: 0, marginRight: 0 }}

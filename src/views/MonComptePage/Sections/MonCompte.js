@@ -43,13 +43,17 @@ import Axios from "axios";
 import config from "config/config";
 import { Input } from "@material-ui/core";
 import { subscriber, messageService } from "./../../../services/messageService";
+import { Redirect } from 'react-router-dom';
+
 class MonCompte extends React.Component {
   constructor(props) {
     super(props);
     this.headerClasse = makeStyles(headerStyle);
     // Don't call this.setState() here!
     this.state = {
-      idUser: "4305f81f-8e67-45df-80eb-54a646387457",
+      redirect: 0,
+      userLocal: '',
+      idUser: "",
       noteDessinMoy: 0,
       noteTextMoy: 0,
       imgProfil: "",
@@ -87,15 +91,20 @@ class MonCompte extends React.Component {
     this.checkPass = this.checkPass.bind(this);
     this.checkAPass = this.checkAPass.bind(this);
     this.saveUsers = this.saveUsers.bind(this);
-    this.fetchUser();
+    
   }
   componentDidMount() {
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (!user) {
+      this.setState({  redirect: 1 }, ()=> {this.forceUpdate()});
+    }else{
+      this.setState({  idUser: user.id, userLocal: user }, ()=> {this.fetchUser();this.forceUpdate()});
+    }
     subscriber.subscribe(v => {
       if(v.profil instanceof Blob){
         this.savePhotoProfil(v.profil)
       }
       if(v.couverture instanceof Blob){
-        console.log("sssssssssssssssssssss")
         this.savePhotoCov(v.couverture)
       }
     });
@@ -224,7 +233,11 @@ class MonCompte extends React.Component {
         let s = res.data.filePath.replace("\\", "/").replace("\\", "/");
         _this.state.user.lienCouverture = config.API_URL + s;
         return Axios.put(config.API_URL + "users", _this.state.user).then(res => {_this.fetchUser();
-          _this.setState({ change: false }, ()=> {_this.forceUpdate()});
+          const user = _this.state.userLocal;
+          user.lienPhoto = _this.state.imgProfil;
+          user.pseudo = _this.state.pseudo;
+          _this.setState({ change: false, userLocal: user },
+             ()=> {localStorage.setItem('user', JSON.stringify(_this.state.userLocal));subscriber.next('change');_this.forceUpdate()});
         })
         .catch(
           function(error) {
@@ -242,7 +255,11 @@ class MonCompte extends React.Component {
         let s = res.data.filePath.replace("\\", "/").replace("\\", "/");
         _this.state.user.lienPhoto = config.API_URL + s;
         return Axios.put(config.API_URL + "users", _this.state.user).then(res => {_this.fetchUser();
-          _this.setState({ change: false }, ()=> {_this.forceUpdate()});
+          const user = _this.state.userLocal;
+          user.lienPhoto = _this.state.imgProfil;
+          user.pseudo = _this.state.pseudo;
+          _this.setState({ change: false, userLocal: user },
+             ()=> {localStorage.setItem('user', JSON.stringify(_this.state.userLocal));subscriber.next('change');_this.forceUpdate()});
         })
         .catch(
           function(error) {
@@ -252,7 +269,10 @@ class MonCompte extends React.Component {
       });
     } else {
       return Axios.put(config.API_URL + "users", _this.state.user).then(res => {_this.fetchUser();
-        _this.setState({ change: false }, ()=> {_this.forceUpdate()});
+        const user = _this.state.userLocal;
+          user.pseudo = _this.state.pseudo;
+          _this.setState({ change: false, userLocal: user },
+             ()=> {localStorage.setItem('user', JSON.stringify(_this.state.userLocal));subscriber.next('change');_this.forceUpdate()});
       }).catch(
         function(error) {
           console.log(error);
@@ -264,6 +284,9 @@ class MonCompte extends React.Component {
   render() {
     const { classes } = this.props;
     const { selectedIndex } = this.state;
+    if (this.state.redirect == 1) {
+      return <Redirect to='/Connexion' />
+    }
     return (
       <div className={classes.section} style={{paddingTop: 0}}>
         {/* <GridContainer

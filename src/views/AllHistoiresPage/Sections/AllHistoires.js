@@ -68,18 +68,18 @@ import TitleIcon from "@material-ui/icons/Title";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import Fab from "@material-ui/core/Fab";
 import Avatar from "@material-ui/core/Avatar";
-import CreateIcon from "@material-ui/icons/Create";
-import BrushIcon from "@material-ui/icons/Brush";
-import CommentIcon from "@material-ui/icons/Comment";
-import VisibilityIcon from "@material-ui/icons/Visibility";
-import {
-  CircularProgressbar,
-  CircularProgressbarWithChildren,
-  buildStyles
-} from "react-circular-progressbar";
-import "react-circular-progressbar/dist/styles.css";
-import Divider from "@material-ui/core/Divider";
+import CreateIcon from '@material-ui/icons/Create';
+import BrushIcon from '@material-ui/icons/Brush';
+import CommentIcon from '@material-ui/icons/Comment';
+import VisibilityIcon from '@material-ui/icons/Visibility';
+import { CircularProgressbar,CircularProgressbarWithChildren,buildStyles } from 'react-circular-progressbar';
+import 'react-circular-progressbar/dist/styles.css';
+import Divider from '@material-ui/core/Divider';
+import "moment/locale/fr";
+import Moment from "moment";
 import { subscriber, messageService } from "./../../../services/messageService";
+import { Redirect } from 'react-router-dom';
+
 
 class AllHistoires extends React.Component {
   constructor(props) {
@@ -87,6 +87,8 @@ class AllHistoires extends React.Component {
     // Don't call this.setState() here!
     this.state = {
       page: 1,
+      redirect: 0,
+      connected: false,
       pageUsers: 1,
       numberPage: 0,
       numberPageUsers: 0,
@@ -113,6 +115,10 @@ class AllHistoires extends React.Component {
     this.handleVisibility = this.handleVisibility.bind(this);
   }
   componentDidMount() {
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (user) {
+      this.setState({  connected: true }, ()=> {this.forceUpdate()});
+    }
     subscriber.subscribe(v => {
       this.setState({ search: v.search, currentFiltre: v.filtre }, () => {
         this.searchCheck();
@@ -205,12 +211,12 @@ class AllHistoires extends React.Component {
         "/1/xxxx",
       {}
     ).then(res => {
-      this.setState({ histoires: res.data, showMore: true });
+      this.setState({ histoires: res.data });
     });
     Axios.get(config.API_URL + "histoires/numberHistoires", {}).then(res => {
       this.setState({ numberPage: Math.ceil(res.data / 6) }, () => {
-        if (res.data <= 6) {
-          this.setState({ showMore: false });
+        if (res.data > 6) {
+          this.setState({ showMore: true });
         }
       });
     });
@@ -233,6 +239,8 @@ class AllHistoires extends React.Component {
             this.setState({ numberPage: Math.ceil(res.data / 6) }, () => {
               if (res.data <= 6) {
                 this.setState({ showMore: false });
+              } else {
+                this.setState({ showMore: true });
               }
             });
           });
@@ -245,6 +253,8 @@ class AllHistoires extends React.Component {
             this.setState({ numberPageUsers: Math.ceil(res.data / 6) }, () => {
               if (res.data <= 6) {
                 this.setState({ showMoreUsers: false });
+              }else{
+                this.setState({ showMoreUsers: true });
               }
             });
           });
@@ -315,6 +325,8 @@ class AllHistoires extends React.Component {
             this.setState({ numberPage: Math.ceil(res.data / 6) }, () => {
               if (res.data <= 6) {
                 this.setState({ showMore: false });
+              } else {
+                this.setState({ showMore: true });
               }
             });
           });
@@ -327,6 +339,8 @@ class AllHistoires extends React.Component {
             this.setState({ numberPageUsers: Math.ceil(res.data / 6) }, () => {
               if (res.data <= 6) {
                 this.setState({ showMoreUsers: false });
+              }else{
+                this.setState({ showMoreUsers: true });
               }
             });
           });
@@ -395,6 +409,8 @@ class AllHistoires extends React.Component {
             this.setState({ numberPage: Math.ceil(res.data / 6) }, () => {
               if (res.data <= 6) {
                 this.setState({ showMore: false });
+              } else {
+                this.setState({ showMore: true });
               }
             });
           });
@@ -407,6 +423,8 @@ class AllHistoires extends React.Component {
             this.setState({ numberPageUsers: Math.ceil(res.data / 6) }, () => {
               if (res.data <= 6) {
                 this.setState({ showMoreUsers: false });
+              }else{
+                this.setState({ showMoreUsers: true });
               }
             });
           });
@@ -475,6 +493,8 @@ class AllHistoires extends React.Component {
             this.setState({ numberPage: Math.ceil(res.data / 6) }, () => {
               if (res.data <= 6) {
                 this.setState({ showMore: false });
+              } else {
+                this.setState({ showMore: true });
               }
             });
           });
@@ -487,6 +507,8 @@ class AllHistoires extends React.Component {
             this.setState({ numberPageUsers: Math.ceil(res.data / 6) }, () => {
               if (res.data <= 6) {
                 this.setState({ showMoreUsers: false });
+              }else{
+                this.setState({ showMoreUsers: true });
               }
             });
           });
@@ -630,7 +652,14 @@ class AllHistoires extends React.Component {
     }
   }
   redirectFunction(index) {
-    this.props.history.push("/publier/" + (index + 1));
+    if (this.state.connected) {
+      this.props.history.push("/publier/" + (index + 1));
+    } else {
+      this.setState({ redirect: 1 }, () => {
+        this.forceUpdate();
+      });
+    }
+    
   }
 
   //modal - carousel
@@ -667,6 +696,9 @@ class AllHistoires extends React.Component {
       { icon: <EditIcon />, name: "Texte uniquement" }
     ];
 
+    if (this.state.redirect == 1) {
+      return <Redirect to='/Connexion' />
+    }
     if (this.state.histoires !== [])
       return (
         <div className={classes.section} style={{ width: "99%" }}>
@@ -709,9 +741,19 @@ class AllHistoires extends React.Component {
                       justify="center"
                       key={index}
                     >
-                      <Link to={"/Histoire/" + histoire.id}>
-                        <CardHistoire histoire={histoire} />
-                      </Link>
+                      {this.state.connected ? (
+                        <Link to={"/Histoire/" + histoire.id}>
+                          <CardHistoire histoire={histoire}/>
+                        </Link>
+                        ):(
+                          <Link onClick={() => {
+                            this.setState({ redirect: 1 }, () => {
+                              this.forceUpdate();
+                            });
+                          }}>
+                            <CardHistoire histoire={histoire}/>
+                          </Link>
+                        )}
                     </GridItem>
                   );
                 })}
@@ -768,9 +810,19 @@ class AllHistoires extends React.Component {
                                       justify="center"
                                       key={index}
                                     >
+                                    {this.state.connected ? (
                                       <Link to={"/Histoire/" + histoire.id}>
                                         <CardHistoire histoire={histoire} />
                                       </Link>
+                                      ):(
+                                        <Link onClick={() => {
+                                          this.setState({ redirect: 1 }, () => {
+                                            this.forceUpdate();
+                                          });
+                                        }}>
+                                         <CardHistoire histoire={histoire}/>
+                                        </Link>
+                                      )}
                                     </GridItem>
                                   );
                                 })
@@ -835,9 +887,19 @@ class AllHistoires extends React.Component {
                                         justify="center"
                                         key={index}
                                       >
-                                        <Link to={"/Histoire/" + histoire.id}>
-                                          <CardHistoire histoire={histoire} />
+                                      {this.state.connected ? (
+                                      <Link to={"/Histoire/" + histoire.id}>
+                                        <CardHistoire histoire={histoire}/>
+                                      </Link>
+                                      ):(
+                                        <Link onClick={() => {
+                                          this.setState({ redirect: 1 }, () => {
+                                            this.forceUpdate();
+                                          });
+                                        }}>
+                                         <CardHistoire histoire={histoire}/>
                                         </Link>
+                                      )}
                                       </GridItem>
                                     );
                                   }
@@ -917,8 +979,53 @@ class AllHistoires extends React.Component {
   }
 }
 
-function dateNew(date) {
-  return new Date(date);
+
+function functionDate(date) {
+  ///.format("dddd D MMMM YYYY HH:mm:ss")
+  const momentDate = Moment(Moment(date).format());
+  const dateNow = Moment(new Date());
+  let t = Moment.duration(dateNow - momentDate);
+  if (t.years() >= 1) {
+    let y = "";
+    let m = "";
+    if (t.years() === 1) y = "un an";
+    else y = t.years() + " ans";
+    if (t.months() == 1) m = " et un mois";
+    else if (t.months() > 1) m = " et " + t.months() + " mois";
+    return y + m;
+  } else if (t.months() >= 1) {
+    let y = "";
+    let m = "";
+    if (t.months() === 1) y = "un mois";
+    else y = t.months() + " mois";
+    if (t.days() == 1) m = " et un jour";
+    else if (t.days() > 1) m = " et " + t.days() + " jours";
+    return y + m;
+  } else if (t.days() >= 1) {
+    let y = "";
+    let m = "";
+    if (t.days() === 1) y = "un jour";
+    else y = t.days() + " jours";
+    if (t.hours() == 1) m = " et une heure";
+    else if (t.hours() > 1) m = " et " + t.hours() + " heures";
+    return y + m;
+  } else if (t.hours() >= 1) {
+    let y = "";
+    let m = "";
+    if (t.hours() === 1) y = "une heure";
+    else y = t.hours() + " heures";
+    if (t.minutes() == 1) m = " et une minute";
+    else if (t.minutes() > 1) m = " et " + t.minutes() + " minutes";
+    return y + m;
+  } else if (t.minutes() >= 1) {
+    let y = "";
+    let m = "";
+    if (t.minutes() === 1) y = "une minute";
+    else y = t.minutes() + " minutes";
+    if (t.seconds() == 1) m = " et une seconde";
+    else if (t.seconds() > 1) m = " et " + t.seconds() + " secondes";
+    return y + m;
+  } else return "a l'instant";
 }
 function CardHistoire(props) {
   const { histoire } = props;
@@ -946,7 +1053,9 @@ function CardHistoire(props) {
             height: "240px",
             marginLeft: "auto",
             marginRight: "auto",
-            display: "block"
+            display: "block",
+            borderTopLeftRadius: 6,
+            borderTopRightRadius: 6
           }}
         ></Parallax>
         {/* <img
@@ -979,51 +1088,50 @@ function CardHistoire(props) {
         {histoire.titreHistoire}
         {/* {histoire.nombreVue ? histoire.nombreVue : 0} vues -{" "}
           {this.getDay(histoire.dateDeCreation)} */}
-      </h5>
-      <h6
-        style={{
-          fontFamily: "monospace",
-          color: "black",
-          marginLeft: "5%",
-          textAlign: "left"
-        }}
-      >
-        {dateNew(histoire.dateDeCreation).toLocaleDateString(
-          "fr-FR",
-          dateFormat
-        )}
-        {/* {this.getDay(histoire.dateDeCreation)} */}
-      </h6>
-      <CardBody>
-        <Divider />
-        <GridContainer style={{ marginTop: "4%" }}>
-          <GridItem xs={6} sm={6} md={6}>
-            <GridContainer>
-              <GridItem xs={4} sm={4} md={4}>
-                <Avatar
-                  alt=""
-                  src={histoire.userText.lienPhoto}
-                  // style={{ width: 200, height: 200 }}
-                />
-              </GridItem>
-              <GridItem xs={8} sm={8} md={8}>
-                <h6
-                  style={{
-                    fontFamily: "monospace",
-                    color: "black",
-                    fontWeight: "bold",
-                    marginLeft: "5%",
-                    textAlign: "left"
-                  }}
-                >
-                  {histoire.userText.pseudo}
-                </h6>
-              </GridItem>
-            </GridContainer>
-          </GridItem>
-          <GridItem xs={3} sm={3} md={3}>
-            <div style={{ width: 40 }}>
-              <Tooltip
+        </h5>
+        <h6
+          style={{
+            fontFamily: "monospace",
+            color: "black",
+            marginLeft: '5%',
+            textAlign: 'left'
+          }}
+        >
+          {functionDate(histoire.dateDeCreation)}
+          {/* {this.getDay()} */}
+        </h6>
+        <CardBody>
+        <Divider/>
+        {histoire.userText ? (
+          <GridContainer style={{marginTop: '4%'}}>
+            <GridItem xs={6} sm={6} md={6}>
+              
+              <GridContainer>
+                <GridItem xs={4} sm={4} md={4}>
+                  <Avatar
+                    alt=""
+                    src={histoire.userText.lienPhoto}
+                    // style={{ width: 200, height: 200 }}
+                  />
+                </GridItem>
+                <GridItem xs={8} sm={8} md={8}>
+                  <h6
+                    style={{
+                      fontFamily: "monospace",
+                      color: "black",
+                      fontWeight: "bold",
+                      marginLeft: '5%',
+                      textAlign: 'left'
+                    }}
+                  >
+                    {histoire.userText.pseudo}
+                  </h6>
+                </GridItem>
+              </GridContainer>
+            </GridItem>
+            <GridItem xs={3} sm={3} md={3}>
+            <div style={{width: 40}}>
+            <Tooltip
                 disableFocusListener
                 disableTouchListener
                 title={
@@ -1047,7 +1155,7 @@ function CardHistoire(props) {
                     ).toFixed(1)}
                     styles={buildStyles({
                       textColor: "transparent",
-                      pathColor: "#df6c4f",
+                      pathColor: "#2e99b0",
                       trailColor: "#d6d6d6",
                       strokeLinecap: "butt"
                     })}
@@ -1062,7 +1170,7 @@ function CardHistoire(props) {
                     >
                       <p
                         style={{
-                          color: "#df6c4f",
+                          color: "#2e99b0",
                           fontSize: 15,
                           margin: 0
                         }}
@@ -1083,7 +1191,37 @@ function CardHistoire(props) {
             </div>
           </GridItem>
         </GridContainer>
+        ):(
+          <GridContainer style={{marginTop: '4%'}}>
+            <GridItem xs={6} sm={6} md={6}>
+              
+              <GridContainer>
+                <GridItem xs={4} sm={4} md={4}>
+                  <Avatar
+                    alt=""
+                    src={config.API_URL + "images/defaultPhotoProfil.jpg"}
+                    // style={{ width: 200, height: 200 }}
+                  />
+                </GridItem>
+                <GridItem xs={8} sm={8} md={8}>
+                  <h6
+                    style={{
+                      fontFamily: "monospace",
+                      color: "black",
+                      fontWeight: "bold",
+                      marginLeft: '5%',
+                      textAlign: 'left'
+                    }}
+                  >
+                    non spécifié
+                  </h6>
+                </GridItem>
+              </GridContainer>
+            </GridItem>
+            </GridContainer>
+        )}
         <Divider style={{ marginTop: "4%" }} />
+        {histoire.userDessin ? (
         <GridContainer style={{ marginTop: "4%" }}>
           <GridItem xs={6} sm={6} md={6}>
             <GridContainer>
@@ -1135,7 +1273,7 @@ function CardHistoire(props) {
                     ).toFixed(2)}
                     styles={buildStyles({
                       textColor: "transparent",
-                      pathColor: "#1a99aa",
+                      pathColor: "#ff2e4c",
                       trailColor: "#d6d6d6",
                       strokeLinecap: "butt"
                     })}
@@ -1150,7 +1288,7 @@ function CardHistoire(props) {
                     >
                       <p
                         style={{
-                          color: "#1a99aa",
+                          color: "#ff2e4c",
                           fontSize: 15,
                           margin: 0
                         }}
@@ -1172,6 +1310,34 @@ function CardHistoire(props) {
             </div>{" "}
           </GridItem>
         </GridContainer>
+        ):(
+          <GridContainer style={{ marginTop: "4%" }}>
+          <GridItem xs={6} sm={6} md={6}>
+            <GridContainer>
+              <GridItem xs={4} sm={4} md={4}>
+                <Avatar
+                  alt=""
+                  src={config.API_URL + "images/defaultPhotoProfil.jpg"}
+                  // style={{ width: 200, height: 200 }}
+                />
+              </GridItem>
+              <GridItem xs={8} sm={8} md={8}>
+                <h6
+                  style={{
+                    fontFamily: "monospace",
+                    color: "black",
+                    fontWeight: "bold",
+                    marginLeft: "5%",
+                    textAlign: "left"
+                  }}
+                >
+                  non spécifié
+                </h6>
+              </GridItem>
+            </GridContainer>
+          </GridItem>
+          </GridContainer>
+        )}
         <Divider
           style={{ marginTop: "4%", marginLeft: -30, marginRight: -30 }}
         />

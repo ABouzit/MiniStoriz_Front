@@ -11,6 +11,12 @@ import IconButton from "@material-ui/core/IconButton";
 import Button from "@material-ui/core/Button";
 import Hidden from "@material-ui/core/Hidden";
 import Drawer from "@material-ui/core/Drawer";
+import {
+  BrowserView,
+  MobileView,
+  isBrowser,
+  isMobile
+} from "react-device-detect";
 // @material-ui/icons
 import Typography from "@material-ui/core/Typography";
 import Menu from "@material-ui/icons/Menu";
@@ -63,7 +69,7 @@ export default function Header(props) {
   });
   const brandComponent = <Button className={classes.title}>{brand}</Button>;
   return (
-    <AppBar className={appBarClasses}>
+    <AppBar className={appBarClasses} style={isMobile ?{display: 'inherit'}:{}}>
       <Toolbar className={classes.container}>
         {leftLinks !== undefined ? brandComponent : null}
         <div className={classes.flex}>
@@ -90,6 +96,8 @@ export default function Header(props) {
       </Toolbar>
 
       <Hidden mdUp implementation="js">
+      <div >        
+        <div style={{position: 'absolute', marginTop: -51}}>{leftLinks}</div>
         <Drawer
           variant="temporary"
           anchor={"right"}
@@ -104,13 +112,14 @@ export default function Header(props) {
             {rightLinks}
           </div>
         </Drawer>
+      </div>
       </Hidden>
     </AppBar>
   );
 }
 
 Header.defaultProp = {
-  color: "white"
+  color: "primary"
 };
 
 Header.propTypes = {

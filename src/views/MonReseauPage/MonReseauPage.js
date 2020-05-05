@@ -21,6 +21,7 @@ import styles from "assets/jss/material-kit-react/views/landingPage.js";
 import CustomInput from "components/CustomInput/CustomInput.js";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import Search from "@material-ui/icons/Search";
+import { Link, withRouter } from "react-router-dom";
 import ButtonBase from "@material-ui/core/ButtonBase";
 import {
   BrowserView,
@@ -40,7 +41,6 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Divider from "@material-ui/core/Divider";
 import Avatar from "@material-ui/core/Avatar";
 import Lightbox from "react-image-lightbox";
-import { Link, withRouter } from "react-router-dom";
 import "react-image-lightbox/style.css";
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import ForumRoundedIcon from '@material-ui/icons/ForumRounded';
@@ -49,16 +49,16 @@ import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
 // Sections for this page
 import { subscriber, messageService } from "./../../services/messageService";
-import MesOeuvres from "./Sections/MesOeuvres";
+import MonReseau from "./Sections/MonReseau";
 import { Redirect } from 'react-router-dom';
 import * as firebase from "firebase/app";
 import "firebase/database";
 import PersonAddDisabledIcon from '@material-ui/icons/PersonAddDisabled';
 
+
 const dashboardRoutes = [];
 
 const useStyles = makeStyles(styles);
-
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
@@ -67,7 +67,6 @@ export default function MesOeuvresPage(props) {
   const [isOpen, setIsOpen] = React.useState(false);
   const [search, setSearch] = React.useState("");
   const [imgUrl, setImgUrl] = React.useState("");
-  const [filtre, setFiltre] = React.useState(1);
   const [user, setUser] = React.useState("");
   const [view, setView] = React.useState('');
   const [ami, setAmi] = React.useState(false);
@@ -80,7 +79,6 @@ export default function MesOeuvresPage(props) {
   };
   React.useEffect(() => {
     subscriber.subscribe(v => {
-      console.log(v)
       if(v.user){
         setUser(v.user)
       }
@@ -492,11 +490,10 @@ export default function MesOeuvresPage(props) {
                     </GridContainer>
                   <Divider  style={{marginTop: '2%', marginLeft: -30, marginRight: -30}} />
                   {view == '' ? (
-                  <div>
+                    <div>
                   <GridContainer justify="center">
-                    
                     <GridItem xs={12} sm={12} md={12}>
-                    <Link to="/MonReseau">
+                    <Link to="/MesOeuvres">
                       <h5
                         style={{
                           fontFamily: "cursive",
@@ -509,7 +506,7 @@ export default function MesOeuvresPage(props) {
                           textDecoration: 'underline'
                         }}
                       >
-                        Mon Réseau
+                        Mes Oeuvres
                       </h5>
                       </Link>
                     </GridItem>
@@ -541,7 +538,7 @@ export default function MesOeuvresPage(props) {
                     <div>
                     <GridContainer justify="center">
                     <GridItem xs={12} sm={12} md={12}>
-                    <Link to={"/Reseau/"+view}>
+                    <Link to={"/LesOeuvres/"+view}>
                       <h5
                         style={{
                           fontFamily: "cursive",
@@ -554,11 +551,11 @@ export default function MesOeuvresPage(props) {
                           textDecoration: 'underline'
                         }}
                       >
-                        Mon Réseau
+                        Mes Oeuvres
                       </h5>
                       </Link>
                     </GridItem>
-                  </GridContainer>
+                    </GridContainer>
                     <Divider
                       style={{ marginTop: "4%", marginLeft: -30, marginRight: -30 }}
                     />
@@ -583,19 +580,18 @@ export default function MesOeuvresPage(props) {
                       ):(
                         <GridItem xs={4} sm={4} md={4} style={{ textAlign: "center" }}>
                         
-                            <ButtonBase onClick={()=>{removeRequestFriend(view)}}>
-                              <small style={{color: '#1e1548'}}>
-                                <PersonAddDisabledIcon style={{ width: 20 }} />
-                              </small>
-                            </ButtonBase>
-                          
-                        </GridItem>
+                          <ButtonBase onClick={()=>{removeRequestFriend(view)}}>
+                            <small style={{color: '#1e1548'}}>
+                              <PersonAddDisabledIcon style={{ width: 20 }} />
+                            </small>
+                          </ButtonBase>
+                        
+                       </GridItem>
                       )}
                     </GridContainer>
                     </div>
                   )}
-                    
-                    
+                  
                 </CardBody>
               </Card>
               </GridItem>
@@ -615,7 +611,7 @@ export default function MesOeuvresPage(props) {
                   }}
                   inputProps={{
                     endAdornment: (
-                      <ButtonBase onClick={subscriber.next({search: search, filtre: filtre})}>
+                      <ButtonBase onClick={subscriber.next({search: search})}>
                         <InputAdornment position="end">
                           <Search />
                         </InputAdornment>
@@ -624,20 +620,7 @@ export default function MesOeuvresPage(props) {
                   }}
                 />
               </GridItem>
-              <GridItem xs={12} sm={12} md={10} style={{textAlign: 'center'}}>
-                <ButtonGroup
-                    orientation="vertical"
-                    // color="secondary"
-                    aria-label="Les filtres"
-                    variant="contained"
-                    style={{width : '-webkit-fill-available'}}
-                  >
-                  <Button onClick={()=> {subscriber.next({search: search, filtre: 1}); setFiltre(1); window.scrollTo(0, 0)}}>Les plus lues</Button>
-                  <Button onClick={()=> {subscriber.next({search: search, filtre: 2}); setFiltre(2); window.scrollTo(0, 0)}}>Les plus populaires</Button>
-                  <Button onClick={()=> {subscriber.next({search: search, filtre: 3}); setFiltre(3); window.scrollTo(0, 0)}}>Les plus recentes</Button>
-                  <Button onClick={()=> {subscriber.next({search: search, filtre: 4}); setFiltre(4); window.scrollTo(0, 0)}}>Les plus anciennes</Button>
-                </ButtonGroup>
-              </GridItem>
+              
             </GridContainer>
             <div id="scrollTop" style={{ display: 'none', position: 'fixed', width: '100%', textAlign: 'left', zIndex: 10, bottom: 5, right: -5}}>
               <Fab
@@ -890,11 +873,10 @@ export default function MesOeuvresPage(props) {
                     </GridContainer>
                   <Divider  style={{marginTop: '2%', marginLeft: -30, marginRight: -30}} />
                   {view == '' ? (
-                  <div>
+                    <div>
                   <GridContainer justify="center">
-                    
                     <GridItem xs={12} sm={12} md={12}>
-                    <Link to="/MonReseau">
+                    <Link to="/MesOeuvres">
                       <h5
                         style={{
                           fontFamily: "cursive",
@@ -907,7 +889,7 @@ export default function MesOeuvresPage(props) {
                           textDecoration: 'underline'
                         }}
                       >
-                        Mon Réseau
+                        Mes Oeuvres
                       </h5>
                       </Link>
                     </GridItem>
@@ -939,7 +921,7 @@ export default function MesOeuvresPage(props) {
                     <div>
                     <GridContainer justify="center">
                     <GridItem xs={12} sm={12} md={12}>
-                    <Link to={"/Reseau/"+view}>
+                    <Link to={"/LesOeuvres/"+view}>
                       <h5
                         style={{
                           fontFamily: "cursive",
@@ -952,17 +934,17 @@ export default function MesOeuvresPage(props) {
                           textDecoration: 'underline'
                         }}
                       >
-                        Mon Réseau
+                        Mes Oeuvres
                       </h5>
                       </Link>
                     </GridItem>
-                  </GridContainer>
+                    </GridContainer>
                     <Divider
                       style={{ marginTop: "4%", marginLeft: -30, marginRight: -30 }}
                     />
                     <GridContainer justify="center" style={{ marginTop: "3%", height: 23 }}>
                       <GridItem xs={4} sm={4} md={4} style={{ textAlign: "center" }}>
-                       <Link to={"/Message/"+user.id}>
+                      <Link to={"/Message/"+user.id}>
                         <small style={{color: '#1e1548'}}>
                           <ForumRoundedIcon style={{ width: 20 }} /> 
                         </small>
@@ -992,6 +974,7 @@ export default function MesOeuvresPage(props) {
                     </GridContainer>
                     </div>
                   )}
+                  
                 </CardBody>
               </Card>
               </GridItem>
@@ -1011,7 +994,7 @@ export default function MesOeuvresPage(props) {
                   }}
                   inputProps={{
                     endAdornment: (
-                      <ButtonBase onClick={subscriber.next({search: search, filtre: filtre})}>
+                      <ButtonBase onClick={subscriber.next({search: search})}>
                         <InputAdornment position="end">
                           <Search />
                         </InputAdornment>
@@ -1019,21 +1002,6 @@ export default function MesOeuvresPage(props) {
                     )
                   }}
                 />
-                
-              </GridItem>
-              <GridItem xs={12} sm={12} md={10} style={{textAlign: 'center'}}>
-                <ButtonGroup
-                    orientation="vertical"
-                    // color="secondary"
-                    aria-label="Les filtres"
-                    variant="contained"
-                    style={{width : '-webkit-fill-available'}}
-                  >
-                  <Button onClick={()=> {subscriber.next({search: search, filtre: 1}); setFiltre(1); window.scrollTo(0, 0)}}>Les plus lues</Button>
-                  <Button onClick={()=> {subscriber.next({search: search, filtre: 2}); setFiltre(2); window.scrollTo(0, 0)}}>Les plus populaires</Button>
-                  <Button onClick={()=> {subscriber.next({search: search, filtre: 3}); setFiltre(3); window.scrollTo(0, 0)}}>Les plus recentes</Button>
-                  <Button onClick={()=> {subscriber.next({search: search, filtre: 4}); setFiltre(4); window.scrollTo(0, 0)}}>Les plus anciennes</Button>
-                </ButtonGroup>
               </GridItem>
             </GridContainer>
             </div> )}
@@ -1051,12 +1019,12 @@ export default function MesOeuvresPage(props) {
           {isMobile ? (
           <GridItem xs={12} sm={12} md={9} position="center">
             <div>
-            <MesOeuvres /></div>
+            <MonReseau /></div>
             
           </GridItem>
           ):(
           <GridItem xs={12} sm={12} md={9} position="end">
-          <MesOeuvres />
+          <MonReseau />
         </GridItem>
         )}
         </GridContainer>

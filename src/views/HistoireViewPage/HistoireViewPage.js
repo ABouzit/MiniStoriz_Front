@@ -25,6 +25,7 @@ import ButtonBase from "@material-ui/core/ButtonBase";
 // Sections for this page
 import HistoireView from "./Sections/HistoireView";
 import { subscriber, messageService } from "./../../services/messageService";
+import { Redirect } from 'react-router-dom';
 
 const dashboardRoutes = [];
 
@@ -34,12 +35,16 @@ export default function HistoireViewPage(props) {
   const [refresh, setRefresh] = React.useState(false);
   const [search, setSearch] = React.useState("");
   const [filtre, setFiltre] = React.useState(1);
+  const [userCurrent, setUserCurrent] = React.useState(JSON.parse(localStorage.getItem('user')));
   let refreshCallBackFunction = publierData => {
     console.log(publierData);
     setRefresh(true);
   };
   const classes = useStyles();
   const { ...rest } = props;
+  if (userCurrent == null) {
+    return <Redirect to='/Connexion' />;
+  }
   return (
     <div style={{ backgroundColor: "white" }}>
       <Header
@@ -59,7 +64,7 @@ export default function HistoireViewPage(props) {
         rightLinks={<HeaderUser />}
         fixed
         changeColorOnScroll={{
-          height: 0,
+          height: -1,
           color: "info"
         }}
         {...rest}
@@ -74,7 +79,6 @@ export default function HistoireViewPage(props) {
           <AllHistoires />
         </div>
       </div> */}
-      {/* <Footer /> */}
     </div>
   );
 }

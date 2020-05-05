@@ -30,6 +30,7 @@ export default function CustomInput(props) {
     defaultValue,
     readOnly,
     type,
+    autoComplete,
     onChange
   } = props;
 
@@ -82,6 +83,7 @@ export default function CustomInput(props) {
         id={id}
         value={value}
         style={style}
+        autoComplete={autoComplete}
         readOnly={readOnly}
         onChange={onChange}
         {...inputProps}

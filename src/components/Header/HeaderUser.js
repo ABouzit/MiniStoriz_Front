@@ -14,11 +14,18 @@ import config from "config/config";
 // @material-ui/icons
 import { Apps, CloudDownload } from "@material-ui/icons";
 import PersonIcon from '@material-ui/icons/Person';
-
+import PeopleOutlineOutlinedIcon from '@material-ui/icons/PeopleOutlineOutlined';
+import ListItemText from '@material-ui/core/ListItemText';
 // core components
 import CustomDropdown from "components/CustomDropdown/CustomDropdown.js";
 import Button from "components/CustomButtons/Button.js";
+import Buttonss from '@material-ui/core/Button';
 
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import LanguageIcon from '@material-ui/icons/Language';
+import moment from "moment";
+import "moment/locale/fr";
 import styles from "assets/jss/material-kit-react/components/headerLinksStyle.js";
 // import { Link } from "react-scroll";
 import headerStyle from "assets/jss/material-kit-react/components/headerStyle";
@@ -29,12 +36,173 @@ import MuiDialogActions from "@material-ui/core/DialogActions";
 import { withStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import ButtonBase from "@material-ui/core/ButtonBase";
-const useStyles = makeStyles(styles);
+import Avatar from "@material-ui/core/Avatar";
+import Axios from "axios";
+import SimpleBar from "simplebar-react";
+import "simplebar/dist/simplebar.min.css";
+import { subscriber, messageService } from "./../../services/messageService";
+import GridContainer from "components/Grid/GridContainer";
+import HighlightOffRoundedIcon from '@material-ui/icons/HighlightOffRounded';
+import CheckCircleOutlineRoundedIcon from '@material-ui/icons/CheckCircleOutlineRounded';
+import GridItem from "components/Grid/GridItem";
+import Badge from '@material-ui/core/Badge';
+import MailIcon from '@material-ui/icons/MailOutline';
+import * as firebase from "firebase/app";
+import "firebase/database";
+import "firebase/auth";
+import NotificationsNoneIcon from '@material-ui/icons/NotificationsNone';
+import MenuBookOutlinedIcon from '@material-ui/icons/ImportContactsOutlined';
 
+
+const useStyles = makeStyles(styles);
+const ITEM_HEIGHT = 48;
+firebase.initializeApp(config.firebaseConfig);
 export default function HeaderUser(props) {
   const classes = useStyles();
   const headerClasse = makeStyles(headerStyle);
   const [modal, setModal] = React.useState(false);
+  const [user, setUser] = React.useState(JSON.parse(localStorage.getItem('user')));
+  const [anchorEl2, setAnchorEl2] = React.useState(null);
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [vue, setVue] = React.useState(0);
+  const [vueNotif, setVueNotif] = React.useState(0);
+  const [nbrReq, setNbrReq] = React.useState(0);
+  const [requestFriend, setRequestFriend] = React.useState([]);
+  const [notifications, setNotifications] = React.useState([]);
+  
+  const open = Boolean(anchorEl);
+  const open2 = Boolean(anchorEl2);
+
+  const handleClick = (event) => {
+    getRequestFriend();
+    setAnchorEl(event.currentTarget);
+    
+  };
+  const handleClick2 = (event) => {
+    notification();
+    setAnchorEl2(event.currentTarget);
+    
+  };
+  const accepteRequest = (id,id2) => {
+    Axios.put(config.API_URL + "users/relation/"+user.id, {
+      id: id,
+      isActive: true
+    }).then(res => {
+      firebase.database().ref('notifications/' + id2).set({
+        from: user.id,
+        to: id2,
+        numbe: 100000 + Math.random() * (100000 - 1)
+      });
+      getRequestFriend()
+    })
+    .catch(
+      function(error) {
+        console.log(error);
+      }
+    );
+  }
+  const refuseRequest = (id) => {
+    Axios.delete(config.API_URL + "relations/"+id).then(res => {
+      getRequestFriend()
+    })
+    .catch(
+      function(error) {
+        console.log(error);
+      }
+    );
+  }
+  const getRequestFriend = () =>{
+    Axios.get(
+      config.API_URL +
+        "relations/request/" + user.id,
+      {}
+    ).then(res => {
+      setRequestFriend(res.data)
+    });
+  }
+  const getNumberVue = () =>{
+    Axios.get(
+      config.API_URL +
+        "messages/numberVueTotal/" + user.id,
+      {}
+    ).then(res => {
+      setVue(res.data)
+    });
+  }
+  const notification = () =>{
+    Axios.get(
+      config.API_URL +
+        "notification/for/" + user.id,
+      {}
+    ).then(res => {
+      setNotifications(res.data)
+    });
+  }
+  const NumberVue = () =>{
+    Axios.get(
+      config.API_URL +
+        "notification/nbrNotification/" + user.id,
+      {}
+    ).then(res => {
+      setVueNotif(res.data)
+    });
+  }
+  NumberVue();
+  const getNumberRequest = () =>{
+    Axios.get(
+      config.API_URL +
+        "relations/getNumberRequest/" + user.id,
+      {}
+    ).then(res => {
+      setNbrReq(res.data)
+    });
+  }
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+  const handleClose2 = () => {
+    setAnchorEl2(null);
+  };
+  React.useEffect(() => {
+
+    var messageRef = firebase.database().ref('messages/' + user.id);
+    messageRef.on('value', function(snapshot) {
+        if (snapshot.val().to == user.id) {
+          getNumberVue()
+        }
+    });
+    var relationRef = firebase.database().ref('relations/' + user.id);
+      relationRef.on('value', function(snapshot) {
+        if (snapshot.val()) {
+          
+          if (snapshot.val().to == user.id) {
+            getNumberRequest()
+          }
+        } 
+      });
+    var notificationRef = firebase.database().ref('notifications/' + user.id);
+    notificationRef.on('value', function(snapshot) {console.log(snapshot.val())
+      if (snapshot.val()) {
+        
+        if (snapshot.val().to == user.id) {
+          NumberVue()
+        }
+      } 
+    });  
+    subscriber.subscribe(v => {
+      const userss = JSON.parse(localStorage.getItem('user'));
+      if(v == 'change'){
+        if (userss) {
+          setUser(userss);
+        }
+      }
+      if (v.messageUser) {
+        getNumberVue()
+      }
+    });
+  });
+  getNumberVue();
+  getNumberRequest();
   const styles1 = theme => ({
     root: {
       margin: 0
@@ -182,114 +350,7 @@ export default function HeaderUser(props) {
         </MuiDialogActions>
       </Dialog>
       <List className={classes.list}>
-        {/* <ListItem className={classes.listItem}>
-        <CustomDropdown
-          noLiPadding
-          buttonText="Components"
-          buttonProps={{
-            className: classes.navLink,
-            color: "transparent"
-          }}
-          buttonIcon={Apps}
-          dropdownList={[
-            // <Link to="/" className={classes.dropdownLink}>
-            //   All components
-            // </Link>,
-            <a
-              href="https://creativetimofficial.github.io/material-kit-react/#/documentation?ref=mkr-navbar"
-              target="_blank"
-              className={classes.dropdownLink}
-            >
-              Documentation
-            </a>
-          ]}
-        />
-      </ListItem>
-      <ListItem className={classes.listItem}>
-        <Button
-          href="https://www.creative-tim.com/product/material-kit-react?ref=mkr-navbar"
-          color="transparent"
-          target="_blank"
-          className={classes.navLink}
-        >
-          <CloudDownload className={classes.icons} /> Download
-        </Button>
-      </ListItem> */}
-        {/* <ListItem className={classes.listItem}>
-      <Link
-          color="transparent"
-          style={{color:"white"}}
-          activeClass="active"
-          to="noshistoire"
-          spy={true}
-          smooth={true}
-          offset={0}
-          duration= {500}
-          >
-        <Button
-          color="transparent"
-          target="_blank"
-          className={classes.navLink}
-        >
-          <i
-            className={
-              headerClasse.socialIcons + " fab fa-readme"
-            }
-            style={{  fontSize: 15 }}
-          /> Lire
-        </Button>
-        </Link>
-      </ListItem>
-      <ListItem className={classes.listItem}>
-      <Link
-          color="transparent"
-          style={{color:"white"}}
-          activeClass="active"
-          to="publier"
-          spy={true}
-          smooth={true}
-          offset={0}
-          duration= {500}
-          >
-        <Button
-          color="transparent"
-          target="_blank"
-          className={classes.navLink}
-        >
-          <i
-            className={
-              headerClasse.socialIcons + " fas fa-pen-square"
-            }
-            style={{  fontSize: 15 }}
-          /> Publier
-        </Button>
-        </Link>
-      </ListItem>
-      <ListItem className={classes.listItem}>
-      <Link
-          color="transparent"
-          style={{color:"white"}}
-          activeClass="active"
-          to="echanger"
-          spy={true}
-          smooth={true}
-          offset={0}
-          duration= {500}
-          >
-        <Button
-          color="transparent"
-          target="_blank"
-          className={classes.navLink}
-        >
-          <i
-            className={
-              headerClasse.socialIcons + " fas fa-comments"
-            }
-            style={{  fontSize: 15 }}
-          /> Echanger
-        </Button>
-        </Link>
-      </ListItem> */}
+
         <ListItem className={classes.listItem}>
           <Link to="/" className={classes.dropdownLink}>
             <Button
@@ -297,55 +358,255 @@ export default function HeaderUser(props) {
               className={classes.navLink}
               style={{ padding: 0 }}
             >
-              <i
-                className={headerClasse.socialIcons + " fas fa-home"}
-                style={{ fontSize: 25 }}
-              />{" "}
-              Retour a l'accueil
+              <MenuBookOutlinedIcon style={{width:22,height:22}} /> Histoires
             </Button>
           </Link>
         </ListItem>
-        {/* <ListItem className={classes.listItem}>
-        <Tooltip title="Delete">
-          <IconButton aria-label="Delete">
-            <DeleteIcon />
-          </IconButton>
-        </Tooltip>
-        <Tooltip
-          id="instagram-twitter"
-          title="Follow us on twitter"
-          placement={window.innerWidth > 959 ? "top" : "left"}
-          classes={{ tooltip: classes.tooltip }}
-        >
-          <Button
-            href='/NosHistoires'
-            // target="_blank"
-            color="transparent"
-            className={classes.navLink}
-          >
-            <i className={classes.socialIcons + " fab fa-twitter"} />
-          </Button>
-        </Tooltip>
-      </ListItem> */}
-        {/* <ListItem className={classes.listItem}>
-        <Tooltip
-          id="instagram-facebook"
-          title="Follow us on facebook"
-          placement={window.innerWidth > 959 ? "top" : "left"}
-          classes={{ tooltip: classes.tooltip }}
-        >
-          <Button
-            color="transparent"
-            href="https://www.facebook.com/CreativeTim?ref=creativetim"
-            target="_blank"
-            className={classes.navLink}
-          >
-            <i className={classes.socialIcons + " fab fa-facebook"} />
-          </Button>
-        </Tooltip>
-      </ListItem> */}
         <ListItem className={classes.listItem}>
-          <Link className={classes.dropdownLink}>
+          <Link to="/Utilisateurs" className={classes.dropdownLink}>
+            <Button
+              color="transparent"
+              className={classes.navLink}
+              style={{ padding: 0 }}
+            >
+              <PeopleOutlineOutlinedIcon style={{width:22,height:22}} /> utilisateurs
+            </Button>
+          </Link>
+        </ListItem>
+        <ListItem className={classes.listItem}>
+          <Link to="/Messages" className={classes.dropdownLink}>
+            <Button
+              color="transparent"
+              className={classes.navLink}
+              style={{ padding: 0 }}
+            >
+              <Badge badgeContent={vue} max={99} color="secondary"
+                    anchorOrigin={{
+                      vertical: 'top',
+                      horizontal: 'left',
+                    }}>
+                <MailIcon style={{width:22,height:22}} />
+              </Badge> Messages
+            </Button>
+          </Link>
+        </ListItem>
+        <ListItem className={classes.listItem}>
+        <div>
+          
+          <Link onClick={handleClick} className={classes.dropdownLink}>
+            <Button
+              color="transparent"
+              className={classes.navLink}
+              style={{ padding: 0 }}
+            >
+              
+              <Badge badgeContent={nbrReq} max={99} color="secondary"
+                    anchorOrigin={{
+                      vertical: 'top',
+                      horizontal: 'left',
+                    }}>
+                <LanguageIcon style={{width:22,height:22}} />
+              </Badge> Réseau
+            </Button>
+          </Link>
+          
+          <Menu
+          elevation={0}
+          getContentAnchorEl={null}
+            id="long-menu"
+            anchorEl={anchorEl}
+            keepMounted
+            open={open}
+            onClose={handleClose}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'center',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'center',
+            }}
+            PaperProps={{
+              style: {
+                // maxHeight: ITEM_HEIGHT * 4.5,
+                width: '36ch',
+              },
+            }}
+          >
+            <SimpleBar
+              style={{
+                maxHeight: ITEM_HEIGHT * 4.5,
+                width: '36ch',
+                marginLeft: "auto",
+                marginRight: "auto"
+              }}
+            >
+            {requestFriend.length == 0 ? (
+              <MenuItem ><span  style={{textAlign: 'center',width: '100%', color:'#1e1548'}}>aucune nouvelle invitation</span></MenuItem>
+            ):
+            requestFriend.map((friend) => (
+              <MenuItem >
+                    <div style={{display: 'contents'}}>
+                    { friend.userOne.lienPhoto == "" ? (
+                      <Avatar
+                          style={{borderStyle: 'solid',borderWidth: 1.2,
+                                   borderColor: '#1e1548'}}
+                          alt=""
+                          src={config.API_URL + "images/defaultPhotoProfil.jpg"}
+                        />
+                      ):(
+                    <Avatar
+                        style={{borderStyle: 'solid',borderWidth: 1.2,
+                                   borderColor: '#1e1548'}}
+                        alt=""
+                        src={friend.userOne.lienPhoto}
+                      />
+                      )}
+                    <span style={{marginLeft:6,color: '#1e1548'}}>{friend.userOne.pseudo}</span>
+                  </div>
+                  <Tooltip
+                    title="Accepter"
+                  >
+                    <ButtonBase onClick={()=>{accepteRequest(friend.id,friend.userOne.id)}}style={{marginLeft: 'auto'}}>
+                        <CheckCircleOutlineRoundedIcon style={{color: '#1e1548'}}/>
+                  </ButtonBase>
+                  </Tooltip>
+                  <Tooltip
+                    title="Refuser"
+                    
+                  >
+                    <ButtonBase onClick={()=>{refuseRequest(friend.id)}} style={{marginLeft: 5}}>
+                        <HighlightOffRoundedIcon style={{color: '#1e1548'}}/>
+                  </ButtonBase>
+                  </Tooltip>
+                  
+                  
+              </MenuItem>
+            ))}
+            </SimpleBar>
+            <MenuItem selected={true}>
+              <Link to="/MonReseau">
+                <h6
+                  style={{
+                    fontFamily: "cursive",
+                    fontWeight: "bold",
+                    color: "#1e1548",
+                    margin: 0,
+                    textAlign: 'center',
+                    fontVariant: 'unicase',
+                    width: 287,
+                    textDecoration: 'underline'
+                  }}
+                >
+                  Mon Réseau
+                </h6>
+              </Link> 
+            </MenuItem>
+          </Menu>
+        </div>
+        </ListItem>
+        <ListItem className={classes.listItem}>
+        <div>
+          
+          <Link onClick={handleClick2} className={classes.dropdownLink}>
+            <Button
+              color="transparent"
+              className={classes.navLink}
+              style={{ padding: 0 }}
+            >
+              
+              <Badge badgeContent={vueNotif} max={99} color="secondary"
+                    anchorOrigin={{
+                      vertical: 'top',
+                      horizontal: 'left',
+                    }}>
+                <NotificationsNoneIcon style={{width:22,height:22}} />
+              </Badge> Notifications
+            </Button>
+          </Link>
+          
+          <Menu
+          elevation={0}
+          getContentAnchorEl={null}
+            id="long-menu"
+            anchorEl={anchorEl2}
+            keepMounted
+            open={open2}
+            onClose={handleClose2}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'center',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'center',
+            }}
+            PaperProps={{
+              style: {
+                // maxHeight: ITEM_HEIGHT * 4.5,
+                width: '36ch',
+              },
+            }}
+          >
+            <SimpleBar
+              style={{
+                maxHeight: 252,
+                width: '36ch',
+                marginLeft: "auto",
+                marginRight: "auto"
+              }}
+            >
+            {notifications.length == 0 ? (
+              <MenuItem ><span  style={{textAlign: 'center',width: '100%', color:'#1e1548'}}>aucune notification</span></MenuItem>
+            ):
+            notifications.map((notification) => (
+              <Link to={notification.lien}>
+              <MenuItem >
+                    <div style={{display: 'flex'}}>
+                    { notification.lienDessin == "" ? (
+                      <Avatar
+                          style={{borderStyle: 'solid',borderWidth: 1.2,
+                                   borderColor: '#1e1548'}}
+                          alt=""
+                          src={config.API_URL + "images/defaultPhotoProfil.jpg"}
+                        />
+                      ):(
+                    <Avatar
+                        style={{borderStyle: 'solid',borderWidth: 1.2,
+                                   borderColor: '#1e1548'}}
+                        alt=""
+                        src={notification.lienDessin}
+                      />
+                      )}
+                    <div style={{marginLeft:6,maxWidth: 280}}>
+                    <span style={{color: '#1e1548'}}>{notification.pseudo}</span>
+                    <ListItemText primary={
+                      <React.Fragment>
+                        <p style={{whiteSpace: 'nowrap', overflow: 'hidden',textOverflow: 'ellipsis',color: 'black',width: 244}}>
+                         {notification.text}
+                        </p>
+                      </React.Fragment>
+                    } secondary={moment(notification.dateDeCreation).fromNow()} />
+                    </div>
+                  </div>
+                  {/* <Tooltip
+                    title="Accepter"
+                  >
+                    <ButtonBase onClick={()=>{}}style={{marginLeft: 'auto'}}>
+                        <CheckCircleOutlineRoundedIcon style={{color: '#1e1548'}}/>
+                  </ButtonBase>
+                  </Tooltip> */}
+              </MenuItem>
+              </Link>
+            ))}
+            </SimpleBar>
+            
+          </Menu>
+        </div>
+        </ListItem>
+        <ListItem className={classes.listItem}>
+
+          <Link className={classes.dropdownLink} style={{ padding: 0 }}>
             <Tooltip
               id="instagram-tooltip"
               title="Mon Compte"
@@ -355,13 +616,30 @@ export default function HeaderUser(props) {
             >
               <CustomDropdown
                 noLiPadding
-                buttonText=""
+                buttonText={
+                  <div style={{display: 'contents'}}>
+                    { user.lienPhoto == "" ? (
+                      <Avatar
+                         style={{borderStyle: 'solid',borderWidth: 1.2,
+                                   borderColor: '#1e1548'}}
+                          alt=""
+                          src={config.API_URL + "images/defaultPhotoProfil.jpg"}
+                        />
+                      ):(
+                    <Avatar
+                        style={{borderStyle: 'solid',borderWidth: 1.2,
+                                   borderColor: '#1e1548'}}
+                        alt=""
+                        src={user.lienPhoto}
+                      />
+                      )}
+                    <span style={{marginLeft:6,color: '#1e1548'}}>{user.pseudo}</span>
+                  </div>
+                }
                 buttonProps={{
                   className: classes.navLink,
                   color: "transparent"
                 }}
-                iconStyle={{ width: 30, height: 30 }}
-                buttonIcon={PersonIcon}
                 dropdownList={[
                   <Link to="/LesHistoires" className={classes.dropdownLink}>
                     NOS HISTOIRES
@@ -385,7 +663,7 @@ export default function HeaderUser(props) {
                   >
                     NOTRE CHARTE
                   </ButtonBase>,
-                  <Link to="/Logout" className={classes.dropdownLink} divider>
+                  <Link onClick={()=>{localStorage.clear();}} className={classes.dropdownLink} divider>
                     DÉCONNEXION
                   </Link>
                 ]}
