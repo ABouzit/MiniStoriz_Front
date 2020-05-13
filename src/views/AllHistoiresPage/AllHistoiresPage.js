@@ -2,7 +2,7 @@ import React from "react";
 // nodejs library that concatenates classes
 import classNames from "classnames";
 // @material-ui/core components
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, withStyles } from "@material-ui/core/styles";
 
 // @material-ui/icons
 
@@ -31,7 +31,7 @@ import {
 // Sections for this page
 import AllHistoires from "./Sections/AllHistoires";
 import { subscriber, messageService } from "./../../services/messageService";
-
+import HeaderGloble from "components/Header/HeaderGloble";
 const dashboardRoutes = [];
 
 const useStyles = makeStyles(styles);
@@ -40,8 +40,10 @@ export default function AllHistoiresPage(props) {
   const [refresh, setRefresh] = React.useState(false);
   const [search, setSearch] = React.useState("");
   const [filtre, setFiltre] = React.useState(1);
-  const [user, setUser] = React.useState(JSON.parse(localStorage.getItem('user')));
-  
+  const [user, setUser] = React.useState(
+    JSON.parse(localStorage.getItem("user"))
+  );
+
   let refreshCallBackFunction = publierData => {
     console.log(publierData);
     setRefresh(true);
@@ -50,53 +52,6 @@ export default function AllHistoiresPage(props) {
   const { ...rest } = props;
   return (
     <div>
-      {user ? (
-        <Header
-        color="info"
-        routes={dashboardRoutes}
-        // brand="Mateeeerial Kit React"
-        leftLinks={
-          <img
-            src={config.API_URL + "images/asset/logo.png"}
-            alt="Logo"
-            style={{
-              display: "block",
-              width: "146px"
-            }}
-          />
-        }
-        rightLinks={<HeaderUser />}
-        fixed
-        changeColorOnScroll={{
-          height: -1,
-          color: "info"
-        }}
-        {...rest}
-      />
-      ):(
-        <Header
-        color="info"
-        routes={dashboardRoutes}
-        // brand="Mateeeerial Kit React"
-        leftLinks={
-          <img
-            src={config.API_URL + "images/asset/logo.png"}
-            alt="Logo"
-            style={{
-              display: "block",
-              width: "146px"
-            }}
-          />
-        }
-        fixed
-        changeColorOnScroll={{
-          height: -1,
-          color: "info"
-        }}
-        {...rest}
-      />
-      )}
-      
       {/* <div style={{width: '100%',
                     backgroundColor: '#e3f3fd',
                     color: 'rgb(89, 79, 118)',
@@ -109,6 +64,7 @@ export default function AllHistoiresPage(props) {
                         Bienvenue à toi, Azzedine le mini-artiste
                       </h4>
       </div> */}
+      <HeaderGloble />
       <div style={{ backgroundColor: "#ecfbfc" }}>
         <GridContainer justify="flex-end" style={{ margin: 0 }}>
           <GridItem xs={12} sm={12} md={3}>
@@ -146,12 +102,13 @@ export default function AllHistoiresPage(props) {
                   <GridItem xs={10} sm={10} style={{ marginTop: "5%" }}>
                     <ButtonGroup
                       orientation="vertical"
-                      // color="secondary"
+                      color="primary"
                       aria-label="Les filtres"
                       variant="contained"
                       style={{ width: "-webkit-fill-available" }}
                     >
-                      <Button
+                      <ColorButton
+                       
                         onClick={() => {
                           subscriber.next({ search: search, filtre: 1 });
                           setFiltre(1);
@@ -159,8 +116,9 @@ export default function AllHistoiresPage(props) {
                         }}
                       >
                         Les plus lues
-                      </Button>
-                      <Button
+                      </ColorButton>
+                      <ColorButton
+                        
                         onClick={() => {
                           subscriber.next({ search: search, filtre: 2 });
                           setFiltre(2);
@@ -168,8 +126,9 @@ export default function AllHistoiresPage(props) {
                         }}
                       >
                         Les plus populaires
-                      </Button>
-                      <Button
+                      </ColorButton>
+                      <ColorButton
+                        
                         onClick={() => {
                           subscriber.next({ search: search, filtre: 3 });
                           setFiltre(3);
@@ -177,8 +136,9 @@ export default function AllHistoiresPage(props) {
                         }}
                       >
                         Les plus recentes
-                      </Button>
-                      <Button
+                      </ColorButton>
+                      <ColorButton
+                        
                         onClick={() => {
                           subscriber.next({ search: search, filtre: 4 });
                           setFiltre(4);
@@ -186,7 +146,7 @@ export default function AllHistoiresPage(props) {
                         }}
                       >
                         Les plus anciennes
-                      </Button>
+                      </ColorButton>
                     </ButtonGroup>
                   </GridItem>
                 </GridContainer>
@@ -234,46 +194,48 @@ export default function AllHistoiresPage(props) {
                     <ButtonGroup
                       orientation="vertical"
                       // color="secondary"
+                      color="primary"
                       aria-label="Les filtres"
                       variant="contained"
                       style={{ width: "-webkit-fill-available" }}
                     >
-                      <Button
+                        <ColorButton
                         onClick={() => {
                           subscriber.next({ search: search, filtre: 1 });
                           setFiltre(1);
                           window.scrollTo(0, 0);
                         }}
                       >
-                        Les plus lues
-                      </Button>
-                      <Button
+                          Les plus lues
+                      </ColorButton>
+                        <ColorButton
+                       
                         onClick={() => {
                           subscriber.next({ search: search, filtre: 2 });
                           setFiltre(2);
                           window.scrollTo(0, 0);
                         }}
                       >
-                        Les plus populaires
-                      </Button>
-                      <Button
+                          Les plus populaires
+                      </ColorButton>
+                        <ColorButton
                         onClick={() => {
                           subscriber.next({ search: search, filtre: 3 });
                           setFiltre(3);
                           window.scrollTo(0, 0);
                         }}
                       >
-                        Les plus recentes
-                      </Button>
-                      <Button
+                          Les plus recentes
+                      </ColorButton>
+                        <ColorButton
                         onClick={() => {
                           subscriber.next({ search: search, filtre: 4 });
                           setFiltre(4);
                           window.scrollTo(0, 0);
                         }}
                       >
-                        Les plus anciennes
-                      </Button>
+                          Les plus anciennes
+                      </ColorButton>
                     </ButtonGroup>
                   </GridItem>
                 </GridContainer>
@@ -305,3 +267,17 @@ export default function AllHistoiresPage(props) {
     </div>
   );
 }
+
+const ColorButton = withStyles(theme => ({
+  root: {
+    color: "white",
+    borderColor: "white !important",
+    backgroundColor: "#2f99b1",
+    "&:hover": {
+      backgroundColor: "#006b81"
+    },
+    "&:active": {
+      backgroundColor: "#006b81"
+    }
+  }
+}))(Button);

@@ -16,7 +16,7 @@ import HeaderUser from "components/Header/HeaderUser.js";
 import Parallax from "components/Parallax/Parallax.js";
 import config from "config/config";
 import styles from "assets/jss/material-kit-react/views/landingPage.js";
-
+import HeaderGloble from "components/Header/HeaderGloble";
 // Sections for this page
 import AllHistoires from "./Sections/AllHistoires";
 import MesOeuvres from "./Sections/MesOeuvres";
@@ -38,28 +38,7 @@ export default function LandingPage(props) {
   const { ...rest } = props;
   return (
     <div>
-      <Header
-        color="info"
-        routes={dashboardRoutes}
-        // brand="Mateeeerial Kit React"
-        leftLinks={
-          <img
-            src={config.API_URL + "images/asset/logo.png"}
-            alt="Logo"
-            style={{
-              display: "block",
-              width: "146px"
-            }}
-          />
-        }
-        rightLinks={<HeaderUser />}
-        fixed
-        changeColorOnScroll={{
-          height: 0,
-          color: "info"
-        }}
-        {...rest}
-      />
+      <HeaderGloble />
       {/* <Parallax filter image={config.API_URL + "images/asset/bg1.jpg"}>
         <div className={classes.container}>
           <GridContainer>

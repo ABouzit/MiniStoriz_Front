@@ -54,46 +54,103 @@ import NotificationsNoneIcon from '@material-ui/icons/NotificationsNone';
 import MenuBookOutlinedIcon from '@material-ui/icons/ImportContactsOutlined';
 
 
-const useStyles = makeStyles(styles);
-const ITEM_HEIGHT = 48;
-firebase.initializeApp(config.firebaseConfig);
-export default function HeaderUser(props) {
-  const classes = useStyles();
-  const headerClasse = makeStyles(headerStyle);
-  const [modal, setModal] = React.useState(false);
-  const [user, setUser] = React.useState(JSON.parse(localStorage.getItem('user')));
-  const [anchorEl2, setAnchorEl2] = React.useState(null);
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const [vue, setVue] = React.useState(0);
-  const [vueNotif, setVueNotif] = React.useState(0);
-  const [nbrReq, setNbrReq] = React.useState(0);
-  const [requestFriend, setRequestFriend] = React.useState([]);
-  const [notifications, setNotifications] = React.useState([]);
-  
-  const open = Boolean(anchorEl);
-  const open2 = Boolean(anchorEl2);
+class HeaderUser extends React.Component {
+  constructor(props){
+    super(props);
+    this.state={
+      modal:false,
+      user: JSON.parse(localStorage.getItem('user')),
+      anchorEl2:null,
+      anchorEl:null,
+      vue:0,
+      vueNotif:0,
+      nbrReq:0,
+      requestFriend:[],
+      notifications:[],
+      numberMessage:0,
+    }
+    this.NumberVue();
+    this.getNumberVue();
+    this.getNumberRequest();
+    this.handleClick=this.handleClick.bind(this);
+    this.handleClick2 = this.handleClick2.bind(this);
 
-  const handleClick = (event) => {
-    getRequestFriend();
-    setAnchorEl(event.currentTarget);
+  
+  }
+  componentDidMount(){
+    console.log("re9")
+    console.log(this.state.user)
+    firebase.database().ref('messages/' + this.state.user.id).on('value', (snapshot) => {
+console.log(snapshot);
+      if (snapshot && snapshot.val()) {
+        console.log(snapshot.val())
+        console.log(snapshot.val().to == this.state.user.id)
+        if (snapshot.val().to == this.state.user.id) {
+          this.getNumberVue()
+        }
+      }
+    });
+    firebase.database().ref('notifications/' + this.state.user.id)
+      .on('value', (snapshot) => {
+        console.log(snapshot);
+        if (snapshot && snapshot.val()) {
+
+          if (snapshot.val().to == this.state.user.id) {
+            alert('ra9')
+            this.getNumberRequest()
+          }
+        }
+
+      });
+    firebase.database().ref('notifications/' + this.state.user.id)
+      .on('value', (snapshot) => {
+        console.log(snapshot);
+        if (snapshot && snapshot.val()) {
+          if (snapshot.val().to == this.state.user.id) {
+            this.NumberVue()
+          }
+        }
+      });
+    subscriber.subscribe(v => {
+      const userss = JSON.parse(localStorage.getItem('user'));
+      if (v == 'change') {
+        if (userss) {
+          this.setState({ user: userss });
+        }
+      }
+      if (v.messageUser) {
+        this.getNumberVue()
+      }
+    });
+  }
+  componentWillUnmount(){
+    firebase.database().ref('messages/' + this.state.user.id).off('value');
+    firebase.database().ref('notifications/' + this.state.user.id)
+      .off('value');
+    firebase.database().ref('notifications/' + this.state.user.id)
+      .off('value');
+
+  }
+  handleClick(event){
+    this.getRequestFriend();
+    this.setState({anchorEl:event.currentTarget});
+  };
+  handleClick2(event){
+    this.notification();
+    this.setState({anchorEl2:event.currentTarget});
     
   };
-  const handleClick2 = (event) => {
-    notification();
-    setAnchorEl2(event.currentTarget);
-    
-  };
-  const accepteRequest = (id,id2) => {
-    Axios.put(config.API_URL + "users/relation/"+user.id, {
+  accepteRequest(id,id2) {
+    Axios.put(config.API_URL + "users/relation/"+this.state.user.id, {
       id: id,
       isActive: true
     }).then(res => {
       firebase.database().ref('notifications/' + id2).set({
-        from: user.id,
+        from: this.state.user.id,
         to: id2,
         numbe: 100000 + Math.random() * (100000 - 1)
       });
-      getRequestFriend()
+      this.getRequestFriend()
     })
     .catch(
       function(error) {
@@ -101,9 +158,9 @@ export default function HeaderUser(props) {
       }
     );
   }
-  const refuseRequest = (id) => {
+  refuseRequest(id){
     Axios.delete(config.API_URL + "relations/"+id).then(res => {
-      getRequestFriend()
+      this.getRequestFriend()
     })
     .catch(
       function(error) {
@@ -111,123 +168,66 @@ export default function HeaderUser(props) {
       }
     );
   }
-  const getRequestFriend = () =>{
+  getRequestFriend() {
     Axios.get(
       config.API_URL +
-        "relations/request/" + user.id,
+        "relations/request/" + this.state.user.id,
       {}
     ).then(res => {
-      setRequestFriend(res.data)
+      this.setState({requestFriend:res.data})
     });
   }
-  const getNumberVue = () =>{
+  getNumberVue(){
     Axios.get(
       config.API_URL +
-        "messages/numberVueTotal/" + user.id,
+        "messages/numberVueTotal/" + this.state.user.id,
       {}
     ).then(res => {
-      setVue(res.data)
-    });
-  }
-  const notification = () =>{
-    Axios.get(
-      config.API_URL +
-        "notification/for/" + user.id,
-      {}
-    ).then(res => {
-      setNotifications(res.data)
-    });
-  }
-  const NumberVue = () =>{
-    Axios.get(
-      config.API_URL +
-        "notification/nbrNotification/" + user.id,
-      {}
-    ).then(res => {
-      setVueNotif(res.data)
-    });
-  }
-  NumberVue();
-  const getNumberRequest = () =>{
-    Axios.get(
-      config.API_URL +
-        "relations/getNumberRequest/" + user.id,
-      {}
-    ).then(res => {
-      setNbrReq(res.data)
-    });
-  }
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-  const handleClose2 = () => {
-    setAnchorEl2(null);
-  };
-  React.useEffect(() => {
+      console.log(res.data)
 
-    var messageRef = firebase.database().ref('messages/' + user.id);
-    messageRef.on('value', function(snapshot) {
-        if (snapshot.val().to == user.id) {
-          getNumberVue()
-        }
+      this.setState({vue:res.data},()=>this.forceUpdate())
     });
-    var relationRef = firebase.database().ref('relations/' + user.id);
-      relationRef.on('value', function(snapshot) {
-        if (snapshot.val()) {
-          
-          if (snapshot.val().to == user.id) {
-            getNumberRequest()
-          }
-        } 
-      });
-    var notificationRef = firebase.database().ref('notifications/' + user.id);
-    notificationRef.on('value', function(snapshot) {console.log(snapshot.val())
-      if (snapshot.val()) {
-        
-        if (snapshot.val().to == user.id) {
-          NumberVue()
-        }
-      } 
-    });  
-    subscriber.subscribe(v => {
-      const userss = JSON.parse(localStorage.getItem('user'));
-      if(v == 'change'){
-        if (userss) {
-          setUser(userss);
-        }
-      }
-      if (v.messageUser) {
-        getNumberVue()
-      }
+  }
+  notification () {
+    Axios.get(
+      config.API_URL +
+        "notification/for/" + this.state.user.id,
+      {}
+    ).then(res => {
+      this.setState({notifications:res.data});
     });
-  });
-  getNumberVue();
-  getNumberRequest();
-  const styles1 = theme => ({
-    root: {
-      margin: 0
-    },
-    closeButton: {
-      position: "absolute",
-      right: theme.spacing(1),
-      top: theme.spacing(1),
-      color: theme.palette.grey[500]
-    }
-  });
-  const DialogTitle = withStyles(styles1)(props => {
-    const { children, classes, onClose, ...other } = props;
-    return (
-      <MuiDialogTitle disableTypography className={classes.root} {...other}>
-        <Typography variant="h6">{children}</Typography>
-        {onClose ? (
-         <div></div>
-        ) : null}
-      </MuiDialogTitle>
-    );
-  });
-  const Transition = React.forwardRef(function Transition(props, ref) {
-    return <Slide direction="down" ref={ref} {...props} />;
-  });
+  }
+  NumberVue (){
+    Axios.get(
+      config.API_URL +
+        "notification/nbrNotification/" + this.state.user.id,
+      {}
+    ).then(res => {
+      this.setState({VueNotif:res.data})
+    });
+  }
+  
+  getNumberRequest (){
+    Axios.get(
+      config.API_URL +
+        "relations/getNumberRequest/" + this.state.user.id,
+      {}
+    ).then(res => {
+      this.setState({nbrReq:res.data});
+    });
+  }
+   handleClose(){
+    this.setState({anchorEl:null})
+  };
+  handleClose2() {
+  this.setState({ anchorEl2: null })
+  };
+  
+  render(){
+    const { classes } = this.props;
+    const ITEM_HEIGHT = 48;
+    const open = Boolean(this.state.anchorEl);
+    const open2 = Boolean(this.state.anchorEl2);
   return (
     <div>
       <Dialog
@@ -235,9 +235,9 @@ export default function HeaderUser(props) {
           root: classes.center,
           paper: classes.modal
         }}
-        open={modal}
+        open={this.state.modal}
         keepMounted
-        onClose={() => setModal(false)}
+        onClose={() => this.setState({modal:false })}
         aria-labelledby="modal-slide-title"
         aria-describedby="modal-slide-description"
         maxWidth={"md"}
@@ -341,7 +341,7 @@ export default function HeaderUser(props) {
                 backgroundColor: "#e3f3fd"
               }}
               onClick={() => {
-                setModal(false);
+                this.setState({modal:false});
               }}
             >
               J’ai compris !
@@ -358,7 +358,7 @@ export default function HeaderUser(props) {
               className={classes.navLink}
               style={{ padding: 0 }}
             >
-              <MenuBookOutlinedIcon style={{width:22,height:22}} /> Histoires
+              <MenuBookOutlinedIcon style={{ width: 22, height: 22 }} /> Histoires
             </Button>
           </Link>
         </ListItem>
@@ -369,7 +369,7 @@ export default function HeaderUser(props) {
               className={classes.navLink}
               style={{ padding: 0 }}
             >
-              <PeopleOutlineOutlinedIcon style={{width:22,height:22}} /> utilisateurs
+              <PeopleOutlineOutlinedIcon style={{ width: 22, height: 22 }} /> utilisateurs
             </Button>
           </Link>
         </ListItem>
@@ -380,229 +380,237 @@ export default function HeaderUser(props) {
               className={classes.navLink}
               style={{ padding: 0 }}
             >
-              <Badge badgeContent={vue} max={99} color="secondary"
-                    anchorOrigin={{
-                      vertical: 'top',
-                      horizontal: 'left',
-                    }}>
-                <MailIcon style={{width:22,height:22}} />
+              <Badge badgeContent={this.state.vue} max={99} color="secondary"
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'left',
+                }}>
+                <MailIcon style={{ width: 22, height: 22 }} />
               </Badge> Messages
             </Button>
           </Link>
         </ListItem>
         <ListItem className={classes.listItem}>
-        <div>
-          
-          <Link onClick={handleClick} className={classes.dropdownLink}>
-            <Button
-              color="transparent"
-              className={classes.navLink}
-              style={{ padding: 0 }}
-            >
-              
-              <Badge badgeContent={nbrReq} max={99} color="secondary"
-                    anchorOrigin={{
-                      vertical: 'top',
-                      horizontal: 'left',
-                    }}>
-                <LanguageIcon style={{width:22,height:22}} />
-              </Badge> Réseau
+          <div>
+
+            <Link onClick={this.handleClick} className={classes.dropdownLink}>
+              <Button
+                color="transparent"
+                className={classes.navLink}
+                style={{ padding: 0 }}
+              >
+
+                <Badge badgeContent={this.state.nbrReq} max={99} color="secondary"
+                  anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'left',
+                  }}>
+                  <LanguageIcon style={{ width: 22, height: 22 }} />
+                </Badge> Réseau
             </Button>
-          </Link>
-          
-          <Menu
-          elevation={0}
-          getContentAnchorEl={null}
-            id="long-menu"
-            anchorEl={anchorEl}
-            keepMounted
-            open={open}
-            onClose={handleClose}
-            anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'center',
-            }}
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'center',
-            }}
-            PaperProps={{
-              style: {
-                // maxHeight: ITEM_HEIGHT * 4.5,
-                width: '36ch',
-              },
-            }}
-          >
-            <SimpleBar
-              style={{
-                maxHeight: ITEM_HEIGHT * 4.5,
-                width: '36ch',
-                marginLeft: "auto",
-                marginRight: "auto"
+            </Link>
+
+            <Menu
+              elevation={0}
+              getContentAnchorEl={null}
+              id="long-menu"
+              anchorEl={this.state.anchorEl}
+              keepMounted
+              open={open}
+              onClose={()=>this.handleClose()}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'center',
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'center',
+              }}
+              PaperProps={{
+                style: {
+                  // maxHeight: ITEM_HEIGHT * 4.5,
+                  width: '36ch',
+                },
               }}
             >
-            {requestFriend.length == 0 ? (
-              <MenuItem ><span  style={{textAlign: 'center',width: '100%', color:'#1e1548'}}>aucune nouvelle invitation</span></MenuItem>
-            ):
-            requestFriend.map((friend) => (
-              <MenuItem >
-                    <div style={{display: 'contents'}}>
-                    { friend.userOne.lienPhoto == "" ? (
-                      <Avatar
-                          style={{borderStyle: 'solid',borderWidth: 1.2,
-                                   borderColor: '#1e1548'}}
-                          alt=""
-                          src={config.API_URL + "images/defaultPhotoProfil.jpg"}
-                        />
-                      ):(
-                    <Avatar
-                        style={{borderStyle: 'solid',borderWidth: 1.2,
-                                   borderColor: '#1e1548'}}
-                        alt=""
-                        src={friend.userOne.lienPhoto}
-                      />
-                      )}
-                    <span style={{marginLeft:6,color: '#1e1548'}}>{friend.userOne.pseudo}</span>
-                  </div>
-                  <Tooltip
-                    title="Accepter"
+              <SimpleBar
+                style={{
+                  maxHeight: ITEM_HEIGHT * 4.5,
+                  width: '36ch',
+                  marginLeft: "auto",
+                  marginRight: "auto"
+                }}
+              >
+                {this.state.requestFriend.length == 0 ? (
+                  <MenuItem ><span style={{ textAlign: 'center', width: '100%', color: '#1e1548' }}>aucune nouvelle invitation</span></MenuItem>
+                ) :
+                  this.state.requestFriend.map((friend) => (
+                    <MenuItem >
+                      <div style={{ display: 'contents' }}>
+                        {friend.userOne.lienPhoto == "" ? (
+                          <Avatar
+                            style={{
+                              borderStyle: 'solid', borderWidth: 1.2,
+                              borderColor: '#1e1548'
+                            }}
+                            alt=""
+                            src={config.API_URL + "images/defaultPhotoProfil.jpg"}
+                          />
+                        ) : (
+                            <Avatar
+                              style={{
+                                borderStyle: 'solid', borderWidth: 1.2,
+                                borderColor: '#1e1548'
+                              }}
+                              alt=""
+                              src={friend.userOne.lienPhoto}
+                            />
+                          )}
+                        <span style={{ marginLeft: 6, color: '#1e1548' }}>{friend.userOne.pseudo}</span>
+                      </div>
+                      <Tooltip
+                        title="Accepter"
+                      >
+                        <ButtonBase onClick={() => { this.accepteRequest(friend.id, friend.userOne.id) }} style={{ marginLeft: 'auto' }}>
+                          <CheckCircleOutlineRoundedIcon style={{ color: '#1e1548' }} />
+                        </ButtonBase>
+                      </Tooltip>
+                      <Tooltip
+                        title="Refuser"
+
+                      >
+                        <ButtonBase onClick={() => { this.refuseRequest(friend.id) }} style={{ marginLeft: 5 }}>
+                          <HighlightOffRoundedIcon style={{ color: '#1e1548' }} />
+                        </ButtonBase>
+                      </Tooltip>
+
+
+                    </MenuItem>
+                  ))}
+              </SimpleBar>
+              <MenuItem selected={true}>
+                <Link to="/MonReseau">
+                  <h6
+                    style={{
+                      fontFamily: "cursive",
+                      fontWeight: "bold",
+                      color: "#1e1548",
+                      margin: 0,
+                      textAlign: 'center',
+                      fontVariant: 'unicase',
+                      width: 287,
+                      textDecoration: 'underline'
+                    }}
                   >
-                    <ButtonBase onClick={()=>{accepteRequest(friend.id,friend.userOne.id)}}style={{marginLeft: 'auto'}}>
-                        <CheckCircleOutlineRoundedIcon style={{color: '#1e1548'}}/>
-                  </ButtonBase>
-                  </Tooltip>
-                  <Tooltip
-                    title="Refuser"
-                    
-                  >
-                    <ButtonBase onClick={()=>{refuseRequest(friend.id)}} style={{marginLeft: 5}}>
-                        <HighlightOffRoundedIcon style={{color: '#1e1548'}}/>
-                  </ButtonBase>
-                  </Tooltip>
-                  
-                  
-              </MenuItem>
-            ))}
-            </SimpleBar>
-            <MenuItem selected={true}>
-              <Link to="/MonReseau">
-                <h6
-                  style={{
-                    fontFamily: "cursive",
-                    fontWeight: "bold",
-                    color: "#1e1548",
-                    margin: 0,
-                    textAlign: 'center',
-                    fontVariant: 'unicase',
-                    width: 287,
-                    textDecoration: 'underline'
-                  }}
-                >
-                  Mon Réseau
+                    Mon Réseau
                 </h6>
-              </Link> 
-            </MenuItem>
-          </Menu>
-        </div>
+                </Link>
+              </MenuItem>
+            </Menu>
+          </div>
         </ListItem>
         <ListItem className={classes.listItem}>
-        <div>
-          
-          <Link onClick={handleClick2} className={classes.dropdownLink}>
-            <Button
-              color="transparent"
-              className={classes.navLink}
-              style={{ padding: 0 }}
-            >
-              
-              <Badge badgeContent={vueNotif} max={99} color="secondary"
-                    anchorOrigin={{
-                      vertical: 'top',
-                      horizontal: 'left',
-                    }}>
-                <NotificationsNoneIcon style={{width:22,height:22}} />
-              </Badge> Notifications
+          <div>
+
+            <Link onClick={this.handleClick2} className={classes.dropdownLink}>
+              <Button
+                color="transparent"
+                className={classes.navLink}
+                style={{ padding: 0 }}
+              >
+
+                <Badge badgeContent={this.state.vueNotif} max={99} color="secondary"
+                  anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'left',
+                  }}>
+                  <NotificationsNoneIcon style={{ width: 22, height: 22 }} />
+                </Badge> Notifications
             </Button>
-          </Link>
-          
-          <Menu
-          elevation={0}
-          getContentAnchorEl={null}
-            id="long-menu"
-            anchorEl={anchorEl2}
-            keepMounted
-            open={open2}
-            onClose={handleClose2}
-            anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'center',
-            }}
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'center',
-            }}
-            PaperProps={{
-              style: {
-                // maxHeight: ITEM_HEIGHT * 4.5,
-                width: '36ch',
-              },
-            }}
-          >
-            <SimpleBar
-              style={{
-                maxHeight: 252,
-                width: '36ch',
-                marginLeft: "auto",
-                marginRight: "auto"
+            </Link>
+
+            <Menu
+              elevation={0}
+              getContentAnchorEl={null}
+              id="long-menu"
+              anchorEl={this.state.anchorEl2}
+              keepMounted
+              open={open2}
+              onClose={()=>this.handleClose2}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'center',
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'center',
+              }}
+              PaperProps={{
+                style: {
+                  // maxHeight: ITEM_HEIGHT * 4.5,
+                  width: '36ch',
+                },
               }}
             >
-            {notifications.length == 0 ? (
-              <MenuItem ><span  style={{textAlign: 'center',width: '100%', color:'#1e1548'}}>aucune notification</span></MenuItem>
-            ):
-            notifications.map((notification) => (
-              <Link to={notification.lien}>
-              <MenuItem >
-                    <div style={{display: 'flex'}}>
-                    { notification.lienDessin == "" ? (
-                      <Avatar
-                          style={{borderStyle: 'solid',borderWidth: 1.2,
-                                   borderColor: '#1e1548'}}
-                          alt=""
-                          src={config.API_URL + "images/defaultPhotoProfil.jpg"}
-                        />
-                      ):(
-                    <Avatar
-                        style={{borderStyle: 'solid',borderWidth: 1.2,
-                                   borderColor: '#1e1548'}}
-                        alt=""
-                        src={notification.lienDessin}
-                      />
-                      )}
-                    <div style={{marginLeft:6,maxWidth: 280}}>
-                    <span style={{color: '#1e1548'}}>{notification.pseudo}</span>
-                    <ListItemText primary={
-                      <React.Fragment>
-                        <p style={{whiteSpace: 'nowrap', overflow: 'hidden',textOverflow: 'ellipsis',color: 'black',width: 244}}>
-                         {notification.text}
-                        </p>
-                      </React.Fragment>
-                    } secondary={moment(notification.dateDeCreation).fromNow()} />
-                    </div>
-                  </div>
-                  {/* <Tooltip
+              <SimpleBar
+                style={{
+                  maxHeight: 252,
+                  width: '36ch',
+                  marginLeft: "auto",
+                  marginRight: "auto"
+                }}
+              >
+                {this.state.notifications.length == 0 ? (
+                  <MenuItem ><span style={{ textAlign: 'center', width: '100%', color: '#1e1548' }}>aucune notification</span></MenuItem>
+                ) :
+                  this.state.notifications.map((notification) => (
+                    <Link to={notification.lien}>
+                      <MenuItem >
+                        <div style={{ display: 'flex' }}>
+                          {notification.lienDessin == "" ? (
+                            <Avatar
+                              style={{
+                                borderStyle: 'solid', borderWidth: 1.2,
+                                borderColor: '#1e1548'
+                              }}
+                              alt=""
+                              src={config.API_URL + "images/defaultPhotoProfil.jpg"}
+                            />
+                          ) : (
+                              <Avatar
+                                style={{
+                                  borderStyle: 'solid', borderWidth: 1.2,
+                                  borderColor: '#1e1548'
+                                }}
+                                alt=""
+                                src={notification.lienDessin}
+                              />
+                            )}
+                          <div style={{ marginLeft: 6, maxWidth: 280 }}>
+                            <span style={{ color: '#1e1548' }}>{notification.pseudo}</span>
+                            <ListItemText primary={
+                              <React.Fragment>
+                                <p style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: 'black', width: 244 }}>
+                                  {notification.text}
+                                </p>
+                              </React.Fragment>
+                            } secondary={moment(notification.dateDeCreation).fromNow()} />
+                          </div>
+                        </div>
+                        {/* <Tooltip
                     title="Accepter"
                   >
                     <ButtonBase onClick={()=>{}}style={{marginLeft: 'auto'}}>
                         <CheckCircleOutlineRoundedIcon style={{color: '#1e1548'}}/>
                   </ButtonBase>
                   </Tooltip> */}
-              </MenuItem>
-              </Link>
-            ))}
-            </SimpleBar>
-            
-          </Menu>
-        </div>
+                      </MenuItem>
+                    </Link>
+                  ))}
+              </SimpleBar>
+
+            </Menu>
+          </div>
         </ListItem>
         <ListItem className={classes.listItem}>
 
@@ -617,23 +625,27 @@ export default function HeaderUser(props) {
               <CustomDropdown
                 noLiPadding
                 buttonText={
-                  <div style={{display: 'contents'}}>
-                    { user.lienPhoto == "" ? (
+                  <div style={{ display: 'contents' }}>
+                    {this.state.user.lienPhoto == "" ? (
                       <Avatar
-                         style={{borderStyle: 'solid',borderWidth: 1.2,
-                                   borderColor: '#1e1548'}}
-                          alt=""
-                          src={config.API_URL + "images/defaultPhotoProfil.jpg"}
-                        />
-                      ):(
-                    <Avatar
-                        style={{borderStyle: 'solid',borderWidth: 1.2,
-                                   borderColor: '#1e1548'}}
+                        style={{
+                          borderStyle: 'solid', borderWidth: 1.2,
+                          borderColor: '#1e1548'
+                        }}
                         alt=""
-                        src={user.lienPhoto}
+                        src={config.API_URL + "images/defaultPhotoProfil.jpg"}
                       />
+                    ) : (
+                        <Avatar
+                          style={{
+                            borderStyle: 'solid', borderWidth: 1.2,
+                            borderColor: '#1e1548'
+                          }}
+                          alt=""
+                          src={this.state.user.lienPhoto}
+                        />
                       )}
-                    <span style={{marginLeft:6,color: '#1e1548'}}>{user.pseudo}</span>
+                    <span style={{ marginLeft: 6, color: '#1e1548' }}>{this.state.user.pseudo}</span>
                   </div>
                 }
                 buttonProps={{
@@ -663,7 +675,7 @@ export default function HeaderUser(props) {
                   >
                     NOTRE CHARTE
                   </ButtonBase>,
-                  <Link onClick={()=>{localStorage.clear();}} className={classes.dropdownLink} divider>
+                  <Link onClick={() => { localStorage.clear() }} className={classes.dropdownLink} divider>
                     DÉCONNEXION
                   </Link>
                 ]}
@@ -674,4 +686,31 @@ export default function HeaderUser(props) {
       </List>
     </div>
   );
+  }
 }
+const styles1 = theme => ({
+  root: {
+    margin: 0
+  },
+  closeButton: {
+    position: "absolute",
+    right: theme.spacing(1),
+    top: theme.spacing(1),
+    color: theme.palette.grey[500]
+  }
+});
+const DialogTitle = withStyles(styles1)(props => {
+  const { children, classes, onClose, ...other } = props;
+  return (
+    <MuiDialogTitle disableTypography className={classes.root} {...other}>
+      <Typography variant="h6">{children}</Typography>
+      {onClose ? (
+        <div></div>
+      ) : null}
+    </MuiDialogTitle>
+  );
+});
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="down" ref={ref} {...props} />;
+});
+export default withStyles(styles)(HeaderUser);

@@ -9,7 +9,7 @@ import CustomInput from "components/CustomInput/CustomInput.js";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import Search from "@material-ui/icons/Search";
 // core components
-import Tooltip from '@material-ui/core/Tooltip';
+import Tooltip from "@material-ui/core/Tooltip";
 import GridContainer from "components/Grid/GridContainer.js";
 import GridItem from "components/Grid/GridItem.js";
 import Card from "components/Card/Card.js";
@@ -31,7 +31,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import ArrowRightOutlined from "@material-ui/icons/ArrowRightOutlined";
 import ArrowLeftOutlined from "@material-ui/icons/ArrowLeftOutlined";
 import StarBorderIcon from "@material-ui/icons/StarBorder";
-import SnackbarContent from '@material-ui/core/SnackbarContent';
+import SnackbarContent from "@material-ui/core/SnackbarContent";
 import CustomTabs from "components/CustomTabs/CustomTabs.js";
 //scroll bare text
 import SimpleBar from "simplebar-react";
@@ -51,35 +51,39 @@ import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import Avatar from "@material-ui/core/Avatar";
 import moment from "moment";
 // import Pagination from "components/Pagination/Pagination.js";
-import Pagination from '@material-ui/lab/Pagination';
+import Pagination from "@material-ui/lab/Pagination";
 import { Link, withRouter } from "react-router-dom";
 // @material-ui/icons
 import PhotoCamera from "@material-ui/icons/PhotoCamera";
 import PeopleIcon from "@material-ui/icons/People";
 import Chat from "@material-ui/icons/Chat";
 import Contacts from "@material-ui/icons/Contacts";
-import AccountBoxIcon from '@material-ui/icons/AccountBox';
-import TitleIcon from '@material-ui/icons/Title';
-import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
-import Fab from '@material-ui/core/Fab';
-import CreateIcon from '@material-ui/icons/Create';
-import BrushIcon from '@material-ui/icons/Brush';
-import CommentIcon from '@material-ui/icons/Comment';
-import VisibilityIcon from '@material-ui/icons/Visibility';
-import { CircularProgressbar,CircularProgressbarWithChildren,buildStyles } from 'react-circular-progressbar';
-import 'react-circular-progressbar/dist/styles.css';
+import AccountBoxIcon from "@material-ui/icons/AccountBox";
+import TitleIcon from "@material-ui/icons/Title";
+import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
+import Fab from "@material-ui/core/Fab";
+import CreateIcon from "@material-ui/icons/Create";
+import BrushIcon from "@material-ui/icons/Brush";
+import CommentIcon from "@material-ui/icons/Comment";
+import VisibilityIcon from "@material-ui/icons/Visibility";
+import {
+  CircularProgressbar,
+  CircularProgressbarWithChildren,
+  buildStyles
+} from "react-circular-progressbar";
+import "react-circular-progressbar/dist/styles.css";
 import Parallax from "components/Parallax/Parallax.js";
 import "moment/locale/fr";
 import Moment from "moment";
 import { subscriber, messageService } from "./../../../services/messageService";
-import { Redirect } from 'react-router-dom';
+import { Redirect } from "react-router-dom";
 
 class MesOeuvres extends React.Component {
   constructor(props) {
     super(props);
     // Don't call this.setState() here!
     this.state = {
-      idCurrentUser: '',
+      idCurrentUser: "",
       redirect: 0,
       idUser: "",
       page: 1,
@@ -97,24 +101,37 @@ class MesOeuvres extends React.Component {
       image: ""
     };
     this.handleChangePage = this.handleChangePage.bind(this);
-    
-    
   }
   componentDidMount() {
-    const user = JSON.parse(localStorage.getItem('user'));
+    const user = JSON.parse(localStorage.getItem("user"));
     if (!user) {
-      this.setState({  redirect: 1 }, ()=> {this.forceUpdate()});
-    }else{
-      if (typeof this.props.match.params.userId === 'undefined') {
-        this.setState({  idUser: user.id }, ()=> {this.fetchUser();this.fetchHistoire();this.forceUpdate()});
-         } else {
-        this.setState({  idUser: this.props.match.params.userId,idCurrentUser: user.id }, ()=> {this.fetchUser();this.fetchRelation(this.props.match.params.userId);this.fetchHistoire();subscriber.next({view:this.props.match.params.userId});this.forceUpdate()});
+      this.setState({ redirect: 1 }, () => {
+        this.forceUpdate();
+      });
+    } else {
+      if (typeof this.props.match.params.userId === "undefined") {
+        this.setState({ idUser: user.id }, () => {
+          this.fetchUser();
+          this.fetchHistoire();
+          this.forceUpdate();
+        });
+      } else {
+        this.setState(
+          { idUser: this.props.match.params.userId, idCurrentUser: user.id },
+          () => {
+            this.fetchUser();
+            this.fetchRelation(this.props.match.params.userId);
+            this.fetchHistoire();
+            subscriber.next({ view: this.props.match.params.userId });
+            this.forceUpdate();
+          }
+        );
       }
     }
     subscriber.subscribe(v => {
-      this.setState({search: v.search, currentFiltre: v.filtre},() => {
+      this.setState({ search: v.search, currentFiltre: v.filtre }, () => {
         this.searchCheck();
-      })
+      });
     });
   }
   fetchUser() {
@@ -124,25 +141,48 @@ class MesOeuvres extends React.Component {
           user: res.data[0]
         },
         () => {
-          
-          subscriber.next({user:this.state.user});
+          this.fetchRelationInit(this.props.match.params.userId);
+          subscriber.next({ user: this.state.user });
           this.forceUpdate();
         }
       );
     });
   }
+  fetchRelationInit(id) {
+    Axios.get(
+      config.API_URL +
+        "relations/getRelationId/" +
+        this.state.idCurrentUser +
+        "/" +
+        id,
+      {}
+    ).then(res => {
+      console.log(res.data);
+      if (res.data > 0) {
+        subscriber.next({ ami: true });
+        this.forceUpdate();
+      }
+    });
+  }
   fetchRelation(id) {
-    Axios.get(config.API_URL + "relations/getRelationIdAccepte/" + this.state.idCurrentUser+"/"+id, {}).then(res => {
-      console.log(res.data)
-          if (res.data > 0) {
-            subscriber.next({ami:true});
-            this.forceUpdate();
-          }
+    Axios.get(
+      config.API_URL +
+        "relations/getRelationIdAccepte/" +
+        this.state.idCurrentUser +
+        "/" +
+        id,
+      {}
+    ).then(res => {
+      console.log(res.data);
+      if (res.data > 0) {
+        subscriber.next({ ami: true });
+        this.forceUpdate();
+      }
     });
   }
   handleChangePage() {
-    if(this.state.numberPage == this.state.page){
-      this.setState({showMore: false})
+    if (this.state.numberPage == this.state.page) {
+      this.setState({ showMore: false });
     }
     if (this.state.search === "") {
       Axios.get(
@@ -156,8 +196,8 @@ class MesOeuvres extends React.Component {
         {}
       ).then(res => {
         this.setState({
-          histoires: this.state.histoires.concat(res.data )
-          });
+          histoires: this.state.histoires.concat(res.data)
+        });
         this.forceUpdate();
       });
     } else {
@@ -174,12 +214,12 @@ class MesOeuvres extends React.Component {
         {}
       ).then(res => {
         this.setState({
-          histoires: this.state.histoires.concat(res.data )
-          });
+          histoires: this.state.histoires.concat(res.data)
+        });
         this.forceUpdate();
       });
     }
-  };
+  }
   fetchHistoire() {
     console.log("URL api" + config.API_URL);
     Axios.get(
@@ -190,23 +230,21 @@ class MesOeuvres extends React.Component {
         this.state.idUser,
       {}
     ).then(res => {
-      console.log(res.data)
+      console.log(res.data);
       this.setState({ histoires: res.data, showMore: true });
     });
     Axios.get(
       config.API_URL + "histoires/numberHistoiresById/" + this.state.idUser,
       {}
     ).then(res => {
-      
-      this.setState({ numberPage: Math.ceil(res.data / 6) }, ()=> {
-        if(res.data <= 6){
-          this.setState({showMore: false})
+      this.setState({ numberPage: Math.ceil(res.data / 6) }, () => {
+        if (res.data <= 6) {
+          this.setState({ showMore: false });
         }
       });
     });
   }
 
- 
   searchCheck() {
     if (this.state.currentFiltre == 1) {
       if (this.state.search !== "") {
@@ -218,9 +256,9 @@ class MesOeuvres extends React.Component {
             this.state.idUser,
           {}
         ).then(res => {
-          this.setState({ numberPage: Math.ceil(res.data / 6) }, ()=> {
-            if(res.data <= 6){
-              this.setState({showMore: false})
+          this.setState({ numberPage: Math.ceil(res.data / 6) }, () => {
+            if (res.data <= 6) {
+              this.setState({ showMore: false });
             }
           });
         });
@@ -247,9 +285,9 @@ class MesOeuvres extends React.Component {
           config.API_URL + "histoires/numberHistoiresById/" + this.state.idUser,
           {}
         ).then(res => {
-          this.setState({ numberPage: Math.ceil(res.data / 6) }, ()=> {
-            if(res.data <= 6){
-              this.setState({showMore: false})
+          this.setState({ numberPage: Math.ceil(res.data / 6) }, () => {
+            if (res.data <= 6) {
+              this.setState({ showMore: false });
             }
           });
         });
@@ -278,9 +316,9 @@ class MesOeuvres extends React.Component {
             this.state.idUser,
           {}
         ).then(res => {
-          this.setState({ numberPage: Math.ceil(res.data / 6) }, ()=> {
-            if(res.data <= 6){
-              this.setState({showMore: false})
+          this.setState({ numberPage: Math.ceil(res.data / 6) }, () => {
+            if (res.data <= 6) {
+              this.setState({ showMore: false });
             }
           });
         });
@@ -318,9 +356,9 @@ class MesOeuvres extends React.Component {
           config.API_URL + "histoires/numberHistoiresById/" + this.state.idUser,
           {}
         ).then(res => {
-          this.setState({ numberPage: Math.ceil(res.data / 6) }, ()=> {
-            if(res.data <= 6){
-              this.setState({showMore: false})
+          this.setState({ numberPage: Math.ceil(res.data / 6) }, () => {
+            if (res.data <= 6) {
+              this.setState({ showMore: false });
             }
           });
         });
@@ -335,9 +373,9 @@ class MesOeuvres extends React.Component {
             this.state.idUser,
           {}
         ).then(res => {
-          this.setState({ numberPage: Math.ceil(res.data / 6) }, ()=> {
-            if(res.data <= 6){
-              this.setState({showMore: false})
+          this.setState({ numberPage: Math.ceil(res.data / 6) }, () => {
+            if (res.data <= 6) {
+              this.setState({ showMore: false });
             }
           });
         });
@@ -375,9 +413,9 @@ class MesOeuvres extends React.Component {
           config.API_URL + "histoires/numberHistoiresById/" + this.state.idUser,
           {}
         ).then(res => {
-          this.setState({ numberPage: Math.ceil(res.data / 6) }, ()=> {
-            if(res.data <= 6){
-              this.setState({showMore: false})
+          this.setState({ numberPage: Math.ceil(res.data / 6) }, () => {
+            if (res.data <= 6) {
+              this.setState({ showMore: false });
             }
           });
         });
@@ -392,9 +430,9 @@ class MesOeuvres extends React.Component {
             this.state.idUser,
           {}
         ).then(res => {
-          this.setState({ numberPage: Math.ceil(res.data / 6) }, ()=> {
-            if(res.data <= 6){
-              this.setState({showMore: false})
+          this.setState({ numberPage: Math.ceil(res.data / 6) }, () => {
+            if (res.data <= 6) {
+              this.setState({ showMore: false });
             }
           });
         });
@@ -432,9 +470,9 @@ class MesOeuvres extends React.Component {
           config.API_URL + "histoires/numberHistoiresById/" + this.state.idUser,
           {}
         ).then(res => {
-          this.setState({ numberPage: Math.ceil(res.data / 6) }, ()=> {
-            if(res.data <= 6){
-              this.setState({showMore: false})
+          this.setState({ numberPage: Math.ceil(res.data / 6) }, () => {
+            if (res.data <= 6) {
+              this.setState({ showMore: false });
             }
           });
         });
@@ -465,27 +503,21 @@ class MesOeuvres extends React.Component {
       });
     }
   }
-  
+
   //modal - carousel
   render() {
     const { classes } = this.props;
     if (this.state.redirect == 1) {
-      return <Redirect to='/Connexion' />
+      return <Redirect to="/Connexion" />;
     }
     if (this.state.histoires !== [])
       return (
-        <div className={classes.section} style={{paddingTop : 0}}>
+        <div className={classes.section} style={{ paddingTop: 0 }}>
           <div>
             <GridContainer justify="center" spacing={"auto"}>
               {this.state.histoires.map((histoire, index) => {
                 return (
-                  <GridItem
-                    xs={12}
-                    sm={12}
-                    md={4}
-                    justify="center"
-                    key={index}
-                  >
+                  <GridItem xs={12} sm={12} md={4} justify="center" key={index}>
                     <Link to={"/Histoire/" + histoire.id}>
                       <CardHistoire histoire={histoire} />
                     </Link>
@@ -496,16 +528,27 @@ class MesOeuvres extends React.Component {
             <GridContainer justify="center">
               <GridItem xs={4} sm={4} md={4}>
                 {this.state.showMore ? (
-                  <Tooltip title="plus de résultats" aria-label="plus de résultats" onClick={() => {
-                    this.setState({page: this.state.page + 1}, () => {
-                      this.handleChangePage();
-                    })
-                  }}>
-                    <Fab color="primary" className={classes.fab}>
+                  <Tooltip
+                    title="plus de résultats"
+                    aria-label="plus de résultats"
+                    onClick={() => {
+                      this.setState({ page: this.state.page + 1 }, () => {
+                        this.handleChangePage();
+                      });
+                    }}
+                  >
+                    <Fab
+                      color="primary"
+                      style={{
+                        color: "white",
+                        backgroundColor: "#1f1748"
+                      }}
+                      className={classes.fab}
+                    >
                       <MoreHorizIcon />
                     </Fab>
                   </Tooltip>
-                ): null}
+                ) : null}
               </GridItem>
             </GridContainer>
           </div>
@@ -531,7 +574,7 @@ class MesOeuvres extends React.Component {
   }
 }
 const StyledRating = withStyles({
-  decimal: {display:'flex'},
+  decimal: { display: "flex" },
   iconFilled: {
     color: "#ffb400",
     fontSize: "24px"
@@ -663,24 +706,23 @@ function CardHistoire(props) {
         {histoire.titreHistoire}
         {/* {histoire.nombreVue ? histoire.nombreVue : 0} vues -{" "}
           {this.getDay(histoire.dateDeCreation)} */}
-        </h5>
-        <h6
-          style={{
-            fontFamily: "monospace",
-            color: "black",
-            marginLeft: '5%',
-            textAlign: 'left'
-          }}
-        >
-          {functionDate(histoire.dateDeCreation)}
-          {/* {this.getDay()} */}
-        </h6>
-        <CardBody>
-        <Divider/>
+      </h5>
+      <h6
+        style={{
+          fontFamily: "monospace",
+          color: "black",
+          marginLeft: "5%",
+          textAlign: "left"
+        }}
+      >
+        {functionDate(histoire.dateDeCreation)}
+        {/* {this.getDay()} */}
+      </h6>
+      <CardBody>
+        <Divider />
         {histoire.userText ? (
-          <GridContainer style={{marginTop: '4%'}}>
+          <GridContainer style={{ marginTop: "4%" }}>
             <GridItem xs={6} sm={6} md={6}>
-              
               <GridContainer>
                 <GridItem xs={4} sm={4} md={4}>
                   <Avatar
@@ -695,8 +737,8 @@ function CardHistoire(props) {
                       fontFamily: "monospace",
                       color: "black",
                       fontWeight: "bold",
-                      marginLeft: '5%',
-                      textAlign: 'left'
+                      marginLeft: "5%",
+                      textAlign: "left"
                     }}
                   >
                     {histoire.userText.pseudo}
@@ -705,71 +747,70 @@ function CardHistoire(props) {
               </GridContainer>
             </GridItem>
             <GridItem xs={3} sm={3} md={3}>
-            <div style={{width: 40}}>
-            <Tooltip
-                disableFocusListener
-                disableTouchListener
-                title={
-                  histoire.noteHistoireMoy
-                    ? parseFloat(
+              <div style={{ width: 40 }}>
+                <Tooltip
+                  disableFocusListener
+                  disableTouchListener
+                  title={
+                    histoire.noteHistoireMoy
+                      ? parseFloat(
+                          Math.round(histoire.noteHistoireMoy * 100) / 100
+                        ).toFixed(2) + "/5"
+                      : 0
+                  }
+                >
+                  <ButtonBase>
+                    <CircularProgressbarWithChildren
+                      maxValue={5}
+                      minValue={0}
+                      strokeWidth={3}
+                      value={parseFloat(
                         Math.round(histoire.noteHistoireMoy * 100) / 100
-                      ).toFixed(2) + "/5"
-                    : 0
-                }
-              >
-                <ButtonBase>
-                  <CircularProgressbarWithChildren
-                    maxValue={5}
-                    minValue={0}
-                    strokeWidth={3}
-                    value={parseFloat(
-                      Math.round(histoire.noteHistoireMoy * 100) / 100
-                    ).toFixed(2)}
-                    text={parseFloat(
-                      Math.round(histoire.noteHistoireMoy * 100) / 100
-                    ).toFixed(1)}
-                    styles={buildStyles({
-                      textColor: "transparent",
-                      pathColor: "#2e99b0",
-                      trailColor: "#d6d6d6",
-                      strokeLinecap: "butt"
-                    })}
-                  >
-                    <div
-                      style={{
-                        height: "100%",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        display: "flex"
-                      }}
+                      ).toFixed(2)}
+                      text={parseFloat(
+                        Math.round(histoire.noteHistoireMoy * 100) / 100
+                      ).toFixed(1)}
+                      styles={buildStyles({
+                        textColor: "transparent",
+                        pathColor: "#2e99b0",
+                        trailColor: "#d6d6d6",
+                        strokeLinecap: "butt"
+                      })}
                     >
-                      <p
+                      <div
                         style={{
-                          color: "#2e99b0",
-                          fontSize: 15,
-                          margin: 0
+                          height: "100%",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          display: "flex"
                         }}
                       >
-                        {parseFloat(
-                          Math.round(histoire.noteHistoireMoy * 100) / 100
-                        ).toFixed(1)}
-                      </p>
-                    </div>
-                  </CircularProgressbarWithChildren>
-                </ButtonBase>
-              </Tooltip>
-            </div>
-          </GridItem>
-          <GridItem xs={3} sm={3} md={3} style={{ textAlign: "right" }}>
-            <div style={{ height: 40, paddingTop: 8 }}>
-              <CreateIcon style={{ width: 20 }} />
-            </div>
-          </GridItem>
-        </GridContainer>
-        ):(
-          <GridContainer style={{marginTop: '4%'}}>
+                        <p
+                          style={{
+                            color: "#2e99b0",
+                            fontSize: 15,
+                            margin: 0
+                          }}
+                        >
+                          {parseFloat(
+                            Math.round(histoire.noteHistoireMoy * 100) / 100
+                          ).toFixed(1)}
+                        </p>
+                      </div>
+                    </CircularProgressbarWithChildren>
+                  </ButtonBase>
+                </Tooltip>
+              </div>
+            </GridItem>
+            <GridItem xs={3} sm={3} md={3} style={{ textAlign: "right" }}>
+              <div style={{ height: 40, paddingTop: 8 }}>
+                <CreateIcon style={{ width: 20 }} />
+              </div>
+            </GridItem>
+          </GridContainer>
+        ) : (
+          <GridContainer style={{ marginTop: "4%" }}>
             <GridItem xs={6} sm={6} md={6}>
-              
               <GridContainer>
                 <GridItem xs={4} sm={4} md={4}>
                   <Avatar
@@ -784,8 +825,8 @@ function CardHistoire(props) {
                       fontFamily: "monospace",
                       color: "black",
                       fontWeight: "bold",
-                      marginLeft: '5%',
-                      textAlign: 'left'
+                      marginLeft: "5%",
+                      textAlign: "left"
                     }}
                   >
                     non spécifié
@@ -793,124 +834,124 @@ function CardHistoire(props) {
                 </GridItem>
               </GridContainer>
             </GridItem>
-            </GridContainer>
+          </GridContainer>
         )}
         <Divider style={{ marginTop: "4%" }} />
         {histoire.userDessin ? (
-        <GridContainer style={{ marginTop: "4%" }}>
-          <GridItem xs={6} sm={6} md={6}>
-            <GridContainer>
-              <GridItem xs={4} sm={4} md={4}>
-                <Avatar
-                  alt=""
-                  src={histoire.userDessin.lienPhoto}
-                  // style={{ width: 200, height: 200 }}
-                />
-              </GridItem>
-              <GridItem xs={8} sm={8} md={8}>
-                <h6
-                  style={{
-                    fontFamily: "monospace",
-                    color: "black",
-                    fontWeight: "bold",
-                    marginLeft: "5%",
-                    textAlign: "left"
-                  }}
-                >
-                  {histoire.userDessin.pseudo}
-                </h6>
-              </GridItem>
-            </GridContainer>
-          </GridItem>
-          <GridItem xs={3} sm={3} md={3}>
-            <div style={{ width: 40 }}>
-              <Tooltip
-                disableFocusListener
-                disableTouchListener
-                title={
-                  histoire.noteHistoireMoy
-                    ? parseFloat(
-                        Math.round(histoire.noteDessinMoy * 100) / 100
-                      ).toFixed(2) + "/5"
-                    : 0
-                }
-              >
-                <ButtonBase>
-                  <CircularProgressbarWithChildren
-                    text={parseFloat(
-                      Math.round(histoire.noteDessinMoy * 100) / 100
-                    ).toFixed(1)}
-                    maxValue={5}
-                    minValue={0}
-                    strokeWidth={3}
-                    value={parseFloat(
-                      Math.round(histoire.noteDessinMoy * 100) / 100
-                    ).toFixed(2)}
-                    styles={buildStyles({
-                      textColor: "transparent",
-                      pathColor: "#ff2e4c",
-                      trailColor: "#d6d6d6",
-                      strokeLinecap: "butt"
-                    })}
+          <GridContainer style={{ marginTop: "4%" }}>
+            <GridItem xs={6} sm={6} md={6}>
+              <GridContainer>
+                <GridItem xs={4} sm={4} md={4}>
+                  <Avatar
+                    alt=""
+                    src={histoire.userDessin.lienPhoto}
+                    // style={{ width: 200, height: 200 }}
+                  />
+                </GridItem>
+                <GridItem xs={8} sm={8} md={8}>
+                  <h6
+                    style={{
+                      fontFamily: "monospace",
+                      color: "black",
+                      fontWeight: "bold",
+                      marginLeft: "5%",
+                      textAlign: "left"
+                    }}
                   >
-                    <div
-                      style={{
-                        height: "100%",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        display: "flex"
-                      }}
+                    {histoire.userDessin.pseudo}
+                  </h6>
+                </GridItem>
+              </GridContainer>
+            </GridItem>
+            <GridItem xs={3} sm={3} md={3}>
+              <div style={{ width: 40 }}>
+                <Tooltip
+                  disableFocusListener
+                  disableTouchListener
+                  title={
+                    histoire.noteHistoireMoy
+                      ? parseFloat(
+                          Math.round(histoire.noteDessinMoy * 100) / 100
+                        ).toFixed(2) + "/5"
+                      : 0
+                  }
+                >
+                  <ButtonBase>
+                    <CircularProgressbarWithChildren
+                      text={parseFloat(
+                        Math.round(histoire.noteDessinMoy * 100) / 100
+                      ).toFixed(1)}
+                      maxValue={5}
+                      minValue={0}
+                      strokeWidth={3}
+                      value={parseFloat(
+                        Math.round(histoire.noteDessinMoy * 100) / 100
+                      ).toFixed(2)}
+                      styles={buildStyles({
+                        textColor: "transparent",
+                        pathColor: "#ff2e4c",
+                        trailColor: "#d6d6d6",
+                        strokeLinecap: "butt"
+                      })}
                     >
-                      <p
+                      <div
                         style={{
-                          color: "#ff2e4c",
-                          fontSize: 15,
-                          margin: 0
+                          height: "100%",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          display: "flex"
                         }}
                       >
-                        {parseFloat(
-                          Math.round(histoire.noteDessinMoy * 100) / 100
-                        ).toFixed(1)}
-                      </p>
-                    </div>
-                  </CircularProgressbarWithChildren>
-                </ButtonBase>
-              </Tooltip>
-            </div>
-          </GridItem>
-          <GridItem xs={3} sm={3} md={3} style={{ textAlign: "right" }}>
-            <div style={{ height: 40, paddingTop: 8 }}>
-              {" "}
-              <BrushIcon style={{ width: 20 }} />
-            </div>{" "}
-          </GridItem>
-        </GridContainer>
-        ):(
+                        <p
+                          style={{
+                            color: "#ff2e4c",
+                            fontSize: 15,
+                            margin: 0
+                          }}
+                        >
+                          {parseFloat(
+                            Math.round(histoire.noteDessinMoy * 100) / 100
+                          ).toFixed(1)}
+                        </p>
+                      </div>
+                    </CircularProgressbarWithChildren>
+                  </ButtonBase>
+                </Tooltip>
+              </div>
+            </GridItem>
+            <GridItem xs={3} sm={3} md={3} style={{ textAlign: "right" }}>
+              <div style={{ height: 40, paddingTop: 8 }}>
+                {" "}
+                <BrushIcon style={{ width: 20 }} />
+              </div>{" "}
+            </GridItem>
+          </GridContainer>
+        ) : (
           <GridContainer style={{ marginTop: "4%" }}>
-          <GridItem xs={6} sm={6} md={6}>
-            <GridContainer>
-              <GridItem xs={4} sm={4} md={4}>
-                <Avatar
-                  alt=""
-                  src={config.API_URL + "images/defaultPhotoProfil.jpg"}
-                  // style={{ width: 200, height: 200 }}
-                />
-              </GridItem>
-              <GridItem xs={8} sm={8} md={8}>
-                <h6
-                  style={{
-                    fontFamily: "monospace",
-                    color: "black",
-                    fontWeight: "bold",
-                    marginLeft: "5%",
-                    textAlign: "left"
-                  }}
-                >
-                  non spécifié
-                </h6>
-              </GridItem>
-            </GridContainer>
-          </GridItem>
+            <GridItem xs={6} sm={6} md={6}>
+              <GridContainer>
+                <GridItem xs={4} sm={4} md={4}>
+                  <Avatar
+                    alt=""
+                    src={config.API_URL + "images/defaultPhotoProfil.jpg"}
+                    // style={{ width: 200, height: 200 }}
+                  />
+                </GridItem>
+                <GridItem xs={8} sm={8} md={8}>
+                  <h6
+                    style={{
+                      fontFamily: "monospace",
+                      color: "black",
+                      fontWeight: "bold",
+                      marginLeft: "5%",
+                      textAlign: "left"
+                    }}
+                  >
+                    non spécifié
+                  </h6>
+                </GridItem>
+              </GridContainer>
+            </GridItem>
           </GridContainer>
         )}
         <Divider

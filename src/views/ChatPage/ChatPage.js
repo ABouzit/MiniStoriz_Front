@@ -12,8 +12,8 @@ import Footer from "components/Footer/Footer.js";
 import GridContainer from "components/Grid/GridContainer.js";
 import GridItem from "components/Grid/GridItem.js";
 // import Button from "components/CustomButtons/Button.js";
-import Button from '@material-ui/core/Button';
-import ButtonGroup from '@material-ui/core/ButtonGroup';
+import Button from "@material-ui/core/Button";
+import ButtonGroup from "@material-ui/core/ButtonGroup";
 import HeaderUser from "components/Header/HeaderUser.js";
 import Parallax from "components/Parallax/Parallax.js";
 import config from "config/config";
@@ -28,29 +28,35 @@ import {
   isBrowser,
   isMobile
 } from "react-device-detect";
-import Fab from '@material-ui/core/Fab';
-import NavigationIcon from '@material-ui/icons/Navigation';
-import CreateIcon from '@material-ui/icons/Create';
-import BrushIcon from '@material-ui/icons/Brush';
-import { CircularProgressbar,CircularProgressbarWithChildren,buildStyles } from 'react-circular-progressbar';
-import 'react-circular-progressbar/dist/styles.css';
+import Fab from "@material-ui/core/Fab";
+import NavigationIcon from "@material-ui/icons/Navigation";
+import CreateIcon from "@material-ui/icons/Create";
+import BrushIcon from "@material-ui/icons/Brush";
+import {
+  CircularProgressbar,
+  CircularProgressbarWithChildren,
+  buildStyles
+} from "react-circular-progressbar";
+import "react-circular-progressbar/dist/styles.css";
 import Card from "components/Card/Card.js";
 import CardBody from "components/Card/CardBody.js";
-import Tooltip from '@material-ui/core/Tooltip';
+import Tooltip from "@material-ui/core/Tooltip";
 import Divider from "@material-ui/core/Divider";
 import Avatar from "@material-ui/core/Avatar";
 import Lightbox from "react-image-lightbox";
 import { Link, withRouter } from "react-router-dom";
 import "react-image-lightbox/style.css";
-import PersonAddIcon from '@material-ui/icons/PersonAdd';
-import ForumRoundedIcon from '@material-ui/icons/ForumRounded';
+import PersonAddIcon from "@material-ui/icons/PersonAdd";
+import ForumRoundedIcon from "@material-ui/icons/ForumRounded";
 import Axios from "axios";
-import Snackbar from '@material-ui/core/Snackbar';
-import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
 // Sections for this page
+import HeaderGloble from "components/Header/HeaderGloble";
 import { subscriber, messageService } from "./../../services/messageService";
 import Messages from "./Sections/Messages";
-import { Redirect } from 'react-router-dom';
+import { Redirect } from "react-router-dom";
+import { Unsubscribe } from "@material-ui/icons";
 
 const dashboardRoutes = [];
 
@@ -62,62 +68,44 @@ export default function ChatPage(props) {
   const [search, setSearch] = React.useState("");
   const [imgUrl, setImgUrl] = React.useState("");
   const [user, setUser] = React.useState("");
-  const [userCurrent, setUserCurrent] = React.useState(JSON.parse(localStorage.getItem('user')));
-  
+  const [userCurrent, setUserCurrent] = React.useState(
+    JSON.parse(localStorage.getItem("user"))
+  );
+
   let refreshCallBackFunction = publierData => {
     console.log(publierData);
     setRefresh(true);
   };
   React.useEffect(() => {
-    subscriber.subscribe(v => {
-      if(v.user){
-        setUser(v.user)
+    const Unsubscribe = subscriber.subscribe(v => {
+      if (v.user) {
+        setUser(v.user);
       }
     });
-  });
+    return () => Unsubscribe;
+  }, []);
   const classes = useStyles();
   const { ...rest } = props;
   if (userCurrent == null) {
-    return <Redirect to='/Connexion' />;
+    return <Redirect to="/Connexion" />;
   }
   return (
-    <div>
+    <div style={{width:"100%"}}>
+      <HeaderGloble />
       {isOpen ? (
-            <Lightbox
-              mainSrc={imgUrl}
-              onCloseRequest={() =>
-                {setIsOpen(false);
-                  setImgUrl("");}
-              }
-              reactModalStyle={{
-                overlay: { zIndex: 2000 }
-              }}
-            />
-          ) : (
-            <div></div>
-          )}
-      <Header
-        color="info"
-        routes={dashboardRoutes}
-        // brand="Mateeeerial Kit React"
-        leftLinks={
-          <img
-            src={config.API_URL + "images/asset/logo.png"}
-            alt="Logo"
-            style={{
-              display: "block",
-              width: "146px"
-            }}
-          />
-        }
-        rightLinks={<HeaderUser />}
-        fixed
-        changeColorOnScroll={{
-          height: -1,
-          color: "info"
-        }}
-        {...rest}
-      />
+        <Lightbox
+          mainSrc={imgUrl}
+          onCloseRequest={() => {
+            setIsOpen(false);
+            setImgUrl("");
+          }}
+          reactModalStyle={{
+            overlay: { zIndex: 2000 }
+          }}
+        />
+      ) : (
+        <div></div>
+      )}
       {/* <div style={{width: '100%',
                     backgroundColor: '#e3f3fd',
                     color: 'rgb(89, 79, 118)',
@@ -130,23 +118,23 @@ export default function ChatPage(props) {
                         Bienvenue à toi, Azzedine le mini-artiste
                       </h4>
       </div> */}
-      <div style={{backgroundColor: "#ecfbfc"}}>
-        <GridContainer justify="center" style={{margin: 0, padding: 0}}>
-          
-          {isMobile ? (
-          <GridItem xs={12} sm={12} md={12} position="center">
-            <div>
-            <Messages /></div>
-            
-          </GridItem>
-          ):(
-          <GridItem xs={12} sm={12} md={11} position="center">
+      <div style={{ backgroundColor: "#ecfbfc" }}>
+        {isMobile ? (
           <Messages />
-        </GridItem>
+        ) : (
+          <GridContainer justify="center" style={{ margin: 0, padding: 0 }}>
+            <GridItem
+              xs={12}
+              sm={12}
+              md={11}
+              position="center"
+              style={{ margin: 0, padding: 0 }}
+            >
+              <Messages />
+            </GridItem>
+          </GridContainer>
         )}
-        </GridContainer>
       </div>
-      
     </div>
   );
 }

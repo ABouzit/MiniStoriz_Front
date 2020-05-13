@@ -80,7 +80,10 @@ class NosHistoires extends React.Component {
   }
   componentDidMount() {
     subscriber.subscribe(v => {
-      if (v == true) this.handleCheckRefresh();
+      if (v) {
+        this.handleCheckRefresh();
+        console.log("xxx");
+      }
     });
   }
   async fetchHistoire() {
@@ -429,7 +432,7 @@ class NosHistoires extends React.Component {
                                     src={planche.lienDessin}
                                     style={{
                                       height: "365px",
-                                      maxWidth: '800px',
+                                      maxWidth: "800px",
                                       marginLeft: "auto",
                                       marginRight: "auto",
                                       display: "block"

@@ -43,6 +43,8 @@ import CustomTabs from "components/CustomTabs/CustomTabs.js";
 import Parallax from "components/Parallax/Parallax.js";
 import { isMobile } from "react-device-detect";
 import Fab from "@material-ui/core/Fab";
+import * as firebase from "firebase/app";
+import "firebase/database";
 //scroll bare text
 import BrushIcon from "@material-ui/icons/Brush";
 import Avatar from "@material-ui/core/Avatar";
@@ -94,7 +96,7 @@ import {
 import Moment from "moment";
 import * as Core from "@material-ui/core";
 import "react-circular-progressbar/dist/styles.css";
-import { Redirect } from 'react-router-dom';
+import { Redirect } from "react-router-dom";
 class PublierView extends React.Component {
   constructor(props) {
     super(props);
@@ -185,19 +187,25 @@ class PublierView extends React.Component {
   }
 
   componentDidMount() {
-    const user = JSON.parse(localStorage.getItem('user'));
+    const user = JSON.parse(localStorage.getItem("user"));
     if (!user) {
-      this.setState({  redirect: 1 }, ()=> {this.forceUpdate()});
-    }else{
-      if (typeof this.props.match.params.histoireId === 'undefined') {
-        this.setState({  id: user.id, userLocal: user }, ()=> {this.forceUpdate()});
+      this.setState({ redirect: 1 }, () => {
+        this.forceUpdate();
+      });
+    } else {
+      if (typeof this.props.match.params.histoireId === "undefined") {
+        this.setState({ id: user.id, userLocal: user }, () => {
+          this.forceUpdate();
+        });
       } else {
-      this.setState({  id: user.id, userLocal: user }, ()=> {this.fetchHistoire(this.props.match.params.histoireId);this.forceUpdate()});
+        this.setState({ id: user.id, userLocal: user }, () => {
+          this.fetchHistoire(this.props.match.params.histoireId);
+          this.forceUpdate();
+        });
       }
     }
-    Axios.get(config.API_URL +
-      "users/relations/"+user.id, {}).then(res => {
-      console.log(res.data)
+    Axios.get(config.API_URL + "users/relations/" + user.id, {}).then(res => {
+      console.log(res.data);
       this.setState({ reseauUsers: res.data });
       if (this.props.match.params.type == "1")
         this.setState({
@@ -219,22 +227,38 @@ class PublierView extends React.Component {
     this.next();
   }
 
-  fetchHistoire(id){
+  fetchHistoire(id) {
     Axios.get(config.API_URL + "histoires/byId/" + id).then(histoire => {
-      if (histoire.data[0].userText.id !== this.state.userLocal.id && histoire.data[0].userDessin.id !== this.state.userLocal.id) {
-        this.props.history.push("/Histoire/"+id)
+      if (
+        histoire.data[0].userText.id !== this.state.userLocal.id &&
+        histoire.data[0].userDessin.id !== this.state.userLocal.id
+      ) {
+        this.props.history.push("/Histoire/" + id);
       } else {
-      Axios.get(config.API_URL + "planches/histoires/" + id).then(
-        planches => {
-          console.log(planches)
-            this.setState({ planche: planches.data,histoire: histoire.data[0], titreHistoire: histoire.data[0].titreHistoire,
-                        imgHistoire: histoire.data[0].lienIllustration,textHistoire: planches.data[1].text,
-                        userText:  histoire.data[0].userText, userDessin: histoire.data[0].userDessin,
-                      testNext: 1,testNextText: 1,lienImgPlanche: planches.data[1].lien},()=>{this.forceUpdate()})
-            });
-       }
-      
-    })
+        Axios.get(config.API_URL + "planches/histoires/" + id).then(
+          planches => {
+            console.log(planches);
+            this.setState(
+              {
+                planche: planches.data,
+                histoire: histoire.data[0],
+                titreHistoire: histoire.data[0].titreHistoire,
+                imgHistoire: histoire.data[0].lienIllustration,
+                textHistoire: planches.data[1].text,
+                userText: histoire.data[0].userText,
+                userDessin: histoire.data[0].userDessin,
+                testNext: 1,
+                testNextText: 1,
+                lienImgPlanche: planches.data[1].lien
+              },
+              () => {
+                this.forceUpdate();
+              }
+            );
+          }
+        );
+      }
+    });
   }
   saveHistoire(file) {
     console.log(file);
@@ -368,9 +392,13 @@ class PublierView extends React.Component {
       this.state.anchorElDessin.focus();
     }
     if (this.state.userLocal.id !== this.state.pendingValueDessin.id) {
-      this.setState({ typePage: 3 },()=>{this.forceUpdate()});
-    }else{
-      this.setState({ typePage: 1 },()=>{this.forceUpdate()});
+      this.setState({ typePage: 3 }, () => {
+        this.forceUpdate();
+      });
+    } else {
+      this.setState({ typePage: 1 }, () => {
+        this.forceUpdate();
+      });
     }
     this.setState({ anchorElDessin: null });
   };
@@ -402,79 +430,81 @@ class PublierView extends React.Component {
       this.state.anchorElText.focus();
     }
     if (this.state.userLocal.id !== this.state.pendingValueText.id) {
-      this.setState({ typePage: 2 },()=>{this.forceUpdate()});
-    }else{
-      this.setState({ typePage: 1 },()=>{this.forceUpdate()});
+      this.setState({ typePage: 2 }, () => {
+        this.forceUpdate();
+      });
+    } else {
+      this.setState({ typePage: 1 }, () => {
+        this.forceUpdate();
+      });
     }
     this.setState({ anchorElText: null });
   };
   submit() {
     const _this = this;
-    let idHistoire = ""; 
+    let idHistoire = "";
     if (this.state.dataImgHistoire == "") {
-    
-      if (typeof this.props.match.params.histoireId === 'indefined') {
-        
-      return Axios.post(config.API_URL + "histoires", {
-        userText: this.state.userText,
-        userDessin: this.state.userDessin,
-        lienIllustration: this.state.imgHistoire,
-        titreHistoire: this.state.titreHistoire
-      })
-        .then(function(response) {
-          Promise.all(
-            _this.state.planche.map((planch, index) => {
-              if (index > 0) {
-                console.log(planch);
-                if (planch.data !== "") {
-                  return Axios.post(
-                    config.API_URL + "sendImage/planches/",
-                    planch.data
-                  ).then(res => {
-                    let s = res.data.filePath
-                      .replace("\\", "/")
-                      .replace("\\", "/");
+      if (typeof this.props.match.params.histoireId === "undefined") {
+        return Axios.post(config.API_URL + "histoires", {
+          userText: this.state.userText,
+          userDessin: this.state.userDessin,
+          lienIllustration: this.state.imgHistoire,
+          titreHistoire: this.state.titreHistoire
+        })
+          .then(function(response) {
+            Promise.all(
+              _this.state.planche.map((planch, index) => {
+                if (index > 0) {
+                  console.log(planch);
+                  if (planch.data !== "") {
+                    return Axios.post(
+                      config.API_URL + "sendImage/planches/",
+                      planch.data
+                    ).then(res => {
+                      let s = res.data.filePath
+                        .replace("\\", "/")
+                        .replace("\\", "/");
+                      return Axios.post(config.API_URL + "planches", {
+                        histoire: response.data.id,
+                        lienDessin: config.API_URL + s,
+                        text: planch.text,
+                        index: index
+                      });
+                    });
+                  } else {
                     return Axios.post(config.API_URL + "planches", {
                       histoire: response.data.id,
-                      lienDessin: config.API_URL + s,
                       text: planch.text,
                       index: index
                     });
-                  });
-                } else {
-                  return Axios.post(config.API_URL + "planches", {
-                    histoire: response.data.id,
-                    text: planch.text,
-                    index: index
-                  });
+                  }
                 }
-              }
-            })
-          ).then(res => {
-            _this.setState(
-              {
-                imgSrc: "",
-                dataImgPlanche: "",
-                lienImgPlanche: "",
-                testNext: 0,
-                testNextText: 0,
-                textHistoire: "",
-                titreHistoire: "",
-                imgHistoire: "",
-                lienImgHistoire: "",
-                dataImgHistoire: "",
-                planche: [{ text: "", img: "", data: "", lien: "" }],
-                lienInputUpload: "",
-                lienInputUploadhistoire: "",
-                submit: false
-              },
-              () => _this.props.history.push("/lesHistoires")
-            );
+              })
+            ).then(res => {
+              _this.setState(
+                {
+                  imgSrc: "",
+                  dataImgPlanche: "",
+                  lienImgPlanche: "",
+                  testNext: 0,
+                  testNextText: 0,
+                  textHistoire: "",
+                  titreHistoire: "",
+                  imgHistoire: "",
+                  lienImgHistoire: "",
+                  dataImgHistoire: "",
+                  planche: [{ text: "", img: "", data: "", lien: "" }],
+                  lienInputUpload: "",
+                  lienInputUploadhistoire: "",
+                  submit: false
+                },
+                () => _this.props.history.push("/lesHistoires")
+              );
+            });
+          })
+          .catch(function(error) {
+            console.log(error);
           });
-        })
-        .catch(function(error) {
-          console.log(error);
-        });
       } else {
         idHistoire = this.props.match.params.histoireId;
         return Axios.put(config.API_URL + "histoires", {
@@ -539,150 +569,175 @@ class PublierView extends React.Component {
             console.log(error);
           });
       }
-  } else {
-    if (typeof this.props.match.params.histoireId === 'indefined') {
-      
-    return Axios({
-      method: "post",
-      url: config.API_URL + "sendImage/histoires/",
-      data: this.state.dataImgHistoire,
-      headers: { "Content-Type": "multipart/form-data" }
-    }).then(res => {
-      let s = res.data.filePath.replace("\\", "/").replace("\\", "/");
-      return Axios.post(config.API_URL + "histoires", {
-        userText: this.state.userText,
-        userDessin: this.state.userDessin,
-        lienIllustration: config.API_URL + s,
-        titreHistoire: this.state.titreHistoire
-      })
-        .then(function(response) {
-          Promise.all(
-            _this.state.planche.map((planch, index) => {
-              if (index > 0) {
-                console.log(planch);
-                if (planch.data !== "") {
-                  return Axios.post(
-                    config.API_URL + "sendImage/planches/",
-                    planch.data
-                  ).then(res => {
-                    let s = res.data.filePath
-                      .replace("\\", "/")
-                      .replace("\\", "/");
-                    return Axios.post(config.API_URL + "planches", {
-                      histoire: response.data.id,
-                      lienDessin: config.API_URL + s,
-                      text: planch.text,
-                      index: index
-                    });
-                  });
-                } else {
-                  return Axios.post(config.API_URL + "planches", {
-                    histoire: response.data.id,
-                    text: planch.text,
-                    index: index
-                  });
+    } else {
+      if (typeof this.props.match.params.histoireId === "undefined") {
+        return Axios({
+          method: "post",
+          url: config.API_URL + "sendImage/histoires/",
+          data: this.state.dataImgHistoire,
+          headers: { "Content-Type": "multipart/form-data" }
+        }).then(res => {
+          let s = res.data.filePath.replace("\\", "/").replace("\\", "/");
+          return Axios.post(config.API_URL + "histoires/" + this.state.id, {
+            userText: this.state.userText,
+            userDessin: this.state.userDessin,
+            lienIllustration: config.API_URL + s,
+            titreHistoire: this.state.titreHistoire
+          })
+            .then(function(response) {
+              Promise.all(
+                _this.state.planche.map((planch, index) => {
+                  if (index > 0) {
+                    console.log(planch);
+                    if (planch.data !== "") {
+                      return Axios.post(
+                        config.API_URL + "sendImage/planches/",
+                        planch.data
+                      ).then(res => {
+                        let s = res.data.filePath
+                          .replace("\\", "/")
+                          .replace("\\", "/");
+                        return Axios.post(config.API_URL + "planches", {
+                          histoire: response.data.id,
+                          lienDessin: config.API_URL + s,
+                          text: planch.text,
+                          index: index
+                        });
+                      });
+                    } else {
+                      return Axios.post(config.API_URL + "planches", {
+                        histoire: response.data.id,
+                        text: planch.text,
+                        index: index
+                      });
+                    }
+                  }
+                })
+              ).then(res => {
+                console.log(res);
+                if (
+                  _this.state.userDessin &&
+                  _this.state.userText &&
+                  _this.state.userDessin.id != _this.state.userText.id
+                ) {
+                  if (_this.state.userText.id === _this.state.id) {
+                    firebase
+                      .database()
+                      .ref("notifications/" + _this.state.userDessin.id)
+                      .set({
+                        from: _this.state.id,
+                        to: _this.state.userDessin.id,
+                        numbe: 100000 + Math.random() * (100000 - 1)
+                      });
+                  } else if (_this.state.userDessin.id === _this.state.id) {
+                    firebase
+                      .database()
+                      .ref("notifications/" + _this.state.userText.id)
+                      .set({
+                        from: _this.state.id,
+                        to: _this.state.userText.id,
+                        numbe: 100000 + Math.random() * (100000 - 1)
+                      });
+                  }
                 }
-              }
+                _this.setState(
+                  {
+                    imgSrc: "",
+                    dataImgPlanche: "",
+                    lienImgPlanche: "",
+                    testNext: 0,
+                    testNextText: 0,
+                    textHistoire: "",
+                    titreHistoire: "",
+                    imgHistoire: "",
+                    lienImgHistoire: "",
+                    dataImgHistoire: "",
+                    planche: [{ text: "", img: "", data: "", lien: "" }],
+                    lienInputUpload: "",
+                    lienInputUploadhistoire: "",
+                    submit: false
+                  },
+                  () => _this.props.history.push("/lesHistoires")
+                );
+              });
             })
-          ).then(res => {
-            _this.setState(
-              {
-                imgSrc: "",
-                dataImgPlanche: "",
-                lienImgPlanche: "",
-                testNext: 0,
-                testNextText: 0,
-                textHistoire: "",
-                titreHistoire: "",
-                imgHistoire: "",
-                lienImgHistoire: "",
-                dataImgHistoire: "",
-                planche: [{ text: "", img: "", data: "", lien: "" }],
-                lienInputUpload: "",
-                lienInputUploadhistoire: "",
-                submit: false
-              },
-              () => _this.props.history.push("/lesHistoires")
-            );
-          });
-        })
-        .catch(function(error) {
-          console.log(error);
+            .catch(function(error) {
+              console.log(error);
+            });
         });
-    });
-  } else {
-    idHistoire = this.props.match.params.histoireId;
-    return Axios({
-      method: "post",
-      url: config.API_URL + "sendImage/histoires/",
-      data: this.state.dataImgHistoire,
-      headers: { "Content-Type": "multipart/form-data" }
-    }).then(res => {
-      let s = res.data.filePath.replace("\\", "/").replace("\\", "/");
-      return Axios.put(config.API_URL + "histoires", {
-        id: idHistoire,
-        userText: this.state.userText,
-        userDessin: this.state.userDessin,
-        lienIllustration: config.API_URL + s,
-        titreHistoire: this.state.titreHistoire
-      })
-        .then(function(response) {
-          Promise.all(
-            _this.state.planche.map((planch, index) => {
-              if (index > 0) {
-                console.log(planch);
-                if (planch.data !== "") {
-                  return Axios.post(
-                    config.API_URL + "sendImage/planches/",
-                    planch.data
-                  ).then(res => {
-                    let s = res.data.filePath
-                      .replace("\\", "/")
-                      .replace("\\", "/");
-                    return Axios.post(config.API_URL + "planches", {
-                      histoire: response.data.id,
-                      lienDessin: config.API_URL + s,
-                      text: planch.text,
-                      index: index
-                    });
-                  });
-                } else {
-                  return Axios.put(config.API_URL + "planches", {
-                    histoire: response.data.id,
-                    text: planch.text,
-                    index: index
-                  });
-                }
-              }
+      } else {
+        idHistoire = this.props.match.params.histoireId;
+        return Axios({
+          method: "post",
+          url: config.API_URL + "sendImage/histoires/",
+          data: this.state.dataImgHistoire,
+          headers: { "Content-Type": "multipart/form-data" }
+        }).then(res => {
+          let s = res.data.filePath.replace("\\", "/").replace("\\", "/");
+          return Axios.put(config.API_URL + "histoires", {
+            id: idHistoire,
+            userText: this.state.userText,
+            userDessin: this.state.userDessin,
+            lienIllustration: config.API_URL + s,
+            titreHistoire: this.state.titreHistoire
+          })
+            .then(function(response) {
+              Promise.all(
+                _this.state.planche.map((planch, index) => {
+                  if (index > 0) {
+                    console.log(planch);
+                    if (planch.data !== "") {
+                      return Axios.post(
+                        config.API_URL + "sendImage/planches/",
+                        planch.data
+                      ).then(res => {
+                        let s = res.data.filePath
+                          .replace("\\", "/")
+                          .replace("\\", "/");
+                        return Axios.post(config.API_URL + "planches", {
+                          histoire: response.data.id,
+                          lienDessin: config.API_URL + s,
+                          text: planch.text,
+                          index: index
+                        });
+                      });
+                    } else {
+                      return Axios.put(config.API_URL + "planches", {
+                        histoire: response.data.id,
+                        text: planch.text,
+                        index: index
+                      });
+                    }
+                  }
+                })
+              ).then(res => {
+                _this.setState(
+                  {
+                    imgSrc: "",
+                    dataImgPlanche: "",
+                    lienImgPlanche: "",
+                    testNext: 0,
+                    testNextText: 0,
+                    textHistoire: "",
+                    titreHistoire: "",
+                    imgHistoire: "",
+                    lienImgHistoire: "",
+                    dataImgHistoire: "",
+                    planche: [{ text: "", img: "", data: "", lien: "" }],
+                    lienInputUpload: "",
+                    lienInputUploadhistoire: "",
+                    submit: false
+                  },
+                  () => _this.props.history.push("/lesHistoires")
+                );
+              });
             })
-          ).then(res => {
-            _this.setState(
-              {
-                imgSrc: "",
-                dataImgPlanche: "",
-                lienImgPlanche: "",
-                testNext: 0,
-                testNextText: 0,
-                textHistoire: "",
-                titreHistoire: "",
-                imgHistoire: "",
-                lienImgHistoire: "",
-                dataImgHistoire: "",
-                planche: [{ text: "", img: "", data: "", lien: "" }],
-                lienInputUpload: "",
-                lienInputUploadhistoire: "",
-                submit: false
-              },
-              () => _this.props.history.push("/lesHistoires")
-            );
-          });
-        })
-        .catch(function(error) {
-          console.log(error);
+            .catch(function(error) {
+              console.log(error);
+            });
         });
-    });
+      }
     }
-  }
   }
   saveHistoireWithPlanche() {
     this.setState({ submit: true });
@@ -691,8 +746,7 @@ class PublierView extends React.Component {
     const _this = this;
     const tab = _this.state.planche[_this.state.planche.length - 1];
     console.log(this.props.match.params);
-    if (typeof this.props.match.params.histoireId === 'indefined') {
-
+    if (typeof this.props.match.params.histoireId === "undefined") {
       if (this.state.typePage == 1) {
         if (
           tab.text !== "" &&
@@ -729,14 +783,11 @@ class PublierView extends React.Component {
           this.handleClick();
         }
       }
-      
     } else {
       if (this.state.typePage == 1) {
         if (
           tab.text !== "" &&
-          (tab.img !== "" ||
-          tab.data !== "" ||
-          tab.lien !== "") &&
+          (tab.img !== "" || tab.data !== "" || tab.lien !== "") &&
           this.state.titreHistoire !== ""
         ) {
           this.submit();
@@ -745,9 +796,7 @@ class PublierView extends React.Component {
         }
       } else if (this.state.typePage == 2) {
         if (
-          (tab.img !== "" ||
-          tab.data !== "" ||
-          tab.lien !== "") &&
+          (tab.img !== "" || tab.data !== "" || tab.lien !== "") &&
           this.state.titreHistoire !== ""
         ) {
           this.submit();
@@ -755,10 +804,7 @@ class PublierView extends React.Component {
           this.handleClick();
         }
       } else if (this.state.typePage == 3) {
-        if (
-          tab.text !== "" &&
-          this.state.titreHistoire !== ""
-        ) {
+        if (tab.text !== "" && this.state.titreHistoire !== "") {
           this.submit();
         } else {
           this.handleClick();
@@ -766,7 +812,7 @@ class PublierView extends React.Component {
       }
     }
   }
-  
+
   redirectFunction(index) {
     if (this.props.match.params.type == 1) {
       this.props.history.push("/publier/back");
@@ -881,7 +927,6 @@ class PublierView extends React.Component {
   };
   //modal - carousel
   render() {
-   
     const openDessin = Boolean(this.state.anchorElDessin);
     const idDessin = openDessin ? "Dessin" : undefined;
     const openText = Boolean(this.state.anchorElText);
@@ -896,7 +941,7 @@ class PublierView extends React.Component {
       day: "numeric"
     };
     if (this.state.redirect == 1) {
-      return <Redirect to='/Connexion' />
+      return <Redirect to="/Connexion" />;
     }
     return (
       <div style={styles.section}>
@@ -912,7 +957,7 @@ class PublierView extends React.Component {
           <div></div>
         )}
         <ButtonBase onClick={() => this.props.history.goBack()}>
-          <Fab aria-label={fab.label} style={fab.style} color={fab.color}>
+          <Fab aria-label={fab.label} style={fab.style}>
             {fab.icon}
           </Fab>
         </ButtonBase>
@@ -926,7 +971,6 @@ class PublierView extends React.Component {
           </Alert>
         </Snackbar>
         <GridContainer style={{ margin: 0, paddingTop: "20px" }}>
-          
           <GridItem xs={12} sm={12} md={12} style={{ textAlign: "left" }}>
             <Paper
               variant="outlined"
@@ -948,489 +992,526 @@ class PublierView extends React.Component {
                     }
               }
             >
-            {!(typeof this.props.match.params.histoireId === 'undefined') ? (
-            <GridContainer
-              style={{
-              width: "90%",
-              marginTop: 20,
-              marginLeft: "auto",
-              marginRight: "auto"
-              }}
-            >
-            {this.state.userDessin ? (
-            <GridItem xs={12} sm={12} md={6} style={{ padding: 0 }}>
-              <ListItem>
-                <Link to={this.state.userDessin.id !== this.state.userLocal.id ?
-                   '/LesOeuvres/'+this.state.userDessin.id : null}>
-                <ListItemAvatar>
-                  {this.state.userDessin.lienPhoto == "" ||
-                  this.state.userDessin.lienPhoto == null ? (
-                    <Avatar
-                      alt=""
-                      src={
-                        config.API_URL + "images/defaultPhotoProfil.jpg"
-                      }
-                    />
-                  ) : (
-                    <Avatar
-                      alt=""
-                      src={this.state.userDessin.lienPhoto}
-                    />
-                  )}
-                </ListItemAvatar>
-                </Link>
-                <Link to={'/LesOeuvres/'+this.state.userDessin.id}>
-                <ListItemText
-                  style={{
-                    paddingBottom: 8
-                  }}
-                >
-                  <p
-                    style={{
-                      color: "#5a517f",
-                      fontWeight: "bold",
-                      fontSize: 17,
-                      margin: 0
-                    }}
-                  >
-                    {this.state.userDessin.pseudo}
-                  </p>
-                </ListItemText>
-                </Link>
-              </ListItem>
-            </GridItem>
-            ):(<GridItem xs={0} sm={0} md={0} style={{ padding: 0 }}></GridItem>)}
-            {this.state.userText ? (
-            <GridItem xs={12} sm={12} md={6} style={{ padding: 0 }}>
-              <ListItem>
-              <Link to={this.state.userText.id !== this.state.userLocal.id ?
-                '/LesOeuvres/'+this.state.userText.id : null}>
-                <ListItemAvatar>
-                  {this.state.userText.lienPhoto == "" ||
-                  this.state.userText.lienPhoto == null ? (
-                    <Avatar
-                      alt=""
-                      src={
-                        config.API_URL + "images/defaultPhotoProfil.jpg"
-                      }
-                    />
-                  ) : (
-                    <Avatar
-                      alt=""
-                      src={this.state.userText.lienPhoto}
-                    />
-                  )}
-                </ListItemAvatar>
-                </Link>
-                <Link to={'/LesOeuvres/'+this.state.userText.id}>
-                <ListItemText
-                  style={{
-                    paddingBottom: 8
-                  }}
-                >
-                  <p
-                    style={{
-                      color: "#5a517f",
-                      fontWeight: "bold",
-                      fontSize: 17,
-                      margin: 0
-                    }}
-                  >
-                    {this.state.userText.pseudo}
-                  </p>
-                </ListItemText>
-                </Link>
-              </ListItem>
-            </GridItem>
-            ):(<GridItem xs={0} sm={0} md={0} style={{ padding: 0 }}></GridItem>)}
-            </GridContainer>
-            ):(
-              <div>
-              {this.props.match.params.type == "1" ? (
+              {!(typeof this.props.match.params.histoireId === "undefined") ? (
                 <GridContainer
                   style={{
                     width: "90%",
                     marginTop: 20,
-
                     marginLeft: "auto",
                     marginRight: "auto"
                   }}
                 >
-                  <GridItem xs={12} sm={12} md={6} style={{ padding: 0 }}>
-                    <ButtonBase
-                      disableRipple
+                  {this.state.userDessin ? (
+                    <GridItem xs={12} sm={12} md={6} style={{ padding: 0 }}>
+                      <ListItem>
+                        <Link
+                          to={
+                            this.state.userDessin.id !== this.state.userLocal.id
+                              ? "/LesOeuvres/" + this.state.userDessin.id
+                              : null
+                          }
+                        >
+                          <ListItemAvatar>
+                            {this.state.userDessin.lienPhoto == "" ||
+                            this.state.userDessin.lienPhoto == null ? (
+                              <Avatar
+                                alt=""
+                                src={
+                                  config.API_URL +
+                                  "images/defaultPhotoProfil.jpg"
+                                }
+                              />
+                            ) : (
+                              <Avatar
+                                alt=""
+                                src={this.state.userDessin.lienPhoto}
+                              />
+                            )}
+                          </ListItemAvatar>
+                        </Link>
+                        <Link to={"/LesOeuvres/" + this.state.userDessin.id}>
+                          <ListItemText
+                            style={{
+                              paddingBottom: 8
+                            }}
+                          >
+                            <p
+                              style={{
+                                color: "#5a517f",
+                                fontWeight: "bold",
+                                fontSize: 17,
+                                margin: 0
+                              }}
+                            >
+                              {this.state.userDessin.pseudo}
+                            </p>
+                          </ListItemText>
+                        </Link>
+                      </ListItem>
+                    </GridItem>
+                  ) : (
+                    <GridItem
+                      xs={0}
+                      sm={0}
+                      md={0}
+                      style={{ padding: 0 }}
+                    ></GridItem>
+                  )}
+                  {this.state.userText ? (
+                    <GridItem xs={12} sm={12} md={6} style={{ padding: 0 }}>
+                      <ListItem>
+                        <Link
+                          to={
+                            this.state.userText.id !== this.state.userLocal.id
+                              ? "/LesOeuvres/" + this.state.userText.id
+                              : null
+                          }
+                        >
+                          <ListItemAvatar>
+                            {this.state.userText.lienPhoto == "" ||
+                            this.state.userText.lienPhoto == null ? (
+                              <Avatar
+                                alt=""
+                                src={
+                                  config.API_URL +
+                                  "images/defaultPhotoProfil.jpg"
+                                }
+                              />
+                            ) : (
+                              <Avatar
+                                alt=""
+                                src={this.state.userText.lienPhoto}
+                              />
+                            )}
+                          </ListItemAvatar>
+                        </Link>
+                        <Link to={"/LesOeuvres/" + this.state.userText.id}>
+                          <ListItemText
+                            style={{
+                              paddingBottom: 8
+                            }}
+                          >
+                            <p
+                              style={{
+                                color: "#5a517f",
+                                fontWeight: "bold",
+                                fontSize: 17,
+                                margin: 0
+                              }}
+                            >
+                              {this.state.userText.pseudo}
+                            </p>
+                          </ListItemText>
+                        </Link>
+                      </ListItem>
+                    </GridItem>
+                  ) : (
+                    <GridItem
+                      xs={0}
+                      sm={0}
+                      md={0}
+                      style={{ padding: 0 }}
+                    ></GridItem>
+                  )}
+                </GridContainer>
+              ) : (
+                <div>
+                  {this.props.match.params.type == "1" ? (
+                    <GridContainer
                       style={{
-                        width: "100%"
+                        width: "90%",
+                        marginTop: 20,
+
+                        marginLeft: "auto",
+                        marginRight: "auto"
                       }}
-                      className={classes.button}
-                      onClick={this.handleClickDessin}
                     >
-                      <ListItem className={classes.avatarPseudo}>
-                        <ListItemAvatar>
-                          {this.state.userDessin.lienPhoto == "" ||
-                          this.state.userDessin.lienPhoto == null ? (
-                            <Avatar
-                              alt=""
-                              src={
-                                config.API_URL + "images/defaultPhotoProfil.jpg"
-                              }
-                            />
-                          ) : (
-                            <Avatar
-                              alt=""
-                              src={this.state.userDessin.lienPhoto}
-                            />
-                          )}
-                        </ListItemAvatar>
-                        <ListItemText
+                      <GridItem xs={12} sm={12} md={6} style={{ padding: 0 }}>
+                        <ButtonBase
+                          disableRipple
                           style={{
-                            paddingBottom: 20
+                            width: "100%"
                           }}
+                          className={classes.button}
+                          onClick={this.handleClickDessin}
                         >
-                          <p
-                            style={{
-                              color: "#5a517f",
-                              fontWeight: "bold",
-                              fontSize: 17,
-                              margin: 0
-                            }}
-                          >
-                            {this.state.userDessin.pseudo}
-                          </p>
-                        </ListItemText>
-                        <EditIcon className={classes.editeIcon} />
-                      </ListItem>
-                    </ButtonBase>
-
-                    <Popper
-                      id={idDessin}
-                      open={openDessin}
-                      anchorEl={this.state.anchorElDessin}
-                      placement="bottom-start"
-                      className={classes.popper}
-                    >
-                      <Autocomplete
-                        open
-                        onClose={this.handleCloseDessin}
-                        classes={{
-                          paper: classes.paper,
-                          option: classes.option,
-                          popperDisablePortal: classes.popperDisablePortal
-                        }}
-                        value={this.state.pendingValueDessin}
-                        onChange={(event, newValue) => {
-                          this.setState(
-                            { pendingValueDessin: newValue },
-                            () => {}
-                          );
-                        }}
-                        disableCloseOnSelect
-                        disablePortal
-                        renderTags={() => null}
-                        renderOption={(option, { selected }) => (
-                          <React.Fragment>
-                            <DoneIcon
-                              className={classes.iconSelected}
+                          <ListItem className={classes.avatarPseudo}>
+                            <ListItemAvatar>
+                              {this.state.userDessin.lienPhoto == "" ||
+                              this.state.userDessin.lienPhoto == null ? (
+                                <Avatar
+                                  alt=""
+                                  src={
+                                    config.API_URL +
+                                    "images/defaultPhotoProfil.jpg"
+                                  }
+                                />
+                              ) : (
+                                <Avatar
+                                  alt=""
+                                  src={this.state.userDessin.lienPhoto}
+                                />
+                              )}
+                            </ListItemAvatar>
+                            <ListItemText
                               style={{
-                                visibility: selected ? "visible" : "hidden"
+                                paddingBottom: 20
                               }}
-                            />
-                            <ListItem>
-                              <ListItemAvatar>
-                                {option.lienPhoto == "" ||
-                                option.lienPhoto == null ? (
-                                  <Avatar
-                                    alt=""
-                                    src={
-                                      config.API_URL +
-                                      "images/defaultPhotoProfil.jpg"
-                                    }
-                                  />
-                                ) : (
-                                  <Avatar alt="" src={option.lienPhoto} />
-                                )}
-                              </ListItemAvatar>
-                              <ListItemText
+                            >
+                              <p
                                 style={{
-                                  paddingBottom: 20
+                                  color: "#5a517f",
+                                  fontWeight: "bold",
+                                  fontSize: 17,
+                                  margin: 0
                                 }}
                               >
-                                <p
-                                  style={{
-                                    color: "#5a517f",
-                                    fontWeight: "bold",
-                                    fontSize: 17,
-                                    margin: 0
-                                  }}
-                                >
-                                  {option.pseudo}
-                                </p>
-                              </ListItemText>
-                            </ListItem>
-                          </React.Fragment>
-                        )}
-                        options={[...this.state.reseauUsers].sort((a, b) => {
-                          // Display the selected labels first.
-                          let ai =
-                            this.state.userDessin === a
-                              ? 0
-                              : this.state.userDessin.length + -1;
+                                {this.state.userDessin.pseudo}
+                              </p>
+                            </ListItemText>
+                            <EditIcon className={classes.editeIcon} />
+                          </ListItem>
+                        </ButtonBase>
 
-                          let bi =
-                            this.state.userDessin === b
-                              ? 0
-                              : this.state.userDessin.length + -1;
-                          return ai - bi;
-                        })}
-                        getOptionLabel={option => option.pseudo}
-                        renderInput={params => (
-                          <InputBase
-                            ref={params.InputProps.ref}
-                            inputProps={params.inputProps}
-                            autoFocus
-                            className={classes.InputBase}
-                          />
-                        )}
-                      />
-                    </Popper>
-                  </GridItem>
-                  <GridItem xs={12} sm={12} md={6} style={{ padding: 0 }}>
-                    <ButtonBase
-                      disableRipple
-                      className={classes.button}
-                      style={{ width: "100%" }}
-                      onClick={this.handleClickText}
-                    >
-                      <ListItem className={classes.avatarPseudo}>
-                        <ListItemAvatar>
-                          {this.state.userText.lienPhoto == "" ||
-                          this.state.userText.lienPhoto == null ? (
-                            <Avatar
-                              alt=""
-                              src={
-                                config.API_URL + "images/defaultPhotoProfil.jpg"
-                              }
-                            />
-                          ) : (
-                            <Avatar
-                              alt=""
-                              src={this.state.userText.lienPhoto}
-                            />
-                          )}
-                        </ListItemAvatar>
-                        <ListItemText
-                          style={{
-                            paddingBottom: 20
-                          }}
+                        <Popper
+                          id={idDessin}
+                          open={openDessin}
+                          anchorEl={this.state.anchorElDessin}
+                          placement="bottom-start"
+                          className={classes.popper}
                         >
-                          <p
-                            style={{
-                              color: "#5a517f",
-                              fontWeight: "bold",
-                              fontSize: 17,
-                              margin: 0
+                          <Autocomplete
+                            open
+                            onClose={this.handleCloseDessin}
+                            classes={{
+                              paper: classes.paper,
+                              option: classes.option,
+                              popperDisablePortal: classes.popperDisablePortal
                             }}
-                          >
-                            {this.state.userText.pseudo}
-                          </p>
-                        </ListItemText>
-                        <EditIcon />
-                      </ListItem>
-                    </ButtonBase>
-                    <Popper
-                      id={idText}
-                      open={openText}
-                      anchorEl={this.state.anchorElText}
-                      placement="bottom-start"
-                      className={classes.popper}
-                    >
-                      <Autocomplete
-                        open
-                        onClose={this.handleCloseText}
-                        classes={{
-                          paper: classes.paper,
-                          option: classes.option,
-                          popperDisablePortal: classes.popperDisablePortal
-                        }}
-                        value={this.state.pendingValueText}
-                        onChange={(event, newValue) => {
-                          this.setState(
-                            { pendingValueText: newValue },
-                            () => {}
-                          );
-                        }}
-                        disableCloseOnSelect
-                        disablePortal
-                        renderTags={() => null}
-                        renderOption={(option, { selected }) => (
-                          <React.Fragment>
-                            <DoneIcon
-                              className={classes.iconSelected}
+                            value={this.state.pendingValueDessin}
+                            onChange={(event, newValue) => {
+                              this.setState(
+                                { pendingValueDessin: newValue },
+                                () => {}
+                              );
+                            }}
+                            disableCloseOnSelect
+                            disablePortal
+                            renderTags={() => null}
+                            renderOption={(option, { selected }) => (
+                              <React.Fragment>
+                                <DoneIcon
+                                  className={classes.iconSelected}
+                                  style={{
+                                    visibility: selected ? "visible" : "hidden"
+                                  }}
+                                />
+                                <ListItem>
+                                  <ListItemAvatar>
+                                    {option.lienPhoto == "" ||
+                                    option.lienPhoto == null ? (
+                                      <Avatar
+                                        alt=""
+                                        src={
+                                          config.API_URL +
+                                          "images/defaultPhotoProfil.jpg"
+                                        }
+                                      />
+                                    ) : (
+                                      <Avatar alt="" src={option.lienPhoto} />
+                                    )}
+                                  </ListItemAvatar>
+                                  <ListItemText
+                                    style={{
+                                      paddingBottom: 20
+                                    }}
+                                  >
+                                    <p
+                                      style={{
+                                        color: "#5a517f",
+                                        fontWeight: "bold",
+                                        fontSize: 17,
+                                        margin: 0
+                                      }}
+                                    >
+                                      {option.pseudo}
+                                    </p>
+                                  </ListItemText>
+                                </ListItem>
+                              </React.Fragment>
+                            )}
+                            options={[...this.state.reseauUsers].sort(
+                              (a, b) => {
+                                // Display the selected labels first.
+                                let ai =
+                                  this.state.userDessin === a
+                                    ? 0
+                                    : this.state.userDessin.length + -1;
+
+                                let bi =
+                                  this.state.userDessin === b
+                                    ? 0
+                                    : this.state.userDessin.length + -1;
+                                return ai - bi;
+                              }
+                            )}
+                            getOptionLabel={option => option.pseudo}
+                            renderInput={params => (
+                              <InputBase
+                                ref={params.InputProps.ref}
+                                inputProps={params.inputProps}
+                                autoFocus
+                                className={classes.InputBase}
+                              />
+                            )}
+                          />
+                        </Popper>
+                      </GridItem>
+                      <GridItem xs={12} sm={12} md={6} style={{ padding: 0 }}>
+                        <ButtonBase
+                          disableRipple
+                          className={classes.button}
+                          style={{ width: "100%" }}
+                          onClick={this.handleClickText}
+                        >
+                          <ListItem className={classes.avatarPseudo}>
+                            <ListItemAvatar>
+                              {this.state.userText.lienPhoto == "" ||
+                              this.state.userText.lienPhoto == null ? (
+                                <Avatar
+                                  alt=""
+                                  src={
+                                    config.API_URL +
+                                    "images/defaultPhotoProfil.jpg"
+                                  }
+                                />
+                              ) : (
+                                <Avatar
+                                  alt=""
+                                  src={this.state.userText.lienPhoto}
+                                />
+                              )}
+                            </ListItemAvatar>
+                            <ListItemText
                               style={{
-                                visibility: selected ? "visible" : "hidden"
+                                paddingBottom: 20
                               }}
-                            />
-                            <ListItem>
-                              <ListItemAvatar>
-                                {option.lienPhoto == "" ||
-                                option.lienPhoto == null ? (
-                                  <Avatar
-                                    alt=""
-                                    src={
-                                      config.API_URL +
-                                      "images/defaultPhotoProfil.jpg"
-                                    }
-                                  />
-                                ) : (
-                                  <Avatar alt="" src={option.lienPhoto} />
-                                )}
-                              </ListItemAvatar>
-                              <ListItemText
+                            >
+                              <p
                                 style={{
-                                  paddingBottom: 20
+                                  color: "#5a517f",
+                                  fontWeight: "bold",
+                                  fontSize: 17,
+                                  margin: 0
                                 }}
                               >
-                                <p
+                                {this.state.userText.pseudo}
+                              </p>
+                            </ListItemText>
+                            <EditIcon />
+                          </ListItem>
+                        </ButtonBase>
+                        <Popper
+                          id={idText}
+                          open={openText}
+                          anchorEl={this.state.anchorElText}
+                          placement="bottom-start"
+                          className={classes.popper}
+                        >
+                          <Autocomplete
+                            open
+                            onClose={this.handleCloseText}
+                            classes={{
+                              paper: classes.paper,
+                              option: classes.option,
+                              popperDisablePortal: classes.popperDisablePortal
+                            }}
+                            value={this.state.pendingValueText}
+                            onChange={(event, newValue) => {
+                              this.setState(
+                                { pendingValueText: newValue },
+                                () => {}
+                              );
+                            }}
+                            disableCloseOnSelect
+                            disablePortal
+                            renderTags={() => null}
+                            renderOption={(option, { selected }) => (
+                              <React.Fragment>
+                                <DoneIcon
+                                  className={classes.iconSelected}
                                   style={{
-                                    color: "#5a517f",
-                                    fontWeight: "bold",
-                                    fontSize: 17,
-                                    margin: 0
+                                    visibility: selected ? "visible" : "hidden"
                                   }}
-                                >
-                                  {option.pseudo}
-                                </p>
-                              </ListItemText>
-                            </ListItem>
-                          </React.Fragment>
-                        )}
-                        options={[...this.state.reseauUsers].sort((a, b) => {
-                          // Display the selected labels first.
-                          let ai =
-                            this.state.userText === a
-                              ? 0
-                              : this.state.userText.length + -1;
+                                />
+                                <ListItem>
+                                  <ListItemAvatar>
+                                    {option.lienPhoto == "" ||
+                                    option.lienPhoto == null ? (
+                                      <Avatar
+                                        alt=""
+                                        src={
+                                          config.API_URL +
+                                          "images/defaultPhotoProfil.jpg"
+                                        }
+                                      />
+                                    ) : (
+                                      <Avatar alt="" src={option.lienPhoto} />
+                                    )}
+                                  </ListItemAvatar>
+                                  <ListItemText
+                                    style={{
+                                      paddingBottom: 20
+                                    }}
+                                  >
+                                    <p
+                                      style={{
+                                        color: "#5a517f",
+                                        fontWeight: "bold",
+                                        fontSize: 17,
+                                        margin: 0
+                                      }}
+                                    >
+                                      {option.pseudo}
+                                    </p>
+                                  </ListItemText>
+                                </ListItem>
+                              </React.Fragment>
+                            )}
+                            options={[...this.state.reseauUsers].sort(
+                              (a, b) => {
+                                // Display the selected labels first.
+                                let ai =
+                                  this.state.userText === a
+                                    ? 0
+                                    : this.state.userText.length + -1;
 
-                          let bi =
-                            this.state.userText === b
-                              ? 0
-                              : this.state.userText.length + -1;
-                          return ai - bi;
-                        })}
-                        getOptionLabel={option => option.pseudo}
-                        renderInput={params => (
-                          <InputBase
-                            ref={params.InputProps.ref}
-                            inputProps={params.inputProps}
-                            autoFocus
-                            className={classes.InputBase}
+                                let bi =
+                                  this.state.userText === b
+                                    ? 0
+                                    : this.state.userText.length + -1;
+                                return ai - bi;
+                              }
+                            )}
+                            getOptionLabel={option => option.pseudo}
+                            renderInput={params => (
+                              <InputBase
+                                ref={params.InputProps.ref}
+                                inputProps={params.inputProps}
+                                autoFocus
+                                className={classes.InputBase}
+                              />
+                            )}
                           />
-                        )}
-                      />
-                    </Popper>
-                  </GridItem>
-                </GridContainer>
-              ) : (
-                <div></div>
-              )}
-              {this.props.match.params.type == "2" ? (
-                <GridContainer
-                  style={{
-                    width: "90%",
-                    marginTop: 20,
+                        </Popper>
+                      </GridItem>
+                    </GridContainer>
+                  ) : (
+                    <div></div>
+                  )}
+                  {this.props.match.params.type == "2" ? (
+                    <GridContainer
+                      style={{
+                        width: "90%",
+                        marginTop: 20,
 
-                    marginLeft: "auto",
-                    marginRight: "auto"
-                  }}
-                >
-                  <GridItem xs={12} sm={12} md={12} style={{ padding: 0 }}>
-                    <ListItem className={classes.avatarPseudo1}>
-                      <ListItemAvatar>
-                        {this.state.userDessin.lienPhoto == "" ||
-                        this.state.userDessin.lienPhoto == null ? (
-                          <Avatar
-                            alt=""
-                            src={
-                              config.API_URL + "images/defaultPhotoProfil.jpg"
-                            }
-                          />
-                        ) : (
-                          <Avatar
-                            alt=""
-                            src={this.state.userDessin.lienPhoto}
-                          />
-                        )}
-                      </ListItemAvatar>
-                      <ListItemText
-                        style={{
-                          paddingBottom: 20
-                        }}
-                      >
-                        <p
-                          style={{
-                            color: "#5a517f",
-                            fontWeight: "bold",
-                            fontSize: 17,
-                            margin: 0
-                          }}
-                        >
-                          {this.state.userDessin.pseudo}
-                        </p>
-                      </ListItemText>
-                    </ListItem>
-                  </GridItem>
-                </GridContainer>
-              ) : (
-                <div></div>
-              )}
-              {this.props.match.params.type == "3" ? (
-                <GridContainer
-                  style={{
-                    width: "90%",
-                    marginTop: 20,
+                        marginLeft: "auto",
+                        marginRight: "auto"
+                      }}
+                    >
+                      <GridItem xs={12} sm={12} md={12} style={{ padding: 0 }}>
+                        <ListItem className={classes.avatarPseudo1}>
+                          <ListItemAvatar>
+                            {this.state.userDessin.lienPhoto == "" ||
+                            this.state.userDessin.lienPhoto == null ? (
+                              <Avatar
+                                alt=""
+                                src={
+                                  config.API_URL +
+                                  "images/defaultPhotoProfil.jpg"
+                                }
+                              />
+                            ) : (
+                              <Avatar
+                                alt=""
+                                src={this.state.userDessin.lienPhoto}
+                              />
+                            )}
+                          </ListItemAvatar>
+                          <ListItemText
+                            style={{
+                              paddingBottom: 20
+                            }}
+                          >
+                            <p
+                              style={{
+                                color: "#5a517f",
+                                fontWeight: "bold",
+                                fontSize: 17,
+                                margin: 0
+                              }}
+                            >
+                              {this.state.userDessin.pseudo}
+                            </p>
+                          </ListItemText>
+                        </ListItem>
+                      </GridItem>
+                    </GridContainer>
+                  ) : (
+                    <div></div>
+                  )}
+                  {this.props.match.params.type == "3" ? (
+                    <GridContainer
+                      style={{
+                        width: "90%",
+                        marginTop: 20,
 
-                    marginLeft: "auto",
-                    marginRight: "auto"
-                  }}
-                >
-                  <GridItem xs={12} sm={12} md={12} style={{ padding: 0 }}>
-                    <ListItem className={classes.avatarPseudo1}>
-                      <ListItemAvatar>
-                        {this.state.userText.lienPhoto == "" ||
-                        this.state.userText.lienPhoto == null ? (
-                          <Avatar
-                            alt=""
-                            src={
-                              config.API_URL + "images/defaultPhotoProfil.jpg"
-                            }
-                          />
-                        ) : (
-                          <Avatar alt="" src={this.state.userText.lienPhoto} />
-                        )}
-                      </ListItemAvatar>
-                      <ListItemText
-                        style={{
-                          paddingBottom: 20
-                        }}
-                      >
-                        <p
-                          style={{
-                            color: "#5a517f",
-                            fontWeight: "bold",
-                            fontSize: 17,
-                            margin: 0
-                          }}
-                        >
-                          {this.state.userText.pseudo}
-                        </p>
-                      </ListItemText>
-                    </ListItem>
-                  </GridItem>
-                </GridContainer>
-              ) : (
-                <div></div>
-              )}
-              </div>
+                        marginLeft: "auto",
+                        marginRight: "auto"
+                      }}
+                    >
+                      <GridItem xs={12} sm={12} md={12} style={{ padding: 0 }}>
+                        <ListItem className={classes.avatarPseudo1}>
+                          <ListItemAvatar>
+                            {this.state.userText.lienPhoto == "" ||
+                            this.state.userText.lienPhoto == null ? (
+                              <Avatar
+                                alt=""
+                                src={
+                                  config.API_URL +
+                                  "images/defaultPhotoProfil.jpg"
+                                }
+                              />
+                            ) : (
+                              <Avatar
+                                alt=""
+                                src={this.state.userText.lienPhoto}
+                              />
+                            )}
+                          </ListItemAvatar>
+                          <ListItemText
+                            style={{
+                              paddingBottom: 20
+                            }}
+                          >
+                            <p
+                              style={{
+                                color: "#5a517f",
+                                fontWeight: "bold",
+                                fontSize: 17,
+                                margin: 0
+                              }}
+                            >
+                              {this.state.userText.pseudo}
+                            </p>
+                          </ListItemText>
+                        </ListItem>
+                      </GridItem>
+                    </GridContainer>
+                  ) : (
+                    <div></div>
+                  )}
+                </div>
               )}
               <GridContainer
                 style={{
@@ -1506,7 +1587,7 @@ class PublierView extends React.Component {
                             this.state.titreHistoire == "" && this.state.submit
                               ? {
                                   borderLeftWidth: 15,
-                                  boderColor: "red"
+                                boderColor: "rgb(255, 44, 77)"
                                 }
                               : {
                                   borderWidth: 10
@@ -1554,7 +1635,7 @@ class PublierView extends React.Component {
                           >
                             <CloseIcon
                               style={{
-                                color: "red"
+                                color: "rgb(255, 44, 77)"
                               }}
                             />
                           </div>
@@ -1574,7 +1655,7 @@ class PublierView extends React.Component {
                             style={
                               this.state.imgHistoire == "" && this.state.submit
                                 ? {
-                                    background: "red",
+                                  background: "rgb(255, 44, 77)",
                                     color: "white"
                                   }
                                 : {
@@ -1714,14 +1795,14 @@ class PublierView extends React.Component {
                                       isMobile
                                         ? {
                                             textAlign: "-webkit-center",
-                                            background: "#5a517f",
+                                          background: "#2f99b1",
                                             borderRadius: "15px 15px 15px 15px",
                                             height: "100%",
                                             width: "100%"
                                           }
                                         : {
                                             textAlign: "-webkit-center",
-                                            background: "#5a517f",
+                                          background: "#2f99b1",
                                             borderRadius: "15px 15px 15px 15px",
                                             height: "100%",
                                             width: "100%"
@@ -1735,7 +1816,7 @@ class PublierView extends React.Component {
                                             isOpen: true,
                                             imgUrl: planche.img
                                           });
-                                        else if(planche.lien !== ""){
+                                        else if (planche.lien !== "") {
                                           this.setState({
                                             isOpen: true,
                                             imgUrl: planche.lien
@@ -1745,7 +1826,11 @@ class PublierView extends React.Component {
                                       style={{ width: "100%" }}
                                     >
                                       <Parallax
-                                        image={planche.img !== "" ? planche.img : planche.lien}
+                                        image={
+                                          planche.img !== ""
+                                            ? planche.img
+                                            : planche.lien
+                                        }
                                         style={
                                           isMobile
                                             ? {
@@ -1802,7 +1887,7 @@ class PublierView extends React.Component {
                                               planche.img === "" &&
                                               this.state.submit
                                                 ? {
-                                                    background: "red",
+                                                  background: "rgb(255, 44, 77)",
                                                     color: "white",
                                                     marginLeft: 15
                                                   }
@@ -1853,7 +1938,7 @@ class PublierView extends React.Component {
                                     isMobile
                                       ? {
                                           height: 400,
-                                          backgroundColor: "rgb(227, 243, 253)",
+                                        backgroundColor: "#fcd77f",
                                           borderRadius: "15px 15px 15px 15px",
                                           borderRadiusTopLeft: 15,
                                           padding: 0,
@@ -1863,7 +1948,7 @@ class PublierView extends React.Component {
                                         }
                                       : {
                                           height: 550,
-                                          backgroundColor: "rgb(227, 243, 253)",
+                                        backgroundColor: "#fcd77f",
                                           borderRadius: "15px 15px 15px 15px",
                                           borderRadiusTopLeft: 15,
                                           padding: 0,
@@ -1964,13 +2049,13 @@ class PublierView extends React.Component {
                                       isMobile
                                         ? {
                                             textAlign: "-webkit-center",
-                                            background: "#5a517f",
+                                              background: "#2f99b1",
                                             borderRadius: "15px 15px 0px 0px",
                                             height: "100%"
                                           }
                                         : {
                                             textAlign: "-webkit-center",
-                                            background: "#5a517f",
+                                              background: "#2f99b1",
                                             borderRadius: "15px 0px 0px 15px",
                                             height: "100%"
                                           }
@@ -1983,7 +2068,7 @@ class PublierView extends React.Component {
                                             isOpen: true,
                                             imgUrl: planche.img
                                           });
-                                        else if(planche.lien !== ""){
+                                        else if (planche.lien !== "") {
                                           this.setState({
                                             isOpen: true,
                                             imgUrl: planche.lien
@@ -1993,7 +2078,11 @@ class PublierView extends React.Component {
                                       style={{ width: "100%" }}
                                     >
                                       <Parallax
-                                        image={planche.img !== "" ? planche.img : planche.lien}
+                                        image={
+                                          planche.img !== ""
+                                            ? planche.img
+                                            : planche.lien
+                                        }
                                         style={
                                           isMobile
                                             ? {
@@ -2015,56 +2104,57 @@ class PublierView extends React.Component {
                                         }
                                       >
                                         <div>
-                                        <input
-                                          accept="image/*"
-                                          className={classes.input}
-                                          id="icon-button-file"
-                                          type="file"
-                                          onTouchStart={() =>
-                                            this.setState({ isOpen: false })
-                                          }
-                                          onChange={file => {
-                                            this.savePlanches(
-                                              file.target.files
-                                            );
-                                            this.setState({
-                                              buttonClick: false
-                                            });
-                                          }}
-                                          onBlur={() =>
-                                            this.setState({ isOpen: false })
-                                          }
-                                        />
-                                        <label htmlFor="icon-button-file">
-                                          <IconButton
-                                            color="primary"
-                                            aria-label="upload picture"
-                                            component="span"
-                                            onBlur={() =>
+                                          <input
+                                            accept="image/*"
+                                            className={classes.input}
+                                            id="icon-button-file"
+                                            type="file"
+                                            onTouchStart={() =>
+                                              this.setState({ isOpen: false })
+                                            }
+                                            onChange={file => {
+                                              this.savePlanches(
+                                                file.target.files
+                                              );
                                               this.setState({
-                                                isOpen: false
-                                              })
+                                                buttonClick: false
+                                              });
+                                            }}
+                                            onBlur={() =>
+                                              this.setState({ isOpen: false })
                                             }
-                                            style={
-                                              index ===
-                                                this.state.planche.length - 1 &&
-                                              planche.img === "" &&
-                                              this.state.submit
-                                                ? {
-                                                    background: "red",
-                                                    color: "white",
-                                                    marginLeft: 15
-                                                  }
-                                                : {
-                                                    background: "white",
-                                                    color: "grey",
-                                                    marginLeft: 15
-                                                  }
-                                            }
-                                          >
-                                            <PhotoCamera />
-                                          </IconButton>
-                                        </label>
+                                          />
+                                          <label htmlFor="icon-button-file">
+                                            <IconButton
+                                              color="primary"
+                                              aria-label="upload picture"
+                                              component="span"
+                                              onBlur={() =>
+                                                this.setState({
+                                                  isOpen: false
+                                                })
+                                              }
+                                              style={
+                                                index ===
+                                                  this.state.planche.length -
+                                                    1 &&
+                                                planche.img === "" &&
+                                                this.state.submit
+                                                  ? {
+                                                    background: "rgb(255, 44, 77)",
+                                                      color: "white",
+                                                      marginLeft: 15
+                                                    }
+                                                  : {
+                                                      background: "white",
+                                                      color: "grey",
+                                                      marginLeft: 15
+                                                    }
+                                              }
+                                            >
+                                              <PhotoCamera />
+                                            </IconButton>
+                                          </label>
                                         </div>
                                       </Parallax>
                                     </ButtonBase>
@@ -2081,7 +2171,7 @@ class PublierView extends React.Component {
                                     isMobile
                                       ? {
                                           height: 400,
-                                          backgroundColor: "rgb(227, 243, 253)",
+                                        backgroundColor: "#fcd77f",
                                           borderRadius: "0px 0px 15px 15px",
                                           borderRadiusTopLeft: 15,
                                           padding: 0,
@@ -2091,7 +2181,7 @@ class PublierView extends React.Component {
                                         }
                                       : {
                                           height: 550,
-                                          backgroundColor: "rgb(227, 243, 253)",
+                                        backgroundColor: "#fcd77f",
                                           borderRadius: "0px 15px 15px 0px",
                                           borderRadiusTopLeft: 15,
                                           padding: 0,
@@ -2108,7 +2198,6 @@ class PublierView extends React.Component {
                                       marginRight: "auto"
                                     }}
                                   >
-                                    
                                     <TextField
                                       primary
                                       id="standard-multiline-static"
@@ -2175,7 +2264,7 @@ class PublierView extends React.Component {
                   left={isMobile ? "-11%" : "-5%"}
                 />
               </div>
-             
+
               <GridContainer
                 style={{
                   width: "90%",
@@ -2196,7 +2285,7 @@ class PublierView extends React.Component {
                   <Button
                     variant="contained"
                     style={{
-                      backgroundColor: "rgb(90, 81, 127)",
+                      backgroundColor: "rgb(31, 23, 72)",
                       marginLeft: 15
                     }}
                     color="rgb(90, 81, 127)"
@@ -2209,9 +2298,8 @@ class PublierView extends React.Component {
             </Paper>
           </GridItem>
         </GridContainer>
-   </div>
+      </div>
     );
-   
   }
 }
 const Styles = {};
@@ -2415,9 +2503,16 @@ const fab = {
     top: "100px",
     left: "10px",
     position: "fixed",
-    zIndex: 1999
+    zIndex: 1999,
+    color: "white",
+    backgroundColor: "#ff2c4d",
+    "&:hover": {
+      backgroundColor: "#c40025"
+    },
+    "&:active": {
+      backgroundColor: "#c40025"
+    }
   },
-  color: "primary",
   icon: <AddIcon />,
   label: "Add"
 };

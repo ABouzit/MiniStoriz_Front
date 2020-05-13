@@ -25,7 +25,8 @@ import ButtonBase from "@material-ui/core/ButtonBase";
 // Sections for this page
 import HistoireView from "./Sections/HistoireView";
 import { subscriber, messageService } from "./../../services/messageService";
-import { Redirect } from 'react-router-dom';
+import { Redirect } from "react-router-dom";
+import HeaderGloble from "components/Header/HeaderGloble";
 
 const dashboardRoutes = [];
 
@@ -35,7 +36,9 @@ export default function HistoireViewPage(props) {
   const [refresh, setRefresh] = React.useState(false);
   const [search, setSearch] = React.useState("");
   const [filtre, setFiltre] = React.useState(1);
-  const [userCurrent, setUserCurrent] = React.useState(JSON.parse(localStorage.getItem('user')));
+  const [userCurrent, setUserCurrent] = React.useState(
+    JSON.parse(localStorage.getItem("user"))
+  );
   let refreshCallBackFunction = publierData => {
     console.log(publierData);
     setRefresh(true);
@@ -43,34 +46,14 @@ export default function HistoireViewPage(props) {
   const classes = useStyles();
   const { ...rest } = props;
   if (userCurrent == null) {
-    return <Redirect to='/Connexion' />;
+    return <Redirect to="/Connexion" />;
   }
   return (
-    <div style={{ backgroundColor: "white" }}>
-      <Header
-        color="info"
-        routes={dashboardRoutes}
-        // brand="Mateeeerial Kit React"
-        leftLinks={
-          <img
-            src={config.API_URL + "images/asset/logo.png"}
-            alt="Logo"
-            style={{
-              display: "block",
-              width: "146px"
-            }}
-          />
-        }
-        rightLinks={<HeaderUser />}
-        fixed
-        changeColorOnScroll={{
-          height: -1,
-          color: "info"
-        }}
-        {...rest}
-      />
-       <HistoireView /> 
-     
+    <div style={{ backgroundColor: "#ecfbfc" }}>
+      <HeaderGloble />
+
+      <HistoireView />
+
       {/* <div
         className={classNames(classes.main, classes.mainRaised)}
         style={{ marginTop: 81, backgroundImage: 'url("'+config.API_URL+'images/asset/bg1.jpg")' }}

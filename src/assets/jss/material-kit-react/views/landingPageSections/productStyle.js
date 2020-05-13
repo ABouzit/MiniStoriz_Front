@@ -27,7 +27,7 @@ const productStyle = {
     WebkitLineClamp: 3,
     WebkitBoxOrient: "vertical",
     height: "60px"
-  }
+  },
 };
 
 export default productStyle;

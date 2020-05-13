@@ -18,7 +18,7 @@ import CardBody from "components/Card/CardBody.js";
 import CardHeader from "components/Card/CardHeader.js";
 import CardFooter from "components/Card/CardFooter.js";
 import CustomInput from "components/CustomInput/CustomInput.js";
-
+import HeaderGloble from "components/Header/HeaderGloble";
 import styles from "assets/jss/material-kit-react/views/loginPage.js";
 
 import image from "assets/img/bg7.jpg";
@@ -34,13 +34,7 @@ export default function LoginPage(props) {
   const { ...rest } = props;
   return (
     <div>
-      <Header
-        absolute
-        color="transparent"
-        brand="Material Kit React"
-        rightLinks={<HeaderLinks />}
-        {...rest}
-      />
+      <HeaderGloble />
       <div
         className={classes.pageHeader}
         style={{

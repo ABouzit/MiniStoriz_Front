@@ -33,6 +33,7 @@ import AllUsers from "./Sections/AllUsers";
 import { subscriber, messageService } from "./../../services/messageService";
 import { Redirect } from 'react-router-dom';
 import PersonAddDisabledIcon from '@material-ui/icons/PersonAddDisabled';
+import HeaderGloble from "components/Header/HeaderGloble";
 const dashboardRoutes = [];
 
 const useStyles = makeStyles(styles);
@@ -54,53 +55,7 @@ export default function UsersPage(props) {
   }
   return (
     <div>
-      {user ? (
-        <Header
-        color="info"
-        routes={dashboardRoutes}
-        // brand="Mateeeerial Kit React"
-        leftLinks={
-          <img
-            src={config.API_URL + "images/asset/logo.png"}
-            alt="Logo"
-            style={{
-              display: "block",
-              width: "146px"
-            }}
-          />
-        }
-        rightLinks={<HeaderUser />}
-        fixed
-        changeColorOnScroll={{
-          height: -1,
-          color: "info"
-        }}
-        {...rest}
-      />
-      ):(
-        <Header
-        color="info"
-        routes={dashboardRoutes}
-        // brand="Mateeeerial Kit React"
-        leftLinks={
-          <img
-            src={config.API_URL + "images/asset/logo.png"}
-            alt="Logo"
-            style={{
-              display: "block",
-              width: "146px"
-            }}
-          />
-        }
-        fixed
-        changeColorOnScroll={{
-          height: 0,
-          color: "info"
-        }}
-        {...rest}
-      />
-      )}
-      
+      <HeaderGloble />
       {/* <div style={{width: '100%',
                     backgroundColor: '#e3f3fd',
                     color: 'rgb(89, 79, 118)',

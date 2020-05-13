@@ -47,7 +47,7 @@ import { Input } from "@material-ui/core";
 import useForceUpdate from 'use-force-update';
 import Badge from '@material-ui/core/Badge';
 import Paper from '@material-ui/core/Paper';
-
+import HeaderGloble from "components/Header/HeaderGloble";
 const dashboardRoutes = [];
 
 const useStyles = makeStyles(styles);
@@ -115,27 +115,6 @@ export default function HomePage(props) {
   const { ...rest } = props;
   return (
     <div>
-      <Header
-        color="info"
-        routes={dashboardRoutes}
-        // brand="Mateeeerial Kit React"
-        leftLinks={
-          <img
-            src={config.API_URL + "images/asset/logo.png"}
-            alt="Logo"
-            style={{
-              display: "block",
-              width: "146px"
-            }}
-          />
-        }
-        fixed
-        changeColorOnScroll={{
-          height: -1,
-          color: "info"
-        }}
-        {...rest}
-      />
       {/* <div style={{width: '100%',
                     backgroundColor: '#e3f3fd',
                     color: 'rgb(89, 79, 118)',
@@ -148,6 +127,7 @@ export default function HomePage(props) {
                         Bienvenue à toi, Azzedine le mini-artiste
                       </h4>
       </div> */}
+      <HeaderGloble />
       <div style={{backgroundColor: "#ecfbfc"}}>
         <GridContainer justify="center" style={{margin: 0,marginTop: 95, padding: 0 }}>
           <GridItem xs={12} sm={12} md={6}>

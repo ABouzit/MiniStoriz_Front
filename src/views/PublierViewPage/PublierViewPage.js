@@ -26,6 +26,7 @@ import ButtonBase from "@material-ui/core/ButtonBase";
 import PublierView from "./Sections/PublierView";
 import { subscriber, messageService } from "./../../services/messageService";
 import { Redirect } from 'react-router-dom';
+import HeaderGloble from "components/Header/HeaderGloble";
 
 const dashboardRoutes = [];
 
@@ -47,28 +48,7 @@ export default function PublierViewPage(props) {
   }
   return (
     <div>
-      <Header
-        color="info"
-        routes={dashboardRoutes}
-        // brand="Mateeeerial Kit React"
-        leftLinks={
-          <img
-            src={config.API_URL + "images/asset/logo.png"}
-            alt="Logo"
-            style={{
-              display: "block",
-              width: "146px"
-            }}
-          />
-        }
-        rightLinks={<HeaderUser />}
-        fixed
-        changeColorOnScroll={{
-          height: -1,
-          color: "info"
-        }}
-        {...rest}
-      />
+      <HeaderGloble />
       <div style={{ backgroundColor: "#ecfbfc" }}>
         <GridContainer
           justify="flex-end"

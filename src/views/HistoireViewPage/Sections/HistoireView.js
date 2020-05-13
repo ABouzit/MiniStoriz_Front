@@ -14,7 +14,7 @@ import GridItem from "components/Grid/GridItem.js";
 import Card from "components/Card/Card.js";
 import CardBody from "components/Card/CardBody.js";
 import Button from "components/CustomButtons/Button.js";
-import Buttons from '@material-ui/core/Button';
+import Buttons from "@material-ui/core/Button";
 import Button2 from "@material-ui/core/Button";
 import ButtonBase from "@material-ui/core/ButtonBase";
 import styles from "assets/jss/material-kit-react/views/landingPageSections/productStyle.js";
@@ -39,7 +39,7 @@ import CustomTabs from "components/CustomTabs/CustomTabs.js";
 import Parallax from "components/Parallax/Parallax.js";
 import { isMobile } from "react-device-detect";
 import Fab from "@material-ui/core/Fab";
-import Snackbar from '@material-ui/core/Snackbar';
+import Snackbar from "@material-ui/core/Snackbar";
 //scroll bare text
 import Avatar from "@material-ui/core/Avatar";
 import List from "@material-ui/core/List";
@@ -57,8 +57,8 @@ import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
 import InputLabel from "@material-ui/core/InputLabel";
 import moment from "moment";
-import Menu from '@material-ui/core/Menu';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
+import Menu from "@material-ui/core/Menu";
+import MoreVertIcon from "@material-ui/icons/MoreVert";
 // import Pagination from "components/Pagination/Pagination.js";
 import Pagination from "@material-ui/lab/Pagination";
 // @material-ui/icons
@@ -69,8 +69,8 @@ import Contacts from "@material-ui/icons/Contacts";
 import AccountBoxIcon from "@material-ui/icons/AccountBox";
 import TitleIcon from "@material-ui/icons/Title";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
-import UpdateIcon from '@material-ui/icons/Update';
-import DeleteForeverOutlinedIcon from '@material-ui/icons/DeleteForeverOutlined';
+import UpdateIcon from "@material-ui/icons/Update";
+import DeleteForeverOutlinedIcon from "@material-ui/icons/DeleteForeverOutlined";
 import Divider from "@material-ui/core/Divider";
 import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
 import CommentIcon from "@material-ui/icons/Comment";
@@ -90,10 +90,10 @@ import {
 import Moment from "moment";
 import * as Core from "@material-ui/core";
 import "react-circular-progressbar/dist/styles.css";
-import { Redirect } from 'react-router-dom';
+import { Redirect } from "react-router-dom";
 import * as firebase from "firebase/app";
 import "firebase/database";
-import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
+import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
 
 class HistoireView extends React.Component {
   constructor(props) {
@@ -114,7 +114,7 @@ class HistoireView extends React.Component {
       ],
       errorCommentaire: false,
       redirect: 0,
-      user: '',
+      user: "",
       menuUpdate: null,
       openMenuUpdate: false,
       imgUrl: "",
@@ -240,20 +240,46 @@ class HistoireView extends React.Component {
     this.previous = this.previous.bind(this);
   }
   componentDidMount() {
-    const users = JSON.parse(localStorage.getItem('user'));
+    const users = JSON.parse(localStorage.getItem("user"));
     if (!users) {
-      this.setState({  redirect: 1 }, ()=> {this.forceUpdate()});
-    }else{
-      this.setState({  user: users }, ()=> {console.log(this.state.user);this.forceUpdate()});
+      this.setState({ redirect: 1 }, () => {
+        this.forceUpdate();
+      });
+    } else {
+      this.setState({ user: users }, () => {
+        console.log(this.state.user);
+        this.forceUpdate();
+      });
     }
-    this.fetchHistoireAndPlanchesAndCommentes();
+    this.fetchHistoireAndPlanchesAndCommentes(
+      this.props.match.params.histoireId
+    );
+  }
+  componentWillReceiveProps(nextProps) {
+    if (
+      nextProps.match.params.histoireId !== this.props.match.params.histoireId
+    ) {
+      const id = nextProps.match.params.histoireId;
+      const users = JSON.parse(localStorage.getItem("user"));
+      if (!users) {
+        this.setState({ redirect: 1 }, () => {
+          this.forceUpdate();
+        });
+      } else {
+        this.setState({ user: users }, () => {
+          console.log(this.state.user);
+          this.forceUpdate();
+        });
+      }
+      this.fetchHistoireAndPlanchesAndCommentes(id);
+    }
   }
   handleCloseSnack = (event, reason) => {
-    if (reason === 'clickaway') {
+    if (reason === "clickaway") {
       return;
     }
 
-    this.setState({deleteHistoire: false});
+    this.setState({ deleteHistoire: false });
   };
   fetchCommentaires() {
     const id = this.props.match.params.histoireId;
@@ -271,18 +297,20 @@ class HistoireView extends React.Component {
       });
     });
   }
-  deleteHistoire () {
-    Axios.delete(config.API_URL + "impressions/histoire/"+this.props.match.params.histoireId).then(res => {
-      this.props.history.push("/")
-    })
-    .catch(
-      function(error) {
+  deleteHistoire() {
+    Axios.delete(
+      config.API_URL +
+        "impressions/histoire/" +
+        this.props.match.params.histoireId
+    )
+      .then(res => {
+        this.props.history.push("/");
+      })
+      .catch(function(error) {
         console.log(error);
-      }
-    );
+      });
   }
-  fetchHistoireAndPlanchesAndCommentes() {
-    const id = this.props.match.params.histoireId;
+  fetchHistoireAndPlanchesAndCommentes(id) {
     console.log(id);
     if (id) {
       Axios.get(config.API_URL + "histoires/byId/" + id).then(histoire => {
@@ -330,33 +358,49 @@ class HistoireView extends React.Component {
           noteHistoire: parseFloat(this.state.ratingText),
           noteDessin: parseFloat(this.state.ratingDessin),
           isActive: true,
-          user: { id: this.state.user.id,lienPhoto: this.state.user.lienPhoto,pseudo: this.state.user.pseudo }
+          user: {
+            id: this.state.user.id,
+            lienPhoto: this.state.user.lienPhoto,
+            pseudo: this.state.user.pseudo
+          }
         }).then(res => {
           if (!this.state.histoire.userText) {
-            firebase.database().ref('notifications/' + this.state.histoire.userDessin.id).set({
-              from: this.state.user.id,
-              to: this.state.histoire.userDessin.id,
-              numbe: 100000 + Math.random() * (100000 - 1)
-            })
+            firebase
+              .database()
+              .ref("notifications/" + this.state.histoire.userDessin.id)
+              .set({
+                from: this.state.user.id,
+                to: this.state.histoire.userDessin.id,
+                numbe: 100000 + Math.random() * (100000 - 1)
+              });
           } else if (!this.state.histoire.userDessin) {
-            firebase.database().ref('notifications/' + this.state.histoire.userText.id).set({
-              from: this.state.user.id,
-              to: this.state.histoire.userText.id,
-              numbe: 100000 + Math.random() * (100000 - 1)
-            })
+            firebase
+              .database()
+              .ref("notifications/" + this.state.histoire.userText.id)
+              .set({
+                from: this.state.user.id,
+                to: this.state.histoire.userText.id,
+                numbe: 100000 + Math.random() * (100000 - 1)
+              });
           } else {
-            firebase.database().ref('notifications/' + this.state.histoire.userText.id).set({
-              from: this.state.user.id,
-              to: this.state.histoire.userText.id,
-              numbe: 100000 + Math.random() * (100000 - 1)
-            })
-            firebase.database().ref('notifications/' + this.state.histoire.userDessin.id).set({
-              from: this.state.user.id,
-              to: this.state.histoire.userDessin.id,
-              numbe: 100000 + Math.random() * (100000 - 1)
-            })
+            firebase
+              .database()
+              .ref("notifications/" + this.state.histoire.userText.id)
+              .set({
+                from: this.state.user.id,
+                to: this.state.histoire.userText.id,
+                numbe: 100000 + Math.random() * (100000 - 1)
+              });
+            firebase
+              .database()
+              .ref("notifications/" + this.state.histoire.userDessin.id)
+              .set({
+                from: this.state.user.id,
+                to: this.state.histoire.userDessin.id,
+                numbe: 100000 + Math.random() * (100000 - 1)
+              });
           }
-          
+
           this.setState({
             ratingDessin: 0,
             ratingText: 0,
@@ -434,13 +478,13 @@ class HistoireView extends React.Component {
       return y + m;
     } else return "a l'instant";
   }
-  handleClickUpdate (event) {
-    this.setState({nemuUpdate: event.currentTarget, openMenuUpdate: true});
-  };
+  handleClickUpdate(event) {
+    this.setState({ nemuUpdate: event.currentTarget, openMenuUpdate: true });
+  }
 
-  handleCloseUpdate () {
-    this.setState({nemuUpdate: null, openMenuUpdate: false});
-  };
+  handleCloseUpdate() {
+    this.setState({ nemuUpdate: null, openMenuUpdate: false });
+  }
   //modal - carousel
   render() {
     const { settings, modal } = this.state;
@@ -455,7 +499,7 @@ class HistoireView extends React.Component {
     console.log(this.props.match);
     //Moment.locale("fr");
     if (this.state.redirect == 1) {
-      return <Redirect to='/Connexion' />
+      return <Redirect to="/Connexion" />;
     }
     if (this.state.histoire !== "")
       return (
@@ -613,7 +657,7 @@ class HistoireView extends React.Component {
                       }
                 }
               >
-                 {this.state.planches.lenght > 18 ? (
+                {this.state.planches.lenght > 18 ? (
                   <SampleNextArrow
                     onClick={() => this.next()}
                     style={Styles.NextArrow}
@@ -630,138 +674,165 @@ class HistoireView extends React.Component {
                   />
                 ) : (
                   <div></div>
-                  )}
-                {this.state.histoire.userDessin && this.state.histoire.userText && this.state.histoire.userDessin.id == this.state.user.id && this.state.histoire.userText.id == this.state.user.id ? 
-                (
+                )}
+                {this.state.histoire.userDessin &&
+                this.state.histoire.userText &&
+                this.state.histoire.userDessin.id == this.state.user.id &&
+                this.state.histoire.userText.id == this.state.user.id ? (
                   <GridContainer
-                  style={{
-                    width: "90%",
-                    marginTop: 20,
-                    marginLeft: "auto",
-                    marginRight: "auto"
-                    
-                  }}
-                  justify="flex-end"
-                >
-                  <GridItem xs={2} sm={2} md={2} style={{ padding: 0,textAlign: 'end' }}>
-                  <div>
-                  <Link to={"/modifier/histoire/1/"+this.props.match.params.histoireId}>
-                  <Tooltip
-                    title="Modifier l'histoire"
+                    style={{
+                      width: "90%",
+                      marginTop: 20,
+                      marginLeft: "auto",
+                      marginRight: "auto"
+                    }}
+                    justify="flex-end"
                   >
-                    <IconButton
-                      aria-controls="customized-menu"
-                      aria-haspopup="true"
-                      variant="contained"
-                      
+                    <GridItem
+                      xs={6}
+                      sm={4}
+                      md={2}
+                      style={{ padding: 0, textAlign: "end" }}
                     >
-                      <UpdateIcon style={{color: '#1e1548'}} />
-                    </IconButton>
-                  </Tooltip>
-                  </Link>
-                  <Tooltip
-                    title="Supprimer l'histoire"
-                  >
-                    <IconButton
-                      aria-controls="customized-menu"
-                      aria-haspopup="true"
-                      variant="contained"
-                      onClick={()=>{this.setState({deleteHistoire: true})}}
-                    >
-                      <DeleteForeverOutlinedIcon style={{color: '#1e1548'}} />
-                    </IconButton>
-                  </Tooltip>
-                  </div>
-                  </GridItem>
-                </GridContainer>
-
-                ): this.state.histoire.userDessin && this.state.histoire.userDessin.id == this.state.user.id ? (
-
-                <GridContainer
-                  style={{
-                    width: "90%",
-                    marginTop: 20,
-                    marginLeft: "auto",
-                    marginRight: "auto"
-                    
-                  }}
-                  justify="flex-end"
-                >
-                  <GridItem xs={2} sm={2} md={2} style={{ padding: 0,textAlign: 'end' }}>
-                  <div>
-                  <Link to={"/modifier/histoire/2/"+this.props.match.params.histoireId}>
-                  <Tooltip
-                    title="Modifier l'histoire"
-                  >
-                    <IconButton
-                      aria-controls="customized-menu"
-                      aria-haspopup="true"
-                      variant="contained"
-                      
-                    >
-                      <UpdateIcon style={{color: '#1e1548'}} />
-                    </IconButton>
-                  </Tooltip>
-                  </Link>
-                  <Tooltip
-                    title="Supprimer l'histoire"
-                  >
-                    <IconButton
-                      aria-controls="customized-menu"
-                      aria-haspopup="true"
-                      variant="contained"
-                      onClick={()=>{this.setState({deleteHistoire: true})}}
-                    >
-                      <DeleteForeverOutlinedIcon style={{color: '#1e1548'}} />
-                    </IconButton>
-                  </Tooltip>
-                  </div>
-                  </GridItem>
-                </GridContainer>
-
-                ): this.state.histoire.userText && this.state.histoire.userText.id == this.state.user.id ? (
+                      <div>
+                        <Link
+                          to={
+                            "/modifier/histoire/1/" +
+                            this.props.match.params.histoireId
+                          }
+                        >
+                          <Tooltip title="Modifier l'histoire">
+                            <IconButton
+                              aria-controls="customized-menu"
+                              aria-haspopup="true"
+                              variant="contained"
+                            >
+                              <UpdateIcon style={{ color: "#1e1548" }} />
+                            </IconButton>
+                          </Tooltip>
+                        </Link>
+                        <Tooltip title="Supprimer l'histoire">
+                          <IconButton
+                            aria-controls="customized-menu"
+                            aria-haspopup="true"
+                            variant="contained"
+                            onClick={() => {
+                              this.setState({ deleteHistoire: true });
+                            }}
+                          >
+                            <DeleteForeverOutlinedIcon
+                              style={{ color: "#1e1548" }}
+                            />
+                          </IconButton>
+                        </Tooltip>
+                      </div>
+                    </GridItem>
+                  </GridContainer>
+                ) : this.state.histoire.userDessin &&
+                  this.state.histoire.userDessin.id == this.state.user.id ? (
                   <GridContainer
-                  style={{
-                    width: "90%",
-                    marginTop: 20,
-                    marginLeft: "auto",
-                    marginRight: "auto"
-                    
-                  }}
-                  justify="flex-end"
-                >
-                  <GridItem xs={2} sm={2} md={2} style={{ padding: 0,textAlign: 'end' }}>
-                  <div>
-                  <Link to={"/modifier/histoire/3/"+this.props.match.params.histoireId}>
-                  <Tooltip
-                    title="Modifier l'histoire"
+                    style={{
+                      width: "90%",
+                      marginTop: 20,
+                      marginLeft: "auto",
+                      marginRight: "auto"
+                    }}
+                    justify="flex-end"
                   >
-                    <IconButton
-                      aria-controls="customized-menu"
-                      aria-haspopup="true"
-                      variant="contained"
-                      
+                    <GridItem
+                      xs={6}
+                      sm={4}
+                      md={2}
+                      style={{ padding: 0, textAlign: "end" }}
                     >
-                      <UpdateIcon style={{color: '#1e1548'}} />
-                    </IconButton>
-                  </Tooltip>
-                  </Link>
-                  <Tooltip
-                    title="Supprimer l'histoire"
+                      <div>
+                        <Link
+                          to={
+                            "/modifier/histoire/2/" +
+                            this.props.match.params.histoireId
+                          }
+                        >
+                          <Tooltip title="Modifier l'histoire">
+                            <IconButton
+                              aria-controls="customized-menu"
+                              aria-haspopup="true"
+                              variant="contained"
+                            >
+                              <UpdateIcon style={{ color: "#1e1548" }} />
+                            </IconButton>
+                          </Tooltip>
+                        </Link>
+                        <Tooltip title="Supprimer l'histoire">
+                          <IconButton
+                            aria-controls="customized-menu"
+                            aria-haspopup="true"
+                            variant="contained"
+                            onClick={() => {
+                              this.setState({ deleteHistoire: true });
+                            }}
+                          >
+                            <DeleteForeverOutlinedIcon
+                              style={{ color: "#1e1548" }}
+                            />
+                          </IconButton>
+                        </Tooltip>
+                      </div>
+                    </GridItem>
+                  </GridContainer>
+                ) : this.state.histoire.userText &&
+                  this.state.histoire.userText.id == this.state.user.id ? (
+                  <GridContainer
+                    style={{
+                      width: "90%",
+                      marginTop: 20,
+                      marginLeft: "auto",
+                      marginRight: "auto"
+                    }}
+                    justify="flex-end"
                   >
-                    <IconButton
-                      aria-controls="customized-menu"
-                      aria-haspopup="true"
-                      variant="contained"
-                      onClick={()=>{this.setState({deleteHistoire: true})}}
+                    <GridItem
+                      xs={6}
+                      sm={4}
+                      md={2}
+                      style={{ padding: 0, textAlign: "end" }}
                     >
-                      <DeleteForeverOutlinedIcon style={{color: '#1e1548'}} />
-                    </IconButton>
-                  </Tooltip>
-                  </div>
-                  </GridItem>
-                </GridContainer>
-                ):(<div></div>)}
+                      <div>
+                        <Link
+                          to={
+                            "/modifier/histoire/3/" +
+                            this.props.match.params.histoireId
+                          }
+                        >
+                          <Tooltip title="Modifier l'histoire">
+                            <IconButton
+                              aria-controls="customized-menu"
+                              aria-haspopup="true"
+                              variant="contained"
+                            >
+                              <UpdateIcon style={{ color: "#1e1548" }} />
+                            </IconButton>
+                          </Tooltip>
+                        </Link>
+                        <Tooltip title="Supprimer l'histoire">
+                          <IconButton
+                            aria-controls="customized-menu"
+                            aria-haspopup="true"
+                            variant="contained"
+                            onClick={() => {
+                              this.setState({ deleteHistoire: true });
+                            }}
+                          >
+                            <DeleteForeverOutlinedIcon
+                              style={{ color: "#1e1548" }}
+                            />
+                          </IconButton>
+                        </Tooltip>
+                      </div>
+                    </GridItem>
+                  </GridContainer>
+                ) : (
+                  <div></div>
+                )}
                 <GridContainer
                   style={{
                     width: "90%",
@@ -771,91 +842,130 @@ class HistoireView extends React.Component {
                   }}
                 >
                   {this.state.histoire.userDessin ? (
-                  <GridItem xs={12} sm={12} md={6} style={{ padding: 0 }}>
-                    <ListItem>
-                      <Link to={this.state.histoire.userDessin.id !== this.state.user.id ?
-                         '/LesOeuvres/'+this.state.histoire.userDessin.id : null}>
-                      <ListItemAvatar>
-                        {this.state.histoire.userDessin.lienPhoto == "" ||
-                        this.state.histoire.userDessin.lienPhoto == null ? (
-                          <Avatar
-                            alt=""
-                            src={
-                              config.API_URL + "images/defaultPhotoProfil.jpg"
-                            }
-                          />
-                        ) : (
-                          <Avatar
-                            alt=""
-                            src={this.state.histoire.userDessin.lienPhoto}
-                          />
-                        )}
-                      </ListItemAvatar>
-                      </Link>
-                      <Link to={'/LesOeuvres/'+this.state.histoire.userDessin.id}>
-                      <ListItemText
-                        style={{
-                          paddingBottom: 8
-                        }}
-                      >
-                        <p
-                          style={{
-                            color: "#5a517f",
-                            fontWeight: "bold",
-                            fontSize: 17,
-                            margin: 0
-                          }}
+                    <GridItem xs={12} sm={12} md={6} style={{ padding: 0 }}>
+                      <ListItem>
+                        <Link
+                          to={
+                            this.state.histoire.userDessin.id !==
+                            this.state.user.id
+                              ? "/LesOeuvres/" +
+                                this.state.histoire.userDessin.id
+                              : null
+                          }
                         >
-                          {this.state.histoire.userDessin.pseudo}
-                        </p>
-                      </ListItemText>
-                      </Link>
-                    </ListItem>
-                  </GridItem>
-                  ):(<GridItem xs={0} sm={0} md={0} style={{ padding: 0 }}></GridItem>)}
+                          <ListItemAvatar>
+                            {this.state.histoire.userDessin.lienPhoto == "" ||
+                            this.state.histoire.userDessin.lienPhoto == null ? (
+                              <Avatar
+                                alt=""
+                                src={
+                                  config.API_URL +
+                                  "images/defaultPhotoProfil.jpg"
+                                }
+                              />
+                            ) : (
+                              <Avatar
+                                alt=""
+                                src={this.state.histoire.userDessin.lienPhoto}
+                              />
+                            )}
+                          </ListItemAvatar>
+                        </Link>
+                        <Link
+                          to={
+                            this.state.histoire.userDessin.id !==
+                            this.state.user.id
+                              ? "/LesOeuvres/" +
+                                this.state.histoire.userDessin.id
+                              : null
+                          }
+                        >
+                          <ListItemText
+                            style={{
+                              paddingBottom: 8
+                            }}
+                          >
+                            <p
+                              style={{
+                                color: "#5a517f",
+                                fontWeight: "bold",
+                                fontSize: 17,
+                                margin: 0
+                              }}
+                            >
+                              {this.state.histoire.userDessin.pseudo}
+                            </p>
+                          </ListItemText>
+                        </Link>
+                      </ListItem>
+                    </GridItem>
+                  ) : (
+                    <GridItem
+                      xs={0}
+                      sm={0}
+                      md={0}
+                      style={{ padding: 0 }}
+                    ></GridItem>
+                  )}
                   {this.state.histoire.userText ? (
-                  <GridItem xs={12} sm={12} md={6} style={{ padding: 0 }}>
-                    <ListItem>
-                    <Link to={this.state.histoire.userText.id !== this.state.user.id ?
-                      '/LesOeuvres/'+this.state.histoire.userText.id : null}>
-                      <ListItemAvatar>
-                        {this.state.histoire.userText.lienPhoto == "" ||
-                        this.state.histoire.userText.lienPhoto == null ? (
-                          <Avatar
-                            alt=""
-                            src={
-                              config.API_URL + "images/defaultPhotoProfil.jpg"
-                            }
-                          />
-                        ) : (
-                          <Avatar
-                            alt=""
-                            src={this.state.histoire.userText.lienPhoto}
-                          />
-                        )}
-                      </ListItemAvatar>
-                      </Link>
-                      <Link to={'/LesOeuvres/'+this.state.histoire.userText.id}>
-                      <ListItemText
-                        style={{
-                          paddingBottom: 8
-                        }}
-                      >
-                        <p
-                          style={{
-                            color: "#5a517f",
-                            fontWeight: "bold",
-                            fontSize: 17,
-                            margin: 0
-                          }}
+                    <GridItem xs={12} sm={12} md={6} style={{ padding: 0 }}>
+                      <ListItem>
+                        <Link
+                          to={
+                            this.state.histoire.userText.id !==
+                            this.state.user.id
+                              ? "/LesOeuvres/" + this.state.histoire.userText.id
+                              : null
+                          }
                         >
-                          {this.state.histoire.userText.pseudo}
-                        </p>
-                      </ListItemText>
-                      </Link>
-                    </ListItem>
-                  </GridItem>
-                  ):(<GridItem xs={0} sm={0} md={0} style={{ padding: 0 }}></GridItem>)}
+                          <ListItemAvatar>
+                            {this.state.histoire.userText.lienPhoto == "" ||
+                            this.state.histoire.userText.lienPhoto == null ? (
+                              <Avatar
+                                alt=""
+                                src={
+                                  config.API_URL +
+                                  "images/defaultPhotoProfil.jpg"
+                                }
+                              />
+                            ) : (
+                              <Avatar
+                                alt=""
+                                src={this.state.histoire.userText.lienPhoto}
+                              />
+                            )}
+                          </ListItemAvatar>
+                        </Link>
+                        <Link
+                          to={"/LesOeuvres/" + this.state.histoire.userText.id}
+                        >
+                          <ListItemText
+                            style={{
+                              paddingBottom: 8
+                            }}
+                          >
+                            <p
+                              style={{
+                                color: "#5a517f",
+                                fontWeight: "bold",
+                                fontSize: 17,
+                                margin: 0
+                              }}
+                            >
+                              {this.state.histoire.userText.pseudo}
+                            </p>
+                          </ListItemText>
+                        </Link>
+                      </ListItem>
+                    </GridItem>
+                  ) : (
+                    <GridItem
+                      xs={0}
+                      sm={0}
+                      md={0}
+                      style={{ padding: 0 }}
+                    ></GridItem>
+                  )}
                   <GridItem
                     xs={12}
                     sm={12}
@@ -935,7 +1045,7 @@ class HistoireView extends React.Component {
                     </ButtonBase>
                   </GridItem>
                 </GridContainer>
-                
+
                 <div
                   style={{
                     width: "90%",
@@ -1004,7 +1114,7 @@ class HistoireView extends React.Component {
                                             }
                                           : {
                                               textAlign: "-webkit-center",
-                                              background: "#5a517f",
+                                            background: "#2f99b1",
                                               borderRadius:
                                                 "15px 15px 15px 15px",
                                               height: "100%",
@@ -1080,7 +1190,7 @@ class HistoireView extends React.Component {
                                         ? {
                                             height: 400,
                                             backgroundColor:
-                                              "rgb(227, 243, 253)",
+                                              "#fcd77f",
                                             borderRadius: "15px 15px 15px 15px",
                                             borderRadiusTopLeft: 15,
                                             padding: 0,
@@ -1091,7 +1201,7 @@ class HistoireView extends React.Component {
                                         : {
                                             height: 550,
                                             backgroundColor:
-                                              "rgb(227, 243, 253)",
+                                              "#fcd77f",
                                             borderRadius: "15px 15px 15px 15px",
                                             borderRadiusTopLeft: 15,
                                             padding: 0,
@@ -1168,13 +1278,13 @@ class HistoireView extends React.Component {
                                         isMobile
                                           ? {
                                               textAlign: "-webkit-center",
-                                              background: "#5a517f",
+                                                background: "#2f99b1",
                                               borderRadius: "15px 15px 0px 0px",
                                               height: "100%"
                                             }
                                           : {
                                               textAlign: "-webkit-center",
-                                              background: "#5a517f",
+                                                background: "#2f99b1",
                                               borderRadius: "15px 0px 0px 15px",
                                               height: "100%"
                                             }
@@ -1224,7 +1334,7 @@ class HistoireView extends React.Component {
                                         ? {
                                             height: 400,
                                             backgroundColor:
-                                              "rgb(227, 243, 253)",
+                                              "#fcd77f",
                                             borderRadius: "0px 0px 15px 15px",
                                             borderRadiusTopLeft: 15,
                                             padding: 0,
@@ -1235,7 +1345,7 @@ class HistoireView extends React.Component {
                                         : {
                                             height: 550,
                                             backgroundColor:
-                                              "rgb(227, 243, 253)",
+                                              "#fcd77f",
                                             borderRadius: "0px 15px 15px 0px",
                                             borderRadiusTopLeft: 15,
                                             padding: 0,
@@ -1296,7 +1406,7 @@ class HistoireView extends React.Component {
                         }}
                   </Slider>
                 </div>
-                
+
                 {this.state.planches.lenght > 18 ? (
                   <SamplePrevArrow
                     onClick={() => this.previous()}
@@ -1310,7 +1420,7 @@ class HistoireView extends React.Component {
                 ) : (
                   <div></div>
                 )}
-                
+
                 <Divider
                   style={{
                     height: 2,
@@ -1320,7 +1430,7 @@ class HistoireView extends React.Component {
                     marginRight: "auto"
                   }}
                 />
-                
+
                 <GridContainer
                   justify="flex-end"
                   style={{
@@ -1343,17 +1453,17 @@ class HistoireView extends React.Component {
                     </small>
                   </GridItem>
                 </GridContainer>
-                
+
                 <Divider
                   style={{
                     width: "100%",
                     height: "2px"
                   }}
                 />
-                
+
                 <List
                   className={classes.root}
-                  style={{ background: "#777",color: 'aliceblue', padding: 0 }}
+                  style={{ background: "#777", color: "aliceblue", padding: 0 }}
                 >
                   {this.state.commentaires.map((commentaire, index) => {
                     return (
@@ -1369,7 +1479,13 @@ class HistoireView extends React.Component {
                                 maxHeight: "auto"
                               }}
                             >
-                              <Link to={commentaire.user.id !== this.state.user.id ? '/LesOeuvres/'+commentaire.user.id : null}>
+                              <Link
+                                to={
+                                  commentaire.user.id !== this.state.user.id
+                                    ? "/LesOeuvres/" + commentaire.user.id
+                                    : null
+                                }
+                              >
                                 <ListItemAvatar>
                                   {commentaire.user.lienPhoto == "" ||
                                   commentaire.user.lienPhoto == null ? (
@@ -1380,19 +1496,17 @@ class HistoireView extends React.Component {
                                         "images/defaultPhotoProfil.jpg"
                                       }
                                       style={{
-                                        border: 'aliceblue',
-                                        borderStyle: 'solid'
+                                        border: "aliceblue",
+                                        borderStyle: "solid"
                                       }}
                                     />
                                   ) : (
                                     <Avatar
                                       alt=""
-                                      src={
-                                        commentaire.user.lienPhoto
-                                      }
+                                      src={commentaire.user.lienPhoto}
                                       style={{
-                                        border: 'aliceblue',
-                                        borderStyle: 'solid'
+                                        border: "aliceblue",
+                                        borderStyle: "solid"
                                       }}
                                     />
                                   )}
@@ -1400,9 +1514,15 @@ class HistoireView extends React.Component {
                               </Link>
                               <ListItemText
                                 primary={commentaire.user.pseudo}
-                                secondary={<React.Fragment>
-                                  <small style={{color: 'aliceblue'}}>{this.functionDate(commentaire.dateDeCreation)}</small>
-                                  </React.Fragment>}
+                                secondary={
+                                  <React.Fragment>
+                                    <small style={{ color: "aliceblue" }}>
+                                      {this.functionDate(
+                                        commentaire.dateDeCreation
+                                      )}
+                                    </small>
+                                  </React.Fragment>
+                                }
                               />
                             </ListItem>
                           </GridItem>
@@ -1411,144 +1531,142 @@ class HistoireView extends React.Component {
                               justify="flex-start"
                               style={{
                                 width: "100%",
-                                marginLeft: 30,
-                                marginBottom: 13
+                                marginBottom: 13,
+                                paddingLeft: 60
                               }}
-                              
                             >
-                              <GridItem
-                                xs={3}
-                                sm={2}
-                                md={1}></GridItem>
-
                               {this.state.histoire.userDessin ? (
-                              <GridItem
-                                xs={3}
-                                sm={2}
-                                md={1}
-                                style={{
-                                  display: "flex",
-                                  justifyContent: "center",
-                                  textAlign: "-webkit-center"
-                                }}
-                              >
-                                <div
+                                <GridItem
+                                  xs={3}
+                                  sm={2}
+                                  md={1}
                                   style={{
-                                    height: 30,
-                                    width: 30
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    textAlign: "-webkit-center"
                                   }}
                                 >
-                                  <Tooltip
-                                    disableFocusListener
-                                    disableTouchListener
-                                    title={"Dessin"}
+                                  <div
+                                    style={{
+                                      height: 30,
+                                      width: 30
+                                    }}
                                   >
-                                    <ButtonBase style={{ borderRadius: 50 }}>
-                                      <CircularProgressbarWithChildren
-                                        text={
-                                          commentaire.noteDessin === 0
-                                            ? "0"
-                                            : commentaire.noteDessin
-                                        }
-                                        maxValue={5}
-                                        minValue={0}
-                                        strokeWidth={3}
-                                        value={commentaire.noteDessin}
-                                        styles={buildStyles({
-                                          textColor: "transparent",
-                                          pathColor: "#ff2e4c",
-                                          trailColor: "#fff",
-                                          strokeLinecap: "butt"
-                                        })}
-                                      >
-                                        <div
-                                          style={{
-                                            height: "100%",
-                                            justifyContent: "center",
-                                            alignItems: "center",
-                                            display: "flex"
-                                          }}
+                                    <Tooltip
+                                      disableFocusListener
+                                      disableTouchListener
+                                      title={"Dessin"}
+                                    >
+                                      <ButtonBase style={{ borderRadius: 50 }}>
+                                        <CircularProgressbarWithChildren
+                                          text={
+                                            commentaire.noteDessin === 0
+                                              ? "0"
+                                              : commentaire.noteDessin
+                                          }
+                                          maxValue={5}
+                                          minValue={0}
+                                          strokeWidth={3}
+                                          value={commentaire.noteDessin}
+                                          styles={buildStyles({
+                                            textColor: "transparent",
+                                            pathColor: "#ff2e4c",
+                                            trailColor: "#fff",
+                                            strokeLinecap: "butt"
+                                          })}
                                         >
-                                          <p
+                                          <div
                                             style={{
-                                              color: "#ff2e4c",
-                                              fontSize: "14px",
-                                              margin: 0
+                                              height: "100%",
+                                              justifyContent: "center",
+                                              alignItems: "center",
+                                              display: "flex"
                                             }}
                                           >
-                                            {commentaire.noteDessin}
-                                          </p>
-                                        </div>
-                                      </CircularProgressbarWithChildren>
-                                    </ButtonBase>
-                                  </Tooltip>
-                                </div>
-                              </GridItem>
-                              ):(<GridItem xs={0} sm={0} md={0}></GridItem>)}
+                                            <p
+                                              style={{
+                                                color: "#ff2e4c",
+                                                fontSize: "14px",
+                                                margin: 0
+                                              }}
+                                            >
+                                              {commentaire.noteDessin}
+                                            </p>
+                                          </div>
+                                        </CircularProgressbarWithChildren>
+                                      </ButtonBase>
+                                    </Tooltip>
+                                  </div>
+                                </GridItem>
+                              ) : (
+                                <GridItem xs={0} sm={0} md={0}></GridItem>
+                              )}
                               {this.state.histoire.userText ? (
-                              <GridItem
-                                xs={3}
-                                sm={2}
-                                md={1}
-                                style={{
-                                  textAlign: "-webkit-center",
-                                  display: "flex",
-                                  justifyContent: "center"
-                                }}
-                              >
-                                <div
+                                <GridItem
+                                  xs={3}
+                                  sm={2}
+                                  md={1}
                                   style={{
-                                    height: 30,
-                                    width: 30
+                                    textAlign: "-webkit-center",
+                                    display: "flex",
+                                    justifyContent: "center"
                                   }}
                                 >
-                                  <Tooltip
-                                    disableFocusListener
-                                    disableTouchListener
-                                    title={"Text"}
+                                  <div
+                                    style={{
+                                      height: 30,
+                                      width: 30
+                                    }}
                                   >
-                                    <ButtonBase style={{ borderRadius: 50 }}>
-                                      <CircularProgressbarWithChildren
-                                        maxValue={5}
-                                        minValue={0}
-                                        strokeWidth={3}
-                                        value={commentaire.noteHistoire}
-                                        text={
-                                          commentaire.noteHistoire === 0
-                                            ? "0"
-                                            : commentaire.noteHistoire
-                                        }
-                                        styles={buildStyles({
-                                          textColor: "transparent",
-                                          pathColor: "#2e99b0",
-                                          trailColor: "#fff",
-                                          strokeLinecap: "butt"
-                                        })}
-                                      >
-                                        <div
-                                          style={{
-                                            height: "100%",
-                                            justifyContent: "center",
-                                            alignItems: "center",
-                                            display: "flex"
-                                          }}
+                                    <Tooltip
+                                      disableFocusListener
+                                      disableTouchListener
+                                      title={"Text"}
+                                    >
+                                      <ButtonBase style={{ borderRadius: 50 }}>
+                                        <CircularProgressbarWithChildren
+                                          maxValue={5}
+                                          minValue={0}
+                                          strokeWidth={3}
+                                          value={commentaire.noteHistoire}
+                                          text={
+                                            commentaire.noteHistoire === 0
+                                              ? "0"
+                                              : commentaire.noteHistoire
+                                          }
+                                          styles={buildStyles({
+                                            textColor: "transparent",
+                                            pathColor: "#2e99b0",
+                                            trailColor: "#fff",
+                                            strokeLinecap: "butt"
+                                          })}
                                         >
-                                          <p
+                                          <div
                                             style={{
-                                              color: "#2e99b0",
-                                              fontSize: "14px",
-                                              margin: 0
+                                              height: "100%",
+                                              justifyContent: "center",
+                                              alignItems: "center",
+                                              display: "flex"
                                             }}
                                           >
-                                            {commentaire.noteHistoire}
-                                          </p>
-                                        </div>
-                                      </CircularProgressbarWithChildren>
-                                    </ButtonBase>
-                                  </Tooltip>
-                                </div>
-                              </GridItem>
-                              ):(<GridItem xs={0} sm={0} md={0}></GridItem>)}
+                                            <p
+                                              style={{
+                                                color: "#2e99b0",
+                                                fontSize: "14px",
+                                                margin: 0
+                                              }}
+                                            >
+                                              {commentaire.noteHistoire}
+                                            </p>
+                                          </div>
+                                        </CircularProgressbarWithChildren>
+                                      </ButtonBase>
+                                    </Tooltip>
+                                  </div>
+                                </GridItem>
+                              ) : (
+                                <GridItem xs={0} sm={0} md={0}></GridItem>
+                              )}
                             </GridContainer>
                           </GridItem>
                         </GridContainer>
@@ -1564,12 +1682,12 @@ class HistoireView extends React.Component {
                         >
                           {commentaire.commentaire}
                         </p>
-                        <Divider style={{background: 'white'}} />
+                        <Divider style={{ background: "white" }} />
                       </div>
                     );
                   })}
                 </List>
-                
+
                 <Button2
                   style={{ width: "100%", height: 60 }}
                   onClick={() => this.fetchCommentaires()}
@@ -1584,16 +1702,13 @@ class HistoireView extends React.Component {
                   style={{ width: "100%", minHeight: 50, maxHeight: "auto" }}
                 >
                   <ListItemAvatar>
-                  { this.state.user.lienPhoto == "" ? (
-                    <Avatar
+                    {this.state.user.lienPhoto == "" ? (
+                      <Avatar
                         alt=""
                         src={config.API_URL + "images/defaultPhotoProfil.jpg"}
                       />
-                    ):(
-                    <Avatar
-                      alt=""
-                      src={this.state.user.lienPhoto}
-                    />
+                    ) : (
+                      <Avatar alt="" src={this.state.user.lienPhoto} />
                     )}
                   </ListItemAvatar>
                   <ListItemText
@@ -1635,7 +1750,7 @@ class HistoireView extends React.Component {
                     }
                   />
                 </ListItem>
-                 <GridContainer style={{ marginRight: 0 }}>
+                <GridContainer style={{ marginRight: 0 }}>
                   <GridItem xs={12} sm={12} md={12}>
                     <GridContainer
                       justify="flex-start"
@@ -1647,145 +1762,149 @@ class HistoireView extends React.Component {
                       spacing={1}
                     >
                       {this.state.histoire.userDessin ? (
-                      <GridItem
-                        xs={3}
-                        sm={2}
-                        md={1}
-                        style={{
-                          display: "flex",
-                          justifyContent: "center",
-                          textAlign: "-webkit-center"
-                        }}
-                      >
-                        <div
+                        <GridItem
+                          xs={3}
+                          sm={2}
+                          md={1}
                           style={{
-                            height: 50,
-                            width: 50
+                            display: "flex",
+                            justifyContent: "center",
+                            textAlign: "-webkit-center"
                           }}
                         >
-                          <Tooltip
-                            disableFocusListener
-                            disableTouchListener
-                            title={"Dessin"}
+                          <div
+                            style={{
+                              height: 50,
+                              width: 50
+                            }}
                           >
-                            <ButtonBase
-                              style={{ borderRadius: 50 }}
-                              onClick={() =>
-                                this.setState({
-                                  modal: true
-                                })
-                              }
+                            <Tooltip
+                              disableFocusListener
+                              disableTouchListener
+                              title={"Dessin"}
                             >
-                              <CircularProgressbarWithChildren
-                                text={
-                                  this.state.ratingDessin === 0
-                                    ? "0"
-                                    : this.state.ratingDessin
+                              <ButtonBase
+                                style={{ borderRadius: 50 }}
+                                onClick={() =>
+                                  this.setState({
+                                    modal: true
+                                  })
                                 }
-                                maxValue={5}
-                                minValue={0}
-                                strokeWidth={3}
-                                value={this.state.ratingDessin}
-                                styles={buildStyles({
-                                  textColor: "transparent",
-                                  pathColor: "#ff2e4c",
-                                  trailColor: "#d6d6d6",
-                                  strokeLinecap: "butt"
-                                })}
                               >
-                                <div
-                                  style={{
-                                    height: "100%",
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                    display: "flex"
-                                  }}
+                                <CircularProgressbarWithChildren
+                                  text={
+                                    this.state.ratingDessin === 0
+                                      ? "0"
+                                      : this.state.ratingDessin
+                                  }
+                                  maxValue={5}
+                                  minValue={0}
+                                  strokeWidth={3}
+                                  value={this.state.ratingDessin}
+                                  styles={buildStyles({
+                                    textColor: "transparent",
+                                    pathColor: "#ff2e4c",
+                                    trailColor: "#d6d6d6",
+                                    strokeLinecap: "butt"
+                                  })}
                                 >
-                                  <p
+                                  <div
                                     style={{
-                                      color: "#ff2e4c",
-                                      fontSize: "20px",
-                                      margin: 0
+                                      height: "100%",
+                                      justifyContent: "center",
+                                      alignItems: "center",
+                                      display: "flex"
                                     }}
                                   >
-                                    {this.state.ratingDessin}
-                                  </p>
-                                </div>
-                              </CircularProgressbarWithChildren>
-                            </ButtonBase>
-                          </Tooltip>
-                        </div>
-                      </GridItem>
-                      ):(<GridItem xs={0} sm={0} md={0}></GridItem>)}
+                                    <p
+                                      style={{
+                                        color: "#ff2e4c",
+                                        fontSize: "20px",
+                                        margin: 0
+                                      }}
+                                    >
+                                      {this.state.ratingDessin}
+                                    </p>
+                                  </div>
+                                </CircularProgressbarWithChildren>
+                              </ButtonBase>
+                            </Tooltip>
+                          </div>
+                        </GridItem>
+                      ) : (
+                        <GridItem xs={0} sm={0} md={0}></GridItem>
+                      )}
                       {this.state.histoire.userText ? (
-                      <GridItem
-                        xs={3}
-                        sm={2}
-                        md={1}
-                        style={{
-                          textAlign: "-webkit-center"
-                        }}
-                      >
-                        <div
+                        <GridItem
+                          xs={3}
+                          sm={2}
+                          md={1}
                           style={{
-                            height: 50,
-                            width: 50
+                            textAlign: "-webkit-center"
                           }}
                         >
-                          <Tooltip
-                            disableFocusListener
-                            disableTouchListener
-                            title={"Text"}
+                          <div
+                            style={{
+                              height: 50,
+                              width: 50
+                            }}
                           >
-                            <ButtonBase
-                              style={{ borderRadius: 50 }}
-                              onClick={() =>
-                                this.setState({
-                                  modal2: true
-                                })
-                              }
+                            <Tooltip
+                              disableFocusListener
+                              disableTouchListener
+                              title={"Text"}
                             >
-                              <CircularProgressbarWithChildren
-                                maxValue={5}
-                                minValue={0}
-                                strokeWidth={3}
-                                value={this.state.ratingText}
-                                text={
-                                  this.state.ratingText === 0
-                                    ? "0"
-                                    : this.state.ratingText
+                              <ButtonBase
+                                style={{ borderRadius: 50 }}
+                                onClick={() =>
+                                  this.setState({
+                                    modal2: true
+                                  })
                                 }
-                                styles={buildStyles({
-                                  textColor: "transparent",
-                                  pathColor: "#2e99b0",
-                                  trailColor: "#d6d6d6",
-                                  strokeLinecap: "butt"
-                                })}
                               >
-                                <div
-                                  style={{
-                                    height: "100%",
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                    display: "flex"
-                                  }}
+                                <CircularProgressbarWithChildren
+                                  maxValue={5}
+                                  minValue={0}
+                                  strokeWidth={3}
+                                  value={this.state.ratingText}
+                                  text={
+                                    this.state.ratingText === 0
+                                      ? "0"
+                                      : this.state.ratingText
+                                  }
+                                  styles={buildStyles({
+                                    textColor: "transparent",
+                                    pathColor: "#2e99b0",
+                                    trailColor: "#d6d6d6",
+                                    strokeLinecap: "butt"
+                                  })}
                                 >
-                                  <p
+                                  <div
                                     style={{
-                                      color: "#2e99b0",
-                                      fontSize: "20px",
-                                      margin: 0
+                                      height: "100%",
+                                      justifyContent: "center",
+                                      alignItems: "center",
+                                      display: "flex"
                                     }}
                                   >
-                                    {this.state.ratingText}
-                                  </p>
-                                </div>
-                              </CircularProgressbarWithChildren>
-                            </ButtonBase>
-                          </Tooltip>
-                        </div>
-                      </GridItem>
-                      ):(<GridItem xs={0} sm={0} md={0}></GridItem>)}
+                                    <p
+                                      style={{
+                                        color: "#2e99b0",
+                                        fontSize: "20px",
+                                        margin: 0
+                                      }}
+                                    >
+                                      {this.state.ratingText}
+                                    </p>
+                                  </div>
+                                </CircularProgressbarWithChildren>
+                              </ButtonBase>
+                            </Tooltip>
+                          </div>
+                        </GridItem>
+                      ) : (
+                        <GridItem xs={0} sm={0} md={0}></GridItem>
+                      )}
                     </GridContainer>
                   </GridItem>
                   <GridItem
@@ -1808,15 +1927,15 @@ class HistoireView extends React.Component {
                           commentaire: ""
                         });
                       }}
-                      color="default"
+                      style={{ backgroundColor: "rgb(255, 44, 77)"}}
                     >
                       Annuler
                     </Button>
-                    
+
                     <Button
                       variant="contained"
                       style={{
-                        backgroundColor: "rgb(90, 81, 127)",
+                        backgroundColor: "rgb(31, 23, 72)",
                         marginLeft: 15
                       }}
                       color="rgb(90, 81, 127)"
@@ -1829,18 +1948,35 @@ class HistoireView extends React.Component {
               </Paper>
             </GridItem>
           </GridContainer>
-          <Snackbar open={this.state.deleteHistoire} autoHideDuration={12000}  onClose={this.handleCloseSnack}>
-            <Alert onClose={this.handleCloseSnack} severity="warning"
-                action={
-                  <div>
-                  <Buttons color="inherit" size="small" onClick={()=>{this.deleteHistoire();}}>
+          <Snackbar
+            open={this.state.deleteHistoire}
+            autoHideDuration={12000}
+            onClose={this.handleCloseSnack}
+          >
+            <Alert
+              onClose={this.handleCloseSnack}
+              severity="warning"
+              action={
+                <div>
+                  <Buttons
+                    color="inherit"
+                    size="small"
+                    onClick={() => {
+                      this.deleteHistoire();
+                    }}
+                  >
                     OUI
                   </Buttons>
-                  <Buttons color="inherit" size="small" onClick={this.handleCloseSnack}>
+                  <Buttons
+                    color="inherit"
+                    size="small"
+                    onClick={this.handleCloseSnack}
+                  >
                     NON
                   </Buttons>
-                  </div>
-                }>
+                </div>
+              }
+            >
               Voulez vous vraiment supprimer cette histoire !
             </Alert>
           </Snackbar>
@@ -1939,9 +2075,16 @@ const fab = {
     top: "100px",
     left: "10px",
     position: "fixed",
-    zIndex: 1999
+    zIndex: 1999,
+    color: "white",
+    backgroundColor: "#ff2c4d",
+    "&:hover": {
+      backgroundColor: "#c40025"
+    },
+    "&:active": {
+      backgroundColor: "#c40025"
+    }
   },
-  color: "primary",
   icon: <AddIcon />,
   label: "Add"
 };

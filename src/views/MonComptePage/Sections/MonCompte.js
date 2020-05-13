@@ -43,7 +43,7 @@ import Axios from "axios";
 import config from "config/config";
 import { Input } from "@material-ui/core";
 import { subscriber, messageService } from "./../../../services/messageService";
-import { Redirect } from 'react-router-dom';
+import { Redirect } from "react-router-dom";
 
 class MonCompte extends React.Component {
   constructor(props) {
@@ -52,7 +52,7 @@ class MonCompte extends React.Component {
     // Don't call this.setState() here!
     this.state = {
       redirect: 0,
-      userLocal: '',
+      userLocal: "",
       idUser: "",
       noteDessinMoy: 0,
       noteTextMoy: 0,
@@ -91,21 +91,25 @@ class MonCompte extends React.Component {
     this.checkPass = this.checkPass.bind(this);
     this.checkAPass = this.checkAPass.bind(this);
     this.saveUsers = this.saveUsers.bind(this);
-    
   }
   componentDidMount() {
-    const user = JSON.parse(localStorage.getItem('user'));
+    const user = JSON.parse(localStorage.getItem("user"));
     if (!user) {
-      this.setState({  redirect: 1 }, ()=> {this.forceUpdate()});
-    }else{
-      this.setState({  idUser: user.id, userLocal: user }, ()=> {this.fetchUser();this.forceUpdate()});
+      this.setState({ redirect: 1 }, () => {
+        this.forceUpdate();
+      });
+    } else {
+      this.setState({ idUser: user.id, userLocal: user }, () => {
+        this.fetchUser();
+        this.forceUpdate();
+      });
     }
     subscriber.subscribe(v => {
-      if(v.profil instanceof Blob){
-        this.savePhotoProfil(v.profil)
+      if (v.profil instanceof Blob) {
+        this.savePhotoProfil(v.profil);
       }
-      if(v.couverture instanceof Blob){
-        this.savePhotoCov(v.couverture)
+      if (v.couverture instanceof Blob) {
+        this.savePhotoCov(v.couverture);
       }
     });
   }
@@ -140,11 +144,17 @@ class MonCompte extends React.Component {
     let data = new FormData();
     data.append("file", file);
     reader.onloadend = function(e) {
-      this.setState({
-        imgProfil: [reader.result],
-        dataImgProfil: data,
-        lienImgProfil: "images/photoProfile/" + file.name
-      }, ()=> {subscriber.next({imgProfil:this.state.imgProfil}); console.log(reader.result);});
+      this.setState(
+        {
+          imgProfil: [reader.result],
+          dataImgProfil: data,
+          lienImgProfil: config.API_URL + "images/photoProfile/" + file.name
+        },
+        () => {
+          subscriber.next({ imgProfil: this.state.imgProfil });
+          console.log(reader.result);
+        }
+      );
     }.bind(this);
     console.log(file.name); // Would see a path?
   }
@@ -159,11 +169,16 @@ class MonCompte extends React.Component {
     let data = new FormData();
     data.append("file", file);
     reader.onloadend = function(e) {
-      this.setState({
-        imgCov: [reader.result],
-        dataImgCov: data,
-        lienImgCov: "images/photoProfile/" + file.name
-      }, ()=> {subscriber.next({imgCov:this.state.imgCov});});
+      this.setState(
+        {
+          imgCov: [reader.result],
+          dataImgCov: data,
+          lienImgCov: "images/photoProfile/" + file.name
+        },
+        () => {
+          subscriber.next({ imgCov: this.state.imgCov });
+        }
+      );
     }.bind(this);
     // console.log(file.name); // Would see a path?
   }
@@ -183,7 +198,7 @@ class MonCompte extends React.Component {
           imgProfil: res.data[0].lienPhoto
         },
         () => {
-          subscriber.next({user:this.state.user});
+          subscriber.next({ user: this.state.user });
           this.forceUpdate();
         }
       );
@@ -232,52 +247,67 @@ class MonCompte extends React.Component {
       ).then(res => {
         let s = res.data.filePath.replace("\\", "/").replace("\\", "/");
         _this.state.user.lienCouverture = config.API_URL + s;
-        return Axios.put(config.API_URL + "users", _this.state.user).then(res => {_this.fetchUser();
-          const user = _this.state.userLocal;
-          user.lienPhoto = _this.state.imgProfil;
-          user.pseudo = _this.state.pseudo;
-          _this.setState({ change: false, userLocal: user },
-             ()=> {localStorage.setItem('user', JSON.stringify(_this.state.userLocal));subscriber.next('change');_this.forceUpdate()});
-        })
-        .catch(
-          function(error) {
+        return Axios.put(config.API_URL + "users", _this.state.user)
+          .then(res => {
+            _this.fetchUser();
+            const user = _this.state.userLocal;
+            user.lienPhoto = _this.state.lienImgProfil;
+            user.pseudo = _this.state.pseudo;
+            _this.setState({ change: false, userLocal: user }, () => {
+              localStorage.setItem(
+                "user",
+                JSON.stringify(_this.state.userLocal)
+              );
+              subscriber.next("change");
+              _this.forceUpdate();
+            });
+          })
+          .catch(function(error) {
             console.log(error);
-          }
-        );
+          });
       });
-      }
+    }
     if (_this.state.updatePhoto == 1) {
-      
       return Axios.post(
         config.API_URL + "sendImage/photoProfile/",
         this.state.dataImgProfil
       ).then(res => {
         let s = res.data.filePath.replace("\\", "/").replace("\\", "/");
         _this.state.user.lienPhoto = config.API_URL + s;
-        return Axios.put(config.API_URL + "users", _this.state.user).then(res => {_this.fetchUser();
-          const user = _this.state.userLocal;
-          user.lienPhoto = _this.state.imgProfil;
-          user.pseudo = _this.state.pseudo;
-          _this.setState({ change: false, userLocal: user },
-             ()=> {localStorage.setItem('user', JSON.stringify(_this.state.userLocal));subscriber.next('change');_this.forceUpdate()});
-        })
-        .catch(
-          function(error) {
+        return Axios.put(config.API_URL + "users", _this.state.user)
+          .then(res => {
+            _this.fetchUser();
+            const user = _this.state.userLocal;
+            user.lienPhoto = config.API_URL + s;
+            user.pseudo = _this.state.pseudo;
+            _this.setState({ change: false, userLocal: user }, () => {
+              localStorage.setItem(
+                "user",
+                JSON.stringify(_this.state.userLocal)
+              );
+              subscriber.next("change");
+              _this.forceUpdate();
+            });
+          })
+          .catch(function(error) {
             console.log(error);
-          }
-        );
+          });
       });
     } else {
-      return Axios.put(config.API_URL + "users", _this.state.user).then(res => {_this.fetchUser();
-        const user = _this.state.userLocal;
+      return Axios.put(config.API_URL + "users", _this.state.user)
+        .then(res => {
+          _this.fetchUser();
+          const user = _this.state.userLocal;
           user.pseudo = _this.state.pseudo;
-          _this.setState({ change: false, userLocal: user },
-             ()=> {localStorage.setItem('user', JSON.stringify(_this.state.userLocal));subscriber.next('change');_this.forceUpdate()});
-      }).catch(
-        function(error) {
+          _this.setState({ change: false, userLocal: user }, () => {
+            localStorage.setItem("user", JSON.stringify(_this.state.userLocal));
+            subscriber.next("change");
+            _this.forceUpdate();
+          });
+        })
+        .catch(function(error) {
           console.log(error);
-        }
-      );
+        });
     }
   }
 
@@ -285,10 +315,10 @@ class MonCompte extends React.Component {
     const { classes } = this.props;
     const { selectedIndex } = this.state;
     if (this.state.redirect == 1) {
-      return <Redirect to='/Connexion' />
+      return <Redirect to="/Connexion" />;
     }
     return (
-      <div className={classes.section} style={{paddingTop: 0}}>
+      <div className={classes.section} style={{ paddingTop: 0 }}>
         {/* <GridContainer
           justify="center"
           spacing={2}
@@ -411,13 +441,12 @@ class MonCompte extends React.Component {
           </GridItem>
         </GridContainer> */}
 
-        
         <GridContainer justify="center">
           <GridItem xs={12} sm={12} md={12}>
             <Card style={{ backgroundColor: "#fff" }}>
               <CardBody>
                 <GridContainer justify="flex-end">
-                <GridItem
+                  <GridItem
                     xs={12}
                     sm={12}
                     md={6}
@@ -434,9 +463,7 @@ class MonCompte extends React.Component {
                       Pseudo
                     </span>
                   </GridItem>
-                <GridItem xs={12}
-                    sm={12}
-                    md={6}>
+                  <GridItem xs={12} sm={12} md={6}>
                     {this.state.updatePseudo ? (
                       <CustomInput
                         id="material"

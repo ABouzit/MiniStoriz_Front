@@ -22,7 +22,7 @@ import Echanger from "./Sections/Echanger";
 import Contact from "./Sections/Contact";
 import NosHistoires from "./Sections/NosHistoires";
 import Publier from "./Sections/Publier";
-
+import HeaderGloble from "components/Header/HeaderGloble";
 const dashboardRoutes = [];
 
 const useStyles = makeStyles(styles);
@@ -37,40 +37,31 @@ export default function ConnexionPageDesktp(props) {
   const { ...rest } = props;
   return (
     <div>
-      <Header
-        color="info"
-        routes={dashboardRoutes}
-        // brand="Mateeeerial Kit React"
-        leftLinks={
-          <img
-            src={config.API_URL + "images/asset/logo.png"}
-            alt="Logo"
-            style={{
-              display: "block",
-              width: "146px"
-            }}
-          />
-        }
-        rightLinks={<HeaderLinks />}
-        fixed
-        changeColorOnScroll={{
-          height: 4,
-          color: "info"
+      <div
+        style={{
+          width: "100%",
+          backgroundColor: "#e3f3fd",
+          color: "rgb(89, 79, 118)",
+          marginTop: "-9px",
+          height: 30,
+          position: "fixed",
+          zIndex: "100",
+          boxShadow:
+            "0 16px 24px 2px rgba(0, 0, 0, 0.14), 0 6px 30px 5px rgba(0, 0, 0, 0.12), 0 8px 10px -5px rgba(0, 0, 0, 0.2)"
         }}
-        {...rest}
-      />
-        <div style={{width: '100%',
-                    backgroundColor: '#e3f3fd',
-                    color: 'rgb(89, 79, 118)',
-                    marginTop: '-9px',
-                    height: 30,
-                    position: 'fixed',
-                    zIndex: '100',
-                    boxShadow: '0 16px 24px 2px rgba(0, 0, 0, 0.14), 0 6px 30px 5px rgba(0, 0, 0, 0.12), 0 8px 10px -5px rgba(0, 0, 0, 0.2)'}}>
-                      <h4 style={{fontFamily: 'cursive', marginTop: 2, marginLeft: '5%', fontWeight: 'bold'}}>
-                        Bienvenue à toi, Azzedine le mini-artiste
-                      </h4>
-        </div>
+      >
+        <h4
+          style={{
+            fontFamily: "cursive",
+            marginTop: 2,
+            marginLeft: "5%",
+            fontWeight: "bold"
+          }}
+        >
+          Bienvenue à toi, Azzedine le mini-artiste
+        </h4>
+      </div>
+      <HeaderGloble />
       {/* <Parallax filter image={config.API_URL + "images/asset/bg1.jpg"}>
         <div className={classes.container}>
           <GridContainer>
@@ -98,7 +89,10 @@ export default function ConnexionPageDesktp(props) {
       </Parallax> */}
       <div
         className={classNames(classes.main, classes.mainRaised)}
-        style={{ marginTop: 81, backgroundImage:'url("'+config.API_URL+'images/asset/bg1.jpg")' }}
+        style={{
+          marginTop: 81,
+          backgroundImage: 'url("' + config.API_URL + 'images/asset/bg1.jpg")'
+        }}
         id="noshistoire"
       >
         <div className={classes.container}>
@@ -118,7 +112,11 @@ export default function ConnexionPageDesktp(props) {
       <br></br>
       <div
         className={classNames(classes.main, classes.mainRaised)}
-        style={{ marginTop: 20, backgroundImage:'url("'+config.API_URL+'images/asset/bg2.jpg")', backgroundPosition: 'center' }}
+        style={{
+          marginTop: 20,
+          backgroundImage: 'url("' + config.API_URL + 'images/asset/bg2.jpg")',
+          backgroundPosition: "center"
+        }}
         id="echanger"
       >
         <div className={classes.container}>
