@@ -92,6 +92,7 @@ import { Redirect } from "react-router-dom";
 import * as firebase from "firebase/app";
 import "firebase/database";
 import PersonAddDisabledIcon from "@material-ui/icons/PersonAddDisabled";
+import { isMobile } from "react-device-detect";
 
 class AllUsers extends React.Component {
   constructor(props) {
@@ -353,6 +354,8 @@ class AllUsers extends React.Component {
             </SpeedDial> */}
           </div>
           <div>
+            {this.state.users.length > 0 ? (
+            <div>
             <GridContainer justify="center" spacing={"auto"}>
               {this.state.users.map((user, index) => {
                 if (
@@ -765,6 +768,23 @@ class AllUsers extends React.Component {
                 ) : null}
               </GridItem>
             </GridContainer>
+            </div>
+            ):(
+              <GridContainer justify="center">
+              <GridItem
+                xs={12}
+                sm={12}
+                md={4}
+                justify="center"
+                style={isMobile? { width: "auto",marginTop: 10 }:{ width: "auto",marginTop: 100 }}
+              >
+                <SnackbarContent
+                style={{backgroundColor: '#1e1548'}}
+                  message={"aucun utilisateur n'a été trouvée." }
+                />
+              </GridItem>
+            </GridContainer>
+            )}
             <Snackbar
               open={this.state.requestFriend}
               autoHideDuration={8000}

@@ -180,7 +180,8 @@ class AllUsers extends React.Component {
           "users/take/6/" +
           (this.state.page - 1) * 6 +
           "/" +
-          this.state.search,
+          this.state.search+
+          "/" +this.state.user.id,
         {}
       ).then(res => {
         this.setState({
@@ -221,11 +222,12 @@ class AllUsers extends React.Component {
             "users/take/6/" +
             (this.state.page - 1) * 6 +
             "/" +
-            this.state.search,
+            this.state.search+
+            "/" +this.state.user.id,
           {}
         ).then(res => {
           console.log(res.data);
-          this.setState({ users: res.data, showMore: true });
+          this.setState({ users: res.data });
         });
         Axios.get(
           config.API_URL + "users/numberSearchUsers/" + this.state.search,
@@ -235,6 +237,8 @@ class AllUsers extends React.Component {
           this.setState({ numberPage: Math.ceil(res.data / 6) }, () => {
             if (res.data <= 6) {
               this.setState({ showMore: false });
+            }else {
+              this.setState({ showMore: true });
             }
           });
         });

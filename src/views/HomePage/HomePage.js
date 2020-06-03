@@ -129,10 +129,10 @@ export default function HomePage(props) {
       </div> */}
       <HeaderGloble />
       <div style={{backgroundColor: "#ecfbfc"}}>
-        <GridContainer justify="center" style={{margin: 0,marginTop: 95, padding: 0 }}>
+        <GridContainer justify="center" direction={isMobile ? "column-reverse" : null} style={{margin: 0,marginTop: 95, padding: 0 }}>
           <GridItem xs={12} sm={12} md={6}>
             <GridContainer justify="center">
-              <GridItem xs={10} sm={10} md={11} style={{marginTop: 20}}>
+              <GridItem xs={10} sm={10} md={11} style={isMobile? {marginTop: 20, padding: 0}:{marginTop: 20}}>
                 <Paper elevation={0}>
                 <GridContainer justify="center">
                   <GridItem xs={10} sm={10} md={10}>

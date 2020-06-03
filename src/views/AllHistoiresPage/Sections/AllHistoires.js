@@ -12,6 +12,7 @@ import { Link, withRouter } from "react-router-dom";
 // core components
 import SpeedDial from "@material-ui/lab/SpeedDial";
 import SpeedDialIcon from "@material-ui/lab/SpeedDialIcon";
+import PostAddIcon from '@material-ui/icons/LibraryAdd';
 import SpeedDialAction from "@material-ui/lab/SpeedDialAction";
 import FileCopyIcon from "@material-ui/icons/FileCopyOutlined";
 import SaveIcon from "@material-ui/icons/Save";
@@ -83,6 +84,7 @@ import "moment/locale/fr";
 import Moment from "moment";
 import { subscriber, messageService } from "./../../../services/messageService";
 import { Redirect } from "react-router-dom";
+import { isMobile } from "react-device-detect";
 
 class AllHistoires extends React.Component {
   _isMounted = false;
@@ -100,7 +102,7 @@ class AllHistoires extends React.Component {
       currentFiltre: 1,
       selectedFiltre: "",
       showMore: false,
-      showMoreUsers: true,
+      showMoreUsers: false,
       commentaire: "",
       ratingText: 0,
       ratingDessin: 0,
@@ -239,7 +241,7 @@ class AllHistoires extends React.Component {
     console.log(this.state.selectedFiltre);
   };
   searchCheck() {
-    this.setState({ page: 1, showMore: true }, () => {
+    this.setState({ page: 1, showMore: true,showMoreUsers: false }, () => {
       if (this.state.currentFiltre == 1) {
         if (this.state.search !== "") {
           this.setState({ histoireUsers: [] });
@@ -676,6 +678,7 @@ class AllHistoires extends React.Component {
 
   //modal - carousel
   render() {
+    console.log(this.state.histoires)
     const { settings, modal } = this.state;
     const { classes } = this.props;
     const actions = [
@@ -713,7 +716,7 @@ class AllHistoires extends React.Component {
     }
     if (this.state.histoires !== [])
       return (
-        <div className={classes.section} style={{ width: "99%" }}>
+        <div className={classes.section} style={{ width: "99%", marginTop: 78 }}>
           <div className={classes.root}>
             <Backdrop open={this.state.openBackdrop} style={{ zIndex: 1500 }} />
             <SpeedDial
@@ -726,7 +729,7 @@ class AllHistoires extends React.Component {
               }}
               FabProps={{ style: { backgroundColor: "#2f99b1" } }}
               hidden={this.state.hidden}
-              icon={<SpeedDialIcon />}
+              icon={<PostAddIcon />}
               onClose={this.handleCloseBackDrop}
               onOpen={this.handleOpenBackDrop}
               open={this.state.openBackdrop}
@@ -741,7 +744,7 @@ class AllHistoires extends React.Component {
               ))}
             </SpeedDial>
           </div>
-          {this.state.search === "" ? (
+          {this.state.search === "" && this.state.histoires.length > 0 ? (
             <div>
               <GridContainer justify="center" spacing={"auto"}>
                 {this.state.histoires.map((histoire, index) => {
@@ -773,7 +776,7 @@ class AllHistoires extends React.Component {
                 })}
               </GridContainer>
               <GridContainer justify="center">
-                <GridItem xs={4} sm={4} md={4}>
+                <GridItem xs={4} sm={4} md={4} style={{textAlign: 'center'}}>
                   {this.state.showMore ? (
                     <Tooltip
                       title="plus de résultats"
@@ -796,6 +799,23 @@ class AllHistoires extends React.Component {
                 </GridItem>
               </GridContainer>
             </div>
+          ) : this.state.search === "" && this.state.histoires.length == 0 ? (
+            <GridContainer justify="center">
+              <GridItem
+                xs={12}
+                sm={12}
+                md={4}
+                justify="center"
+                style={isMobile? { width: "auto",marginTop: 10 }:{ width: "auto",marginTop: 100 }}
+              >
+                <SnackbarContent
+                style={{backgroundColor: '#1e1548'}}
+                  message={this.state.connected ? "aucune histoire n'a été trouvée." : "aucune histoire n'a été trouvée."
+                  }
+                  action={this.state.connected ? null : (<Link to={"/Connexion"} style={{color: '#ff2e4c'}}>connectez-vous</Link>)}
+                />
+              </GridItem>
+            </GridContainer>
           ) : (
             <div style={{ marginTop: "6%" }}>
               {/* <GridContainer justify="center">
@@ -858,6 +878,7 @@ class AllHistoires extends React.Component {
                                   style={{ width: "auto" }}
                                 >
                                   <SnackbarContent
+                                  style={{backgroundColor: '#1e1548'}}
                                     message={
                                       "aucun résultat correspond à votre recherche."
                                     }
@@ -866,7 +887,7 @@ class AllHistoires extends React.Component {
                               )}
                             </GridContainer>
                             <GridContainer justify="center">
-                              <GridItem xs={4} sm={4} md={4}>
+                              <GridItem xs={4} sm={4} md={4} style={{textAlign: 'center'}}>
                                 {this.state.showMore ? (
                                   <Tooltip
                                     title="plus de résultats"
@@ -942,6 +963,7 @@ class AllHistoires extends React.Component {
                                   style={{ width: "auto" }}
                                 >
                                   <SnackbarContent
+                                  style={{backgroundColor: '#1e1548'}}
                                     message={
                                       "aucun résultat correspond à votre recherche."
                                     }
@@ -956,6 +978,7 @@ class AllHistoires extends React.Component {
                                 md={4}
                                 justify="center"
                                 alignItems="center"
+                                style={{textAlign: 'center'}}
                               >
                                 {this.state.showMoreUsers ? (
                                   <Tooltip

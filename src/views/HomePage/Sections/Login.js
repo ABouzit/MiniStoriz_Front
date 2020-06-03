@@ -55,6 +55,7 @@ import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
 import { Base64 } from "js-base64";
 import { Redirect } from "react-router-dom";
+import { isMobile } from "react-device-detect";
 class Login extends React.Component {
   constructor(props) {
     super(props);
@@ -541,7 +542,12 @@ class Login extends React.Component {
                           justify="center"
                           style={{ textAlign: "-webkit-center" }}
                         >
-                          <Divider orientation="vertical" flexItem />
+                          {isMobile ? (
+                            <Divider />
+                          ):(
+                            <Divider orientation="vertical" flexItem />
+                          )}
+                          
                           <div style={{ width: "90%" }}>
                             <GridItem xs={10} sm={10} md={10}>
                               <h4
@@ -725,7 +731,11 @@ class Login extends React.Component {
                           justify="center"
                           style={{ textAlign: "-webkit-center" }}
                         >
-                          <Divider orientation="vertical" flexItem />
+                          {isMobile ? (
+                            <Divider />
+                          ):(
+                            <Divider orientation="vertical" flexItem />
+                          )}
                           <div style={{ width: "90%" }}>
                             <GridItem xs={10} sm={10} md={10}>
                               <h4
@@ -1026,7 +1036,11 @@ class Login extends React.Component {
                           justify="center"
                           style={{ textAlign: "-webkit-center" }}
                         >
-                          <Divider orientation="vertical" flexItem />
+                          {isMobile ? (
+                            <Divider />
+                          ):(
+                            <Divider orientation="vertical" flexItem />
+                          )}
                           <div style={{ width: "90%" }}>
                             <GridItem xs={10} sm={10} md={12}>
                               {this.state.errorMail ? (

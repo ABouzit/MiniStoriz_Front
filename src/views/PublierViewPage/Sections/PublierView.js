@@ -97,6 +97,8 @@ import Moment from "moment";
 import * as Core from "@material-ui/core";
 import "react-circular-progressbar/dist/styles.css";
 import { Redirect } from "react-router-dom";
+import CircularProgress from '@material-ui/core/CircularProgress';
+
 class PublierView extends React.Component {
   constructor(props) {
     super(props);
@@ -115,6 +117,7 @@ class PublierView extends React.Component {
       imgHistoire: "",
       dataImgHistoire: "",
       lienImgHistoire: "",
+      chargement: false,
       buttonClick: false,
       anchorElDessin: null,
       anchorElText: null,
@@ -262,6 +265,10 @@ class PublierView extends React.Component {
   }
   saveHistoire(file) {
     console.log(file);
+    const allowedFileTypes = ["image/png", "image/jpeg", "image/gif"];
+    if (file[0] && allowedFileTypes.indexOf(file[0].type) > -1) {
+      
+    
     var reader = new FileReader();
     var url = reader.readAsDataURL(file[0]);
     let data = new FormData();
@@ -275,6 +282,7 @@ class PublierView extends React.Component {
     }.bind(this);
     console.log(this.state.imgHistoire); // Would see a path?
   }
+}
 
   next() {
     this.setState({
@@ -442,6 +450,9 @@ class PublierView extends React.Component {
   };
   submit() {
     const _this = this;
+    _this.setState({ chargement: true }, () => {
+      this.forceUpdate();
+    });
     let idHistoire = "";
     if (this.state.dataImgHistoire == "") {
       if (typeof this.props.match.params.histoireId === "undefined") {
@@ -527,7 +538,7 @@ class PublierView extends React.Component {
                       let s = res.data.filePath
                         .replace("\\", "/")
                         .replace("\\", "/");
-                      return Axios.post(config.API_URL + "planches", {
+                      return Axios.put(config.API_URL + "planches", {
                         histoire: response.data.id,
                         lienDessin: config.API_URL + s,
                         text: planch.text,
@@ -694,7 +705,7 @@ class PublierView extends React.Component {
                         let s = res.data.filePath
                           .replace("\\", "/")
                           .replace("\\", "/");
-                        return Axios.post(config.API_URL + "planches", {
+                        return Axios.put(config.API_URL + "planches", {
                           histoire: response.data.id,
                           lienDessin: config.API_URL + s,
                           text: planch.text,
@@ -2282,6 +2293,7 @@ class PublierView extends React.Component {
                     paddingBottom: "15px"
                   }}
                 >
+                  {this.state.chargement == false ? (
                   <Button
                     variant="contained"
                     style={{
@@ -2293,6 +2305,9 @@ class PublierView extends React.Component {
                   >
                     Publier Histoire
                   </Button>
+                  ):(
+                    <CircularProgress style={{marginRight: 55, color: 'rgb(31, 23, 72)'}} />
+                  )}
                 </GridItem>
               </GridContainer>
             </Paper>

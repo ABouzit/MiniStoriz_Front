@@ -82,13 +82,14 @@ class ActivationPage extends React.Component {
     if (id) {
     
     return Axios.get(config.API_URL + "users/" + id, {}).then(res => {
-
+        console.log(res.data)
         if (res.data[0].isActive) {
             _this.setState({redirect: 1},() => {_this.forceUpdate();});
         } else {
             user = res.data[0];
             user.isActive = true;
             return Axios.put(config.API_URL + "users", user).then(res => {
+             localStorage.setItem("user", JSON.stringify(user));
             _this.setState({ redirect: 2 }, ()=> {_this.forceUpdate()});
             }).catch(
             function(error) {
@@ -108,9 +109,9 @@ class ActivationPage extends React.Component {
       return <Redirect to='/' />
      }
      if (this.state.redirect == 2) {
-        return <Redirect to='/' />
+        return <Redirect to='/MonProfil' />
     }
-     return <Redirect to='/MonCompte' />
+    return <div></div>
     }
 }
 ActivationPage.propTypes = {

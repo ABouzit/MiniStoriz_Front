@@ -184,7 +184,7 @@ class HeaderGloale extends React.Component  {
             <Header
                 color="info"
                 routes={dashboardRoutes}
-                // brand="Mateeeerial Kit React"
+                brand={null}
                 leftLinks={
                     <img
                         src={config.API_URL + "images/asset/logo.png"}
@@ -195,7 +195,7 @@ class HeaderGloale extends React.Component  {
                         }}
                     />
                 }
-                    rightLinks={<HeaderUser />}
+                rightLinks={<HeaderUser />}
                 fixed
                 changeColorOnScroll={{
                     height: -1,

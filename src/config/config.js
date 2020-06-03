@@ -1,6 +1,6 @@
-const API_URL = "http://localhost:5600/"; //LOCAL SERVER test
+// const API_URL = "http://localhost:5600/"; //LOCAL SERVER test
 // const API_URL = "https://www.apiministoriz.codemediastudioad.com/";
-// const API_URL = "https://apiministoriz.code-square.net/";//SERVEUR
+const API_URL = "http://www.apiministoriez2.code-square.net:58743/";//SERVEUR
 const firebaseConfig = {
   apiKey: "AIzaSyAMxYL804MZ93kG1Frc-rl0x1w9KHpAijE",
   authDomain: "ministoriz.firebaseapp.com",

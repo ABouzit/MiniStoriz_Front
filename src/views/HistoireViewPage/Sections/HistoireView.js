@@ -539,7 +539,7 @@ class HistoireView extends React.Component {
             </DialogTitle>
             <DialogContent style={{ paddingTop: 50 }}>
               <Core.Slider
-                style={{ color: "#ff2e4c" }}
+                style={{ color: "#2e99b0" }}
                 defaultValue={0}
                 value={this.state.ratingDessinTemp}
                 onChange={(event, value) =>
@@ -573,7 +573,7 @@ class HistoireView extends React.Component {
                     ratingDessin: this.state.ratingDessinTemp
                   })
                 }
-                style={{ backgroundColor: "#ff2e4c" }}
+                style={{ backgroundColor: "#2e99b0" }}
               >
                 Confirmer
               </Button>
@@ -597,7 +597,7 @@ class HistoireView extends React.Component {
             <DialogContent style={{ paddingTop: 50 }}>
               <Core.Slider
                 defaultValue={0}
-                style={{ color: "#2e99b0" }}
+                style={{ color: "#c7a650" }}
                 value={this.state.ratingTextTemp}
                 onChange={(event, value) =>
                   this.setState({ ratingTextTemp: value })
@@ -629,7 +629,7 @@ class HistoireView extends React.Component {
                     ratingText: this.state.ratingTextTemp
                   })
                 }
-                style={{ backgroundColor: "#2e99b0" }}
+                style={{ backgroundColor: "#c7a650" }}
               >
                 Confirmer
               </Button>
@@ -1570,7 +1570,7 @@ class HistoireView extends React.Component {
                                           value={commentaire.noteDessin}
                                           styles={buildStyles({
                                             textColor: "transparent",
-                                            pathColor: "#ff2e4c",
+                                            pathColor: "#2e99b0",
                                             trailColor: "#fff",
                                             strokeLinecap: "butt"
                                           })}
@@ -1585,7 +1585,7 @@ class HistoireView extends React.Component {
                                           >
                                             <p
                                               style={{
-                                                color: "#ff2e4c",
+                                                color: "#2e99b0",
                                                 fontSize: "14px",
                                                 margin: 0
                                               }}
@@ -1636,7 +1636,7 @@ class HistoireView extends React.Component {
                                           }
                                           styles={buildStyles({
                                             textColor: "transparent",
-                                            pathColor: "#2e99b0",
+                                            pathColor: "#fcd77f",
                                             trailColor: "#fff",
                                             strokeLinecap: "butt"
                                           })}
@@ -1651,7 +1651,7 @@ class HistoireView extends React.Component {
                                           >
                                             <p
                                               style={{
-                                                color: "#2e99b0",
+                                                color: "#fcd77f",
                                                 fontSize: "14px",
                                                 margin: 0
                                               }}
@@ -1803,7 +1803,7 @@ class HistoireView extends React.Component {
                                   value={this.state.ratingDessin}
                                   styles={buildStyles({
                                     textColor: "transparent",
-                                    pathColor: "#ff2e4c",
+                                    pathColor: "#2e99b0",
                                     trailColor: "#d6d6d6",
                                     strokeLinecap: "butt"
                                   })}
@@ -1818,7 +1818,7 @@ class HistoireView extends React.Component {
                                   >
                                     <p
                                       style={{
-                                        color: "#ff2e4c",
+                                        color: "#2e99b0",
                                         fontSize: "20px",
                                         margin: 0
                                       }}
@@ -1874,7 +1874,7 @@ class HistoireView extends React.Component {
                                   }
                                   styles={buildStyles({
                                     textColor: "transparent",
-                                    pathColor: "#2e99b0",
+                                    pathColor: "#c7a650",
                                     trailColor: "#d6d6d6",
                                     strokeLinecap: "butt"
                                   })}
@@ -1889,7 +1889,7 @@ class HistoireView extends React.Component {
                                   >
                                     <p
                                       style={{
-                                        color: "#2e99b0",
+                                        color: "#c7a650",
                                         fontSize: "20px",
                                         margin: 0
                                       }}

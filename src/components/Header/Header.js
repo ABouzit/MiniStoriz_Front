@@ -67,10 +67,10 @@ export default function Header(props) {
     [classes.absolute]: absolute,
     [classes.fixed]: fixed
   });
-  const brandComponent = <Button className={classes.title}>{brand}</Button>;
+  const brandComponent = null;
   return (
     <AppBar className={appBarClasses} style={isMobile ?{display: 'inherit'}:{}}>
-      <Toolbar className={classes.container}>
+      <Toolbar className={classes.container} style={{maxWidth: '96%'}}>
         {leftLinks !== undefined ? brandComponent : null}
         <div className={classes.flex}>
           {leftLinks !== undefined ? (
