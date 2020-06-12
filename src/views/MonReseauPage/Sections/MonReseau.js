@@ -378,7 +378,7 @@ class AllUsers extends React.Component {
                                 height: "170px",
                                 width: "100%",
                                 textAlign: "center",
-                                display: "block"
+                                display: "block",
                               }}
                             >
                               <Parallax
@@ -393,7 +393,7 @@ class AllUsers extends React.Component {
                                   marginRight: "auto",
                                   display: "block",
                                   borderTopLeftRadius: 6,
-                                  borderTopRightRadius: 6
+                                  borderTopRightRadius: 6,
                                 }}
                               ></Parallax>
                               <div
@@ -401,7 +401,7 @@ class AllUsers extends React.Component {
                                   textAlign: "-webkit-center",
                                   position: "absolute",
                                   top: 100,
-                                  width: "100%"
+                                  width: "100%",
                                 }}
                               >
                                 {user.lienPhoto == "" ? (
@@ -409,14 +409,14 @@ class AllUsers extends React.Component {
                                     alt=""
                                     src={
                                       config.API_URL +
-                                      "images/defaultPhotoProfil.jpg"
+                                      "images/asset/defaultPhotoProfil.jpg"
                                     }
                                     style={{
                                       width: 130,
                                       height: 130,
                                       borderStyle: "solid",
                                       borderWidth: 7,
-                                      borderColor: "white"
+                                      borderColor: "white",
                                     }}
                                   />
                                 ) : (
@@ -428,7 +428,7 @@ class AllUsers extends React.Component {
                                       height: 130,
                                       borderStyle: "solid",
                                       borderWidth: 7,
-                                      borderColor: "white"
+                                      borderColor: "white",
                                     }}
                                   />
                                 )}
@@ -457,7 +457,7 @@ class AllUsers extends React.Component {
                                 fontWeight: "bold",
                                 color: "black",
                                 marginLeft: "5%",
-                                textAlign: "left"
+                                textAlign: "left",
                               }}
                             >
                               {user.pseudo}
@@ -471,7 +471,7 @@ class AllUsers extends React.Component {
                                   color: "black",
                                   marginLeft: "5%",
                                   width: "50%",
-                                  textAlign: "left"
+                                  textAlign: "left",
                                 }}
                               >
                                 {user.nom + " " + user.prenom}
@@ -484,7 +484,7 @@ class AllUsers extends React.Component {
                                   marginLeft: "5%",
                                   width: "50%",
                                   marginTop: 0,
-                                  textAlign: "center"
+                                  textAlign: "center",
                                 }}
                               >
                                 <RoomIcon style={{ height: 20 }} /> {user.ville}
@@ -512,7 +512,7 @@ class AllUsers extends React.Component {
                                           color: "black",
                                           fontWeight: "bold",
                                           marginLeft: "5%",
-                                          textAlign: "left"
+                                          textAlign: "left",
                                         }}
                                       >
                                         Histoire
@@ -531,7 +531,7 @@ class AllUsers extends React.Component {
                                       fontFamily: "monospace",
                                       color: "black",
                                       fontWeight: "bold",
-                                      textAlign: "center"
+                                      textAlign: "center",
                                     }}
                                   >
                                     {user.nombreHistoire}
@@ -571,7 +571,7 @@ class AllUsers extends React.Component {
                                             textColor: "transparent",
                                             pathColor: "#2e99b0",
                                             trailColor: "#d6d6d6",
-                                            strokeLinecap: "butt"
+                                            strokeLinecap: "butt",
                                           })}
                                         >
                                           <div
@@ -579,14 +579,14 @@ class AllUsers extends React.Component {
                                               height: "100%",
                                               justifyContent: "center",
                                               alignItems: "center",
-                                              display: "flex"
+                                              display: "flex",
                                             }}
                                           >
                                             <p
                                               style={{
                                                 color: "#2e99b0",
                                                 fontSize: 15,
-                                                margin: 0
+                                                margin: 0,
                                               }}
                                             >
                                               {parseFloat(
@@ -622,7 +622,7 @@ class AllUsers extends React.Component {
                                           color: "black",
                                           fontWeight: "bold",
                                           marginLeft: "5%",
-                                          textAlign: "left"
+                                          textAlign: "left",
                                         }}
                                       >
                                         Dessin
@@ -636,7 +636,7 @@ class AllUsers extends React.Component {
                                       fontFamily: "monospace",
                                       color: "black",
                                       fontWeight: "bold",
-                                      textAlign: "center"
+                                      textAlign: "center",
                                     }}
                                   >
                                     {user.nombreDessin}
@@ -674,7 +674,7 @@ class AllUsers extends React.Component {
                                             textColor: "transparent",
                                             pathColor: "#ff2e4c",
                                             trailColor: "#d6d6d6",
-                                            strokeLinecap: "butt"
+                                            strokeLinecap: "butt",
                                           })}
                                         >
                                           <div
@@ -682,14 +682,14 @@ class AllUsers extends React.Component {
                                               height: "100%",
                                               justifyContent: "center",
                                               alignItems: "center",
-                                              display: "flex"
+                                              display: "flex",
                                             }}
                                           >
                                             <p
                                               style={{
                                                 color: "#ff2e4c",
                                                 fontSize: 15,
-                                                margin: 0
+                                                margin: 0,
                                               }}
                                             >
                                               {parseFloat(
@@ -886,7 +886,7 @@ function CardUser(props) {
           height: "170px",
           width: "100%",
           textAlign: "center",
-          display: "block"
+          display: "block",
         }}
       >
         <Parallax
@@ -901,7 +901,7 @@ function CardUser(props) {
             marginRight: "auto",
             display: "block",
             borderTopLeftRadius: 6,
-            borderTopRightRadius: 6
+            borderTopRightRadius: 6,
           }}
         ></Parallax>
         <div
@@ -909,19 +909,19 @@ function CardUser(props) {
             textAlign: "-webkit-center",
             position: "absolute",
             top: 100,
-            width: "100%"
+            width: "100%",
           }}
         >
           {user.lienPhoto == "" ? (
             <Avatar
               alt=""
-              src={config.API_URL + "images/defaultPhotoProfil.jpg"}
+              src={config.API_URL + "images/asset/defaultPhotoProfil.jpg"}
               style={{
                 width: 130,
                 height: 130,
                 borderStyle: "solid",
                 borderWidth: 7,
-                borderColor: "white"
+                borderColor: "white",
               }}
             />
           ) : (
@@ -933,7 +933,7 @@ function CardUser(props) {
                 height: 130,
                 borderStyle: "solid",
                 borderWidth: 7,
-                borderColor: "white"
+                borderColor: "white",
               }}
             />
           )}
@@ -962,7 +962,7 @@ function CardUser(props) {
           fontWeight: "bold",
           color: "black",
           marginLeft: "5%",
-          textAlign: "left"
+          textAlign: "left",
         }}
       >
         {user.pseudo}
@@ -976,7 +976,7 @@ function CardUser(props) {
             color: "black",
             marginLeft: "5%",
             width: "50%",
-            textAlign: "left"
+            textAlign: "left",
           }}
         >
           {user.nom + " " + user.prenom}
@@ -989,7 +989,7 @@ function CardUser(props) {
             marginLeft: "5%",
             width: "50%",
             marginTop: 0,
-            textAlign: "center"
+            textAlign: "center",
           }}
         >
           <RoomIcon style={{ height: 20 }} /> {user.ville}
@@ -1013,7 +1013,7 @@ function CardUser(props) {
                     color: "black",
                     fontWeight: "bold",
                     marginLeft: "5%",
-                    textAlign: "left"
+                    textAlign: "left",
                   }}
                 >
                   Histoire
@@ -1027,7 +1027,7 @@ function CardUser(props) {
                 fontFamily: "monospace",
                 color: "black",
                 fontWeight: "bold",
-                textAlign: "center"
+                textAlign: "center",
               }}
             >
               {user.nombreHistoire}
@@ -1061,7 +1061,7 @@ function CardUser(props) {
                       textColor: "transparent",
                       pathColor: "#2e99b0",
                       trailColor: "#d6d6d6",
-                      strokeLinecap: "butt"
+                      strokeLinecap: "butt",
                     })}
                   >
                     <div
@@ -1069,14 +1069,14 @@ function CardUser(props) {
                         height: "100%",
                         justifyContent: "center",
                         alignItems: "center",
-                        display: "flex"
+                        display: "flex",
                       }}
                     >
                       <p
                         style={{
                           color: "#2e99b0",
                           fontSize: 15,
-                          margin: 0
+                          margin: 0,
                         }}
                       >
                         {parseFloat(
@@ -1106,7 +1106,7 @@ function CardUser(props) {
                     color: "black",
                     fontWeight: "bold",
                     marginLeft: "5%",
-                    textAlign: "left"
+                    textAlign: "left",
                   }}
                 >
                   Dessin
@@ -1120,7 +1120,7 @@ function CardUser(props) {
                 fontFamily: "monospace",
                 color: "black",
                 fontWeight: "bold",
-                textAlign: "center"
+                textAlign: "center",
               }}
             >
               {user.nombreDessin}
@@ -1154,7 +1154,7 @@ function CardUser(props) {
                       textColor: "transparent",
                       pathColor: "#ff2e4c",
                       trailColor: "#d6d6d6",
-                      strokeLinecap: "butt"
+                      strokeLinecap: "butt",
                     })}
                   >
                     <div
@@ -1162,14 +1162,14 @@ function CardUser(props) {
                         height: "100%",
                         justifyContent: "center",
                         alignItems: "center",
-                        display: "flex"
+                        display: "flex",
                       }}
                     >
                       <p
                         style={{
                           color: "#ff2e4c",
                           fontSize: 15,
-                          margin: 0
+                          margin: 0,
                         }}
                       >
                         {parseFloat(

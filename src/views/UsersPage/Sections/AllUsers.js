@@ -465,7 +465,7 @@ class AllUsers extends React.Component {
                                   height: "170px",
                                   width: "100%",
                                   textAlign: "center",
-                                  display: "block"
+                                  display: "block",
                                 }}
                               >
                                 <Parallax
@@ -480,7 +480,7 @@ class AllUsers extends React.Component {
                                     marginRight: "auto",
                                     display: "block",
                                     borderTopLeftRadius: 6,
-                                    borderTopRightRadius: 6
+                                    borderTopRightRadius: 6,
                                   }}
                                 ></Parallax>
                                 <div
@@ -488,7 +488,7 @@ class AllUsers extends React.Component {
                                     textAlign: "-webkit-center",
                                     position: "absolute",
                                     top: 100,
-                                    width: "100%"
+                                    width: "100%",
                                   }}
                                 >
                                   {user.user.lienPhoto == "" ? (
@@ -496,14 +496,14 @@ class AllUsers extends React.Component {
                                       alt=""
                                       src={
                                         config.API_URL +
-                                        "images/defaultPhotoProfil.jpg"
+                                        "images/asset/defaultPhotoProfil.jpg"
                                       }
                                       style={{
                                         width: 130,
                                         height: 130,
                                         borderStyle: "solid",
                                         borderWidth: 7,
-                                        borderColor: "white"
+                                        borderColor: "white",
                                       }}
                                     />
                                   ) : (
@@ -515,7 +515,7 @@ class AllUsers extends React.Component {
                                         height: 130,
                                         borderStyle: "solid",
                                         borderWidth: 7,
-                                        borderColor: "white"
+                                        borderColor: "white",
                                       }}
                                     />
                                   )}
@@ -544,7 +544,7 @@ class AllUsers extends React.Component {
                                   fontWeight: "bold",
                                   color: "black",
                                   marginLeft: "5%",
-                                  textAlign: "left"
+                                  textAlign: "left",
                                 }}
                               >
                                 {user.user.pseudo}
@@ -558,7 +558,7 @@ class AllUsers extends React.Component {
                                     color: "black",
                                     marginLeft: "5%",
                                     width: "50%",
-                                    textAlign: "left"
+                                    textAlign: "left",
                                   }}
                                 >
                                   {user.user.nom + " " + user.user.prenom}
@@ -571,7 +571,7 @@ class AllUsers extends React.Component {
                                     marginLeft: "5%",
                                     width: "50%",
                                     marginTop: 0,
-                                    textAlign: "center"
+                                    textAlign: "center",
                                   }}
                                 >
                                   <RoomIcon style={{ height: 20 }} />{" "}
@@ -591,7 +591,7 @@ class AllUsers extends React.Component {
                                           <CreateIcon
                                             style={{
                                               width: 20,
-                                              color: "black"
+                                              color: "black",
                                             }}
                                           />
                                         </div>
@@ -603,7 +603,7 @@ class AllUsers extends React.Component {
                                             color: "black",
                                             fontWeight: "bold",
                                             marginLeft: "5%",
-                                            textAlign: "left"
+                                            textAlign: "left",
                                           }}
                                         >
                                           Histoire
@@ -622,7 +622,7 @@ class AllUsers extends React.Component {
                                         fontFamily: "monospace",
                                         color: "black",
                                         fontWeight: "bold",
-                                        textAlign: "center"
+                                        textAlign: "center",
                                       }}
                                     >
                                       {user.user.nombreHistoire}
@@ -662,7 +662,7 @@ class AllUsers extends React.Component {
                                               textColor: "transparent",
                                               pathColor: "#2e99b0",
                                               trailColor: "#d6d6d6",
-                                              strokeLinecap: "butt"
+                                              strokeLinecap: "butt",
                                             })}
                                           >
                                             <div
@@ -670,14 +670,14 @@ class AllUsers extends React.Component {
                                                 height: "100%",
                                                 justifyContent: "center",
                                                 alignItems: "center",
-                                                display: "flex"
+                                                display: "flex",
                                               }}
                                             >
                                               <p
                                                 style={{
                                                   color: "#2e99b0",
                                                   fontSize: 15,
-                                                  margin: 0
+                                                  margin: 0,
                                                 }}
                                               >
                                                 {parseFloat(
@@ -704,7 +704,7 @@ class AllUsers extends React.Component {
                                           <BrushIcon
                                             style={{
                                               width: 20,
-                                              color: "black"
+                                              color: "black",
                                             }}
                                           />
                                         </div>
@@ -716,7 +716,7 @@ class AllUsers extends React.Component {
                                             color: "black",
                                             fontWeight: "bold",
                                             marginLeft: "5%",
-                                            textAlign: "left"
+                                            textAlign: "left",
                                           }}
                                         >
                                           Dessin
@@ -730,7 +730,7 @@ class AllUsers extends React.Component {
                                         fontFamily: "monospace",
                                         color: "black",
                                         fontWeight: "bold",
-                                        textAlign: "center"
+                                        textAlign: "center",
                                       }}
                                     >
                                       {user.user.nombreDessin}
@@ -770,7 +770,7 @@ class AllUsers extends React.Component {
                                               textColor: "transparent",
                                               pathColor: "#ff2e4c",
                                               trailColor: "#d6d6d6",
-                                              strokeLinecap: "butt"
+                                              strokeLinecap: "butt",
                                             })}
                                           >
                                             <div
@@ -778,14 +778,14 @@ class AllUsers extends React.Component {
                                                 height: "100%",
                                                 justifyContent: "center",
                                                 alignItems: "center",
-                                                display: "flex"
+                                                display: "flex",
                                               }}
                                             >
                                               <p
                                                 style={{
                                                   color: "#ff2e4c",
                                                   fontSize: 15,
-                                                  margin: 0
+                                                  margin: 0,
                                                 }}
                                               >
                                                 {parseFloat(

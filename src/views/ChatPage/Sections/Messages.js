@@ -445,7 +445,7 @@ class Messages extends React.Component {
                 this.setState({ isOpen: false, imgUrl: "" });
               }}
               reactModalStyle={{
-                overlay: { zIndex: 2000 }
+                overlay: { zIndex: 2000 },
               }}
             />
           ) : (
@@ -465,7 +465,7 @@ class Messages extends React.Component {
                       zIndex: 2,
                       padding: 0,
                       margin: 0,
-                      width: "inherit"
+                      width: "inherit",
                     }}
                   >
                     <GridItem
@@ -479,7 +479,7 @@ class Messages extends React.Component {
                           alignItems: "center",
                           height: 70,
                           marginBottom: 5,
-                          padding: 0
+                          padding: 0,
                         }}
                       >
                         <GridContainer
@@ -487,7 +487,7 @@ class Messages extends React.Component {
                             height: 70,
                             alignItems: "center",
                             padding: 0,
-                            margin: 0
+                            margin: 0,
                           }}
                         >
                           <GridItem
@@ -516,7 +516,7 @@ class Messages extends React.Component {
                           labelText="Recherche"
                           id="material"
                           style={{
-                            width: 295
+                            width: 295,
                           }}
                           value={this.state.search}
                           onChange={(search, event) => {
@@ -535,7 +535,7 @@ class Messages extends React.Component {
                                   <Search />
                                 </InputAdornment>
                               </ButtonBase>
-                            )
+                            ),
                           }}
                         />
                         <SimpleBar
@@ -543,7 +543,7 @@ class Messages extends React.Component {
                           style={{
                             maxHeight: HEIGHT - 249,
                             height: HEIGHT - 249,
-                            overflowX: "hidden"
+                            overflowX: "hidden",
                           }}
                           autoHide={true}
                         >
@@ -575,12 +575,12 @@ class Messages extends React.Component {
                                         style={{
                                           borderStyle: "solid",
                                           borderWidth: 1.2,
-                                          borderColor: "#1e1548"
+                                          borderColor: "#1e1548",
                                         }}
                                         alt=""
                                         src={
                                           config.API_URL +
-                                          "images/defaultPhotoProfil.jpg"
+                                          "images/asset/defaultPhotoProfil.jpg"
                                         }
                                       />
                                     ) : (
@@ -588,7 +588,7 @@ class Messages extends React.Component {
                                         style={{
                                           borderStyle: "solid",
                                           borderWidth: 1.2,
-                                          borderColor: "#1e1548"
+                                          borderColor: "#1e1548",
                                         }}
                                         alt=""
                                         src={user.userOne_lienPhoto}
@@ -598,7 +598,7 @@ class Messages extends React.Component {
                                     <span
                                       style={{
                                         marginLeft: 6,
-                                        color: "#1e1548"
+                                        color: "#1e1548",
                                       }}
                                     >
                                       {user.userOne_pseudo}
@@ -648,12 +648,12 @@ class Messages extends React.Component {
                                         style={{
                                           borderStyle: "solid",
                                           borderWidth: 1.2,
-                                          borderColor: "#1e1548"
+                                          borderColor: "#1e1548",
                                         }}
                                         alt=""
                                         src={
                                           config.API_URL +
-                                          "images/defaultPhotoProfil.jpg"
+                                          "images/asset/defaultPhotoProfil.jpg"
                                         }
                                       />
                                     ) : (
@@ -661,7 +661,7 @@ class Messages extends React.Component {
                                         style={{
                                           borderStyle: "solid",
                                           borderWidth: 1.2,
-                                          borderColor: "#1e1548"
+                                          borderColor: "#1e1548",
                                         }}
                                         alt=""
                                         src={user.userTwo_lienPhoto}
@@ -671,7 +671,7 @@ class Messages extends React.Component {
                                     <span
                                       style={{
                                         marginLeft: 6,
-                                        color: "#1e1548"
+                                        color: "#1e1548",
                                       }}
                                     >
                                       {user.userTwo_pseudo}
@@ -707,7 +707,7 @@ class Messages extends React.Component {
                       zIndex: 2,
                       padding: 0,
                       margin: 0,
-                      width: "inherit"
+                      width: "inherit",
                     }}
                   >
                     <GridItem
@@ -717,7 +717,7 @@ class Messages extends React.Component {
                       style={{
                         alignItems: "center",
                         padding: 0,
-                        margin: 0
+                        margin: 0,
                       }}
                     >
                       <Paper style={{ marginBottom: 5 }}>
@@ -726,7 +726,7 @@ class Messages extends React.Component {
                             height: 70,
                             alignItems: "center",
                             padding: 0,
-                            margin: 0
+                            margin: 0,
                           }}
                         >
                           <GridItem xs={3} sm={3} md={3}>
@@ -757,12 +757,12 @@ class Messages extends React.Component {
                                     borderWidth: 1.2,
                                     borderColor: "#1e1548",
                                     width: 51,
-                                    height: 51
+                                    height: 51,
                                   }}
                                   alt=""
                                   src={
                                     config.API_URL +
-                                    "images/defaultPhotoProfil.jpg"
+                                    "images/asset/defaultPhotoProfil.jpg"
                                   }
                                 />
                               ) : (
@@ -772,7 +772,7 @@ class Messages extends React.Component {
                                     borderWidth: 1.2,
                                     borderColor: "#1e1548",
                                     width: 51,
-                                    height: 51
+                                    height: 51,
                                   }}
                                   alt=""
                                   src={this.state.userChat.lienPhoto}
@@ -783,7 +783,7 @@ class Messages extends React.Component {
                                 style={{
                                   marginLeft: 13,
                                   color: "#1e1548",
-                                  fontWeight: "normal"
+                                  fontWeight: "normal",
                                 }}
                               >
                                 {this.state.userChat.pseudo}
@@ -795,7 +795,7 @@ class Messages extends React.Component {
                                     style={{
                                       marginLeft: "auto",
                                       marginRight: 25,
-                                      borderRadius: 50
+                                      borderRadius: 50,
                                     }}
                                   >
                                     <Tooltip
@@ -803,7 +803,7 @@ class Messages extends React.Component {
                                       style={{
                                         borderRadius: 50,
                                         marginLeft: "auto",
-                                        marginRight: 25
+                                        marginRight: 25,
                                       }}
                                     >
                                       <IconButton
@@ -830,7 +830,7 @@ class Messages extends React.Component {
                                     style={{
                                       marginLeft: "auto",
                                       marginRight: 25,
-                                      borderRadius: 50
+                                      borderRadius: 50,
                                     }}
                                   >
                                     <Tooltip
@@ -838,7 +838,7 @@ class Messages extends React.Component {
                                       style={{
                                         borderRadius: 50,
                                         marginLeft: "auto",
-                                        marginRight: 25
+                                        marginRight: 25,
                                       }}
                                     >
                                       <IconButton
@@ -873,7 +873,7 @@ class Messages extends React.Component {
                           style={{
                             maxHeight: HEIGHT - 245,
                             height: HEIGHT - 245,
-                            overflowX: "hidden"
+                            overflowX: "hidden",
                           }}
                           autoHide={true}
                         >
@@ -882,7 +882,7 @@ class Messages extends React.Component {
                               padding: 0,
                               width: "100%",
                               marginTop: "15px",
-                              margin: 0
+                              margin: 0,
                             }}
                             direction="column-reverse"
                             justify="flex-end"
@@ -901,7 +901,7 @@ class Messages extends React.Component {
                                     style={{
                                       alignItems: "center",
                                       paddingLeft: 0,
-                                      paddingRight: 0
+                                      paddingRight: 0,
                                     }}
                                   >
                                     <GridContainer
@@ -910,7 +910,7 @@ class Messages extends React.Component {
                                         width: "100%",
                                         alignItems: "center",
                                         padding: 0,
-                                        margin: 0
+                                        margin: 0,
                                       }}
                                     >
                                       <GridItem
@@ -920,7 +920,7 @@ class Messages extends React.Component {
                                         style={{
                                           alignItems: "center",
                                           paddingLeft: 0,
-                                          paddingRight: 0
+                                          paddingRight: 0,
                                         }}
                                       ></GridItem>
                                       <GridItem
@@ -932,7 +932,7 @@ class Messages extends React.Component {
                                           paddingTop: 24,
                                           paddingBottom: 24,
                                           paddingLeft: 0,
-                                          paddingRight: 0
+                                          paddingRight: 0,
                                         }}
                                       >
                                         {this.state.userChat.lienPhoto == "" ? (
@@ -940,7 +940,7 @@ class Messages extends React.Component {
                                             alt=""
                                             src={
                                               config.API_URL +
-                                              "images/defaultPhotoProfil.jpg"
+                                              "images/asset/defaultPhotoProfil.jpg"
                                             }
                                           />
                                         ) : (
@@ -958,7 +958,7 @@ class Messages extends React.Component {
                                           alignItems: "center",
                                           width: "auto",
                                           paddingLeft: 0,
-                                          paddingRight: 0
+                                          paddingRight: 0,
                                         }}
                                         className={classes.root}
                                         spacing={2}
@@ -973,7 +973,7 @@ class Messages extends React.Component {
                                                   onClick={() => {
                                                     this.setState({
                                                       isOpen: true,
-                                                      imgUrl: message.lienPhoto
+                                                      imgUrl: message.lienPhoto,
                                                     });
                                                   }}
                                                 >
@@ -983,7 +983,7 @@ class Messages extends React.Component {
                                                     style={{
                                                       width: "auto",
                                                       maxWidth: 220,
-                                                      height: "auto"
+                                                      height: "auto",
                                                     }}
                                                   >
                                                     <img
@@ -991,7 +991,7 @@ class Messages extends React.Component {
                                                       style={{
                                                         width: "auto",
                                                         maxWidth: 220,
-                                                        height: "auto"
+                                                        height: "auto",
                                                       }}
                                                     ></img>
                                                   </Avatar>
@@ -1013,7 +1013,7 @@ class Messages extends React.Component {
                                             color: "white",
                                             textAlign: "left",
                                             boxShadow:
-                                              "0px 3px 5px -1px rgba(4, 144, 243, 0.2), 0px 6px 10px 0px rgba(7, 169, 246, 0.14), 0px 1px 18px 0px rgba(4, 134, 196, 0.12)"
+                                              "0px 3px 5px -1px rgba(4, 144, 243, 0.2), 0px 6px 10px 0px rgba(7, 169, 246, 0.14), 0px 1px 18px 0px rgba(4, 134, 196, 0.12)",
                                           }}
                                         />
                                       </GridItem>
@@ -1029,7 +1029,7 @@ class Messages extends React.Component {
                                     style={{
                                       alignItems: "center",
                                       paddingLeft: 0,
-                                      paddingRight: 0
+                                      paddingRight: 0,
                                     }}
                                   >
                                     <GridContainer
@@ -1039,7 +1039,7 @@ class Messages extends React.Component {
                                         justifyContent: "flex-end",
                                         alignItems: "center",
                                         padding: 0,
-                                        margin: 0
+                                        margin: 0,
                                       }}
                                       alignItems="flex-end"
                                     >
@@ -1051,7 +1051,7 @@ class Messages extends React.Component {
                                           alignItems: "center",
                                           width: "auto",
                                           paddingLeft: 0,
-                                          paddingRight: 0
+                                          paddingRight: 0,
                                         }}
                                         className={classes.root}
                                         spacing={2}
@@ -1066,7 +1066,7 @@ class Messages extends React.Component {
                                                   onClick={() => {
                                                     this.setState({
                                                       isOpen: true,
-                                                      imgUrl: message.lienPhoto
+                                                      imgUrl: message.lienPhoto,
                                                     });
                                                   }}
                                                 >
@@ -1076,7 +1076,7 @@ class Messages extends React.Component {
                                                     style={{
                                                       width: "auto",
                                                       maxWidth: 220,
-                                                      height: "auto"
+                                                      height: "auto",
                                                     }}
                                                   >
                                                     <img
@@ -1084,7 +1084,7 @@ class Messages extends React.Component {
                                                       style={{
                                                         width: "auto",
                                                         maxWidth: 220,
-                                                        height: "auto"
+                                                        height: "auto",
                                                       }}
                                                     ></img>
                                                   </Avatar>
@@ -1106,7 +1106,7 @@ class Messages extends React.Component {
                                             color: "white",
                                             alignItems: "center",
                                             boxShadow:
-                                              "0px 3px 5px -1px rgba(2, 61, 122, 0.2), 0px 6px 10px 0px rgba(0, 16, 211, 0.14), 0px 1px 18px 0px rgba(13, 12, 112, 0.12)"
+                                              "0px 3px 5px -1px rgba(2, 61, 122, 0.2), 0px 6px 10px 0px rgba(0, 16, 211, 0.14), 0px 1px 18px 0px rgba(13, 12, 112, 0.12)",
                                           }}
                                         />
                                       </GridItem>
@@ -1117,7 +1117,7 @@ class Messages extends React.Component {
                                         style={{
                                           alignItems: "center",
                                           paddingLeft: 0,
-                                          paddingRight: 0
+                                          paddingRight: 0,
                                         }}
                                       ></GridItem>
                                       <GridItem
@@ -1129,7 +1129,7 @@ class Messages extends React.Component {
                                           paddingTop: 24,
                                           paddingBottom: 24,
                                           paddingLeft: 0,
-                                          paddingRight: 0
+                                          paddingRight: 0,
                                         }}
                                       >
                                         {this.state.user.lienPhoto == "" ? (
@@ -1137,7 +1137,7 @@ class Messages extends React.Component {
                                             alt=""
                                             src={
                                               config.API_URL +
-                                              "images/defaultPhotoProfil.jpg"
+                                              "images/asset/defaultPhotoProfil.jpg"
                                             }
                                           />
                                         ) : (
@@ -1160,7 +1160,7 @@ class Messages extends React.Component {
                                 style={{
                                   alignItems: "center",
                                   paddingLeft: 0,
-                                  paddingRight: 0
+                                  paddingRight: 0,
                                 }}
                               >
                                 <Tooltip
@@ -1182,7 +1182,7 @@ class Messages extends React.Component {
                                       width: 40,
                                       height: 40,
                                       color: "white",
-                                      backgroundColor: "#1f1748"
+                                      backgroundColor: "#1f1748",
                                     }}
                                   >
                                     <MoreHorizIcon />
@@ -1198,7 +1198,7 @@ class Messages extends React.Component {
                             style={{
                               margin: "0px",
                               padding: "0px",
-                              width: "100%"
+                              width: "100%",
                             }}
                             spacing={2}
                             justify="center"
@@ -1211,10 +1211,10 @@ class Messages extends React.Component {
                                 value={this.state.message}
                                 onChange={(message, event) => {
                                   this.setState({
-                                    message: message.target.value
+                                    message: message.target.value,
                                   });
                                 }}
-                                onKeyPress={ev => {
+                                onKeyPress={(ev) => {
                                   if (
                                     ev.key === "Enter" &&
                                     this.state.message.length > 0
@@ -1228,7 +1228,7 @@ class Messages extends React.Component {
                                 style={{
                                   paddingLeft: "0px",
                                   paddingRigth: "0px",
-                                  width: "100%"
+                                  width: "100%",
                                 }}
                               />
                             </GridItem>
@@ -1238,7 +1238,7 @@ class Messages extends React.Component {
                               md={1}
                               style={{
                                 alignItems: "center",
-                                paddingTop: "12px"
+                                paddingTop: "12px",
                               }}
                             >
                               <input
@@ -1247,7 +1247,7 @@ class Messages extends React.Component {
                                 id="icon-button-file"
                                 type="file"
                                 onClick={() => this.scrollBottom()}
-                                onChange={file => {
+                                onChange={(file) => {
                                   this.savePhotoMessage(file.target.files);
                                 }}
                               />
@@ -1268,7 +1268,7 @@ class Messages extends React.Component {
                             style={{
                               margin: "0px",
                               padding: "0px",
-                              width: "100%"
+                              width: "100%",
                             }}
                             spacing={2}
                             justify="center"
@@ -1281,7 +1281,7 @@ class Messages extends React.Component {
                                 height: 72,
                                 display: "flex",
                                 alignItems: "center",
-                                justifyContent: "center"
+                                justifyContent: "center",
                               }}
                             >
                               {" "}
@@ -1295,7 +1295,7 @@ class Messages extends React.Component {
                             style={{
                               margin: "0px",
                               padding: "0px",
-                              width: "100%"
+                              width: "100%",
                             }}
                             spacing={2}
                             justify="center"
@@ -1308,7 +1308,7 @@ class Messages extends React.Component {
                                 height: 72,
                                 display: "flex",
                                 alignItems: "center",
-                                justifyContent: "center"
+                                justifyContent: "center",
                               }}
                             >
                               {" "}
@@ -1335,7 +1335,7 @@ class Messages extends React.Component {
                     style={{
                       alignItems: "center",
                       height: 70,
-                      marginBottom: 5
+                      marginBottom: 5,
                     }}
                   >
                     <GridContainer style={{ height: 70, alignItems: "center" }}>
@@ -1365,11 +1365,12 @@ class Messages extends React.Component {
                                 borderWidth: 1.2,
                                 borderColor: "#1e1548",
                                 width: 51,
-                                height: 51
+                                height: 51,
                               }}
                               alt=""
                               src={
-                                config.API_URL + "images/defaultPhotoProfil.jpg"
+                                config.API_URL +
+                                "images/asset/defaultPhotoProfil.jpg"
                               }
                             />
                           ) : (
@@ -1379,7 +1380,7 @@ class Messages extends React.Component {
                                 borderWidth: 1.2,
                                 borderColor: "#1e1548",
                                 width: 51,
-                                height: 51
+                                height: 51,
                               }}
                               alt=""
                               src={this.state.userChat.lienPhoto}
@@ -1390,7 +1391,7 @@ class Messages extends React.Component {
                             style={{
                               marginLeft: 13,
                               color: "#1e1548",
-                              fontWeight: "normal"
+                              fontWeight: "normal",
                             }}
                           >
                             {this.state.userChat.pseudo}
@@ -1402,7 +1403,7 @@ class Messages extends React.Component {
                                 style={{
                                   marginLeft: "auto",
                                   marginRight: 25,
-                                  borderRadius: 50
+                                  borderRadius: 50,
                                 }}
                               >
                                 <Tooltip
@@ -1410,7 +1411,7 @@ class Messages extends React.Component {
                                   style={{
                                     borderRadius: 50,
                                     marginLeft: "auto",
-                                    marginRight: 25
+                                    marginRight: 25,
                                   }}
                                 >
                                   <IconButton
@@ -1435,7 +1436,7 @@ class Messages extends React.Component {
                                 style={{
                                   marginLeft: "auto",
                                   marginRight: 25,
-                                  borderRadius: 50
+                                  borderRadius: 50,
                                 }}
                               >
                                 <Tooltip
@@ -1443,7 +1444,7 @@ class Messages extends React.Component {
                                   style={{
                                     borderRadius: 50,
                                     marginLeft: "auto",
-                                    marginRight: 25
+                                    marginRight: 25,
                                   }}
                                 >
                                   <IconButton
@@ -1483,7 +1484,7 @@ class Messages extends React.Component {
                       labelText="Recherche"
                       id="material"
                       style={{
-                        width: 295
+                        width: 295,
                       }}
                       value={this.state.search}
                       onChange={(search, event) => {
@@ -1499,7 +1500,7 @@ class Messages extends React.Component {
                               <Search />
                             </InputAdornment>
                           </ButtonBase>
-                        )
+                        ),
                       }}
                     />
                     <SimpleBar
@@ -1507,7 +1508,7 @@ class Messages extends React.Component {
                       style={{
                         maxHeight: HEIGHT - 249,
                         height: HEIGHT - 249,
-                        overflowX: "hidden"
+                        overflowX: "hidden",
                       }}
                       autoHide={true}
                     >
@@ -1535,12 +1536,12 @@ class Messages extends React.Component {
                                     style={{
                                       borderStyle: "solid",
                                       borderWidth: 1.2,
-                                      borderColor: "#1e1548"
+                                      borderColor: "#1e1548",
                                     }}
                                     alt=""
                                     src={
                                       config.API_URL +
-                                      "images/defaultPhotoProfil.jpg"
+                                      "images/asset/defaultPhotoProfil.jpg"
                                     }
                                   />
                                 ) : (
@@ -1548,7 +1549,7 @@ class Messages extends React.Component {
                                     style={{
                                       borderStyle: "solid",
                                       borderWidth: 1.2,
-                                      borderColor: "#1e1548"
+                                      borderColor: "#1e1548",
                                     }}
                                     alt=""
                                     src={user.userOne_lienPhoto}
@@ -1599,12 +1600,12 @@ class Messages extends React.Component {
                                     style={{
                                       borderStyle: "solid",
                                       borderWidth: 1.2,
-                                      borderColor: "#1e1548"
+                                      borderColor: "#1e1548",
                                     }}
                                     alt=""
                                     src={
                                       config.API_URL +
-                                      "images/defaultPhotoProfil.jpg"
+                                      "images/asset/defaultPhotoProfil.jpg"
                                     }
                                   />
                                 ) : (
@@ -1612,7 +1613,7 @@ class Messages extends React.Component {
                                     style={{
                                       borderStyle: "solid",
                                       borderWidth: 1.2,
-                                      borderColor: "#1e1548"
+                                      borderColor: "#1e1548",
                                     }}
                                     alt=""
                                     src={user.userTwo_lienPhoto}
@@ -1655,7 +1656,7 @@ class Messages extends React.Component {
                       style={{
                         maxHeight: HEIGHT - 245,
                         height: HEIGHT - 245,
-                        overflowX: "hidden"
+                        overflowX: "hidden",
                       }}
                       autoHide={true}
                     >
@@ -1664,7 +1665,7 @@ class Messages extends React.Component {
                           padding: 0,
                           width: "100%",
                           marginTop: "15px",
-                          marginLeft: "0px"
+                          marginLeft: "0px",
                         }}
                         spacing={2}
                         direction="column-reverse"
@@ -1686,7 +1687,7 @@ class Messages extends React.Component {
                                     padding: 0,
                                     width: "100%",
                                     marginLeft: "0px",
-                                    alignItems: "center"
+                                    alignItems: "center",
                                   }}
                                 >
                                   <GridItem
@@ -1706,7 +1707,7 @@ class Messages extends React.Component {
                                         alt=""
                                         src={
                                           config.API_URL +
-                                          "images/defaultPhotoProfil.jpg"
+                                          "images/asset/defaultPhotoProfil.jpg"
                                         }
                                       />
                                     ) : (
@@ -1722,7 +1723,7 @@ class Messages extends React.Component {
                                     md={9}
                                     style={{
                                       alignItems: "center",
-                                      width: "auto"
+                                      width: "auto",
                                     }}
                                     className={classes.root}
                                     spacing={2}
@@ -1737,7 +1738,7 @@ class Messages extends React.Component {
                                               onClick={() => {
                                                 this.setState({
                                                   isOpen: true,
-                                                  imgUrl: message.lienPhoto
+                                                  imgUrl: message.lienPhoto,
                                                 });
                                               }}
                                             >
@@ -1747,7 +1748,7 @@ class Messages extends React.Component {
                                                 style={{
                                                   width: "auto",
                                                   maxWidth: 600,
-                                                  height: "auto"
+                                                  height: "auto",
                                                 }}
                                               >
                                                 <img
@@ -1771,7 +1772,7 @@ class Messages extends React.Component {
                                         color: "white",
                                         textAlign: "left",
                                         boxShadow:
-                                          "0px 3px 5px -1px rgba(4, 144, 243, 0.2), 0px 6px 10px 0px rgba(7, 169, 246, 0.14), 0px 1px 18px 0px rgba(4, 134, 196, 0.12)"
+                                          "0px 3px 5px -1px rgba(4, 144, 243, 0.2), 0px 6px 10px 0px rgba(7, 169, 246, 0.14), 0px 1px 18px 0px rgba(4, 134, 196, 0.12)",
                                       }}
                                     />
                                   </GridItem>
@@ -1798,7 +1799,7 @@ class Messages extends React.Component {
                                     width: "100%",
                                     marginLeft: "0px",
                                     justifyContent: "flex-end",
-                                    alignItems: "center"
+                                    alignItems: "center",
                                   }}
                                   alignItems="flex-end"
                                 >
@@ -1808,7 +1809,7 @@ class Messages extends React.Component {
                                     md={9}
                                     style={{
                                       alignItems: "center",
-                                      width: "auto"
+                                      width: "auto",
                                     }}
                                     className={classes.root}
                                     spacing={2}
@@ -1823,7 +1824,7 @@ class Messages extends React.Component {
                                               onClick={() => {
                                                 this.setState({
                                                   isOpen: true,
-                                                  imgUrl: message.lienPhoto
+                                                  imgUrl: message.lienPhoto,
                                                 });
                                               }}
                                             >
@@ -1833,7 +1834,7 @@ class Messages extends React.Component {
                                                 style={{
                                                   width: "auto",
                                                   maxWidth: 600,
-                                                  height: "auto"
+                                                  height: "auto",
                                                 }}
                                               >
                                                 <img
@@ -1857,7 +1858,7 @@ class Messages extends React.Component {
                                         color: "white",
                                         alignItems: "center",
                                         boxShadow:
-                                          "0px 3px 5px -1px rgba(2, 61, 122, 0.2), 0px 6px 10px 0px rgba(0, 16, 211, 0.14), 0px 1px 18px 0px rgba(13, 12, 112, 0.12)"
+                                          "0px 3px 5px -1px rgba(2, 61, 122, 0.2), 0px 6px 10px 0px rgba(0, 16, 211, 0.14), 0px 1px 18px 0px rgba(13, 12, 112, 0.12)",
                                       }}
                                     />
                                   </GridItem>
@@ -1870,7 +1871,7 @@ class Messages extends React.Component {
                                       paddingTop: 24,
                                       paddingBottom: 24,
                                       paddingLeft: 0,
-                                      paddingRight: 0
+                                      paddingRight: 0,
                                     }}
                                   >
                                     {this.state.user.lienPhoto == "" ? (
@@ -1878,7 +1879,7 @@ class Messages extends React.Component {
                                         alt=""
                                         src={
                                           config.API_URL +
-                                          "images/defaultPhotoProfil.jpg"
+                                          "images/asset/defaultPhotoProfil.jpg"
                                         }
                                       />
                                     ) : (
@@ -1925,7 +1926,7 @@ class Messages extends React.Component {
                                   width: 40,
                                   height: 40,
                                   color: "white",
-                                  backgroundColor: "#1f1748"
+                                  backgroundColor: "#1f1748",
                                 }}
                               >
                                 <MoreHorizIcon />
@@ -1941,7 +1942,7 @@ class Messages extends React.Component {
                         style={{
                           margin: "0px",
                           padding: "0px",
-                          width: "100%"
+                          width: "100%",
                         }}
                         spacing={2}
                         justify="center"
@@ -1954,10 +1955,10 @@ class Messages extends React.Component {
                             value={this.state.message}
                             onChange={(message, event) => {
                               this.setState({
-                                message: message.target.value
+                                message: message.target.value,
                               });
                             }}
-                            onKeyPress={ev => {
+                            onKeyPress={(ev) => {
                               if (
                                 ev.key === "Enter" &&
                                 this.state.message.length > 0
@@ -1971,7 +1972,7 @@ class Messages extends React.Component {
                             style={{
                               paddingLeft: "0px",
                               paddingRigth: "0px",
-                              width: "100%"
+                              width: "100%",
                             }}
                           />
                         </GridItem>
@@ -1981,7 +1982,7 @@ class Messages extends React.Component {
                           md={1}
                           style={{
                             alignItems: "center",
-                            paddingTop: "12px"
+                            paddingTop: "12px",
                           }}
                         >
                           <input
@@ -1990,7 +1991,7 @@ class Messages extends React.Component {
                             id="icon-button-file"
                             type="file"
                             onClick={() => this.scrollBottom()}
-                            onChange={file => {
+                            onChange={(file) => {
                               this.savePhotoMessage(file.target.files);
                             }}
                           />
@@ -2011,7 +2012,7 @@ class Messages extends React.Component {
                         style={{
                           margin: "0px",
                           padding: "0px",
-                          width: "100%"
+                          width: "100%",
                         }}
                         spacing={2}
                         justify="center"
@@ -2024,7 +2025,7 @@ class Messages extends React.Component {
                             height: 72,
                             display: "flex",
                             alignItems: "center",
-                            justifyContent: "center"
+                            justifyContent: "center",
                           }}
                         >
                           {" "}
@@ -2038,7 +2039,7 @@ class Messages extends React.Component {
                         style={{
                           margin: "0px",
                           padding: "0px",
-                          width: "100%"
+                          width: "100%",
                         }}
                         spacing={2}
                         justify="center"
@@ -2051,7 +2052,7 @@ class Messages extends React.Component {
                             height: 72,
                             display: "flex",
                             alignItems: "center",
-                            justifyContent: "center"
+                            justifyContent: "center",
                           }}
                         >
                           {" "}

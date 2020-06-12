@@ -26,6 +26,9 @@ import config from "config/config";
 import HeaderUser from "./HeaderUser2";
 import Header from './Header';
 import IconButton from "@material-ui/core/IconButton";
+import ContactMailOutlinedIcon from '@material-ui/icons/ContactMailOutlined';
+import InputIcon from '@material-ui/icons/Input';
+import PhoneForwardedIcon from '@material-ui/icons/PhoneForwarded';
 // react components for routing our app without refresh
 
 // @material-ui/core components
@@ -217,6 +220,46 @@ class HeaderGloale extends React.Component  {
                             width: "146px"
                         }}
                     />
+                }
+                rightLinks={
+                    <List className={classes.list}>
+                        <ListItem className={classes.listItem}>
+                            <Link to="/" className={classes.dropdownLink}>
+                                <Button
+                                    color="transparent"
+                                    className={classes.navLink}
+                                    style={{ padding: 0 }}
+                                >
+                                    <MenuBookOutlinedIcon style={{ width: 22, height: 22 }} />{" "}
+              Histoires
+            </Button>
+                            </Link>
+                        </ListItem>
+                        <ListItem className={classes.listItem}>
+                            <Link to="/Connexion" className={classes.dropdownLink}>
+                                <Button
+                                    color="transparent"
+                                    className={classes.navLink}
+                                    style={{ padding: 0 }}
+                                >
+                                    <InputIcon style={{ width: 22, height: 22 }} />{" "}
+              Connexion
+            </Button>
+                            </Link>
+                        </ListItem>
+                        <ListItem className={classes.listItem}>
+                            <Link to="/Contact" className={classes.dropdownLink}>
+                                <Button
+                                    color="transparent"
+                                    className={classes.navLink}
+                                    style={{ padding: 0 }}
+                                >
+                                    <PhoneForwardedIcon style={{ width: 22, height: 22 }} />
+              Contactez-nous
+            </Button>
+                            </Link>
+                        </ListItem>
+                        </List>
                 }
                 fixed
                 changeColorOnScroll={{

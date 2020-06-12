@@ -96,7 +96,6 @@ console.log(snapshot);
         if (snapshot && snapshot.val()) {
 
           if (snapshot.val().to == this.state.user.id) {
-            alert('ra9')
             this.getNumberRequest()
           }
         }
@@ -233,11 +232,11 @@ console.log(snapshot);
       <Dialog
         classes={{
           root: classes.center,
-          paper: classes.modal
+          paper: classes.modal,
         }}
         open={this.state.modal}
         keepMounted
-        onClose={() => this.setState({modal:false })}
+        onClose={() => this.setState({ modal: false })}
         aria-labelledby="modal-slide-title"
         aria-describedby="modal-slide-description"
         maxWidth={"md"}
@@ -253,12 +252,12 @@ console.log(snapshot);
           style={{
             paddingBottom: "0px",
             backgroundColor: "#fff",
-            color: "#332861"
+            color: "#332861",
           }}
         >
           <div
             style={{
-              textAlign: "-webkit-center"
+              textAlign: "-webkit-center",
             }}
           >
             <img
@@ -266,14 +265,14 @@ console.log(snapshot);
               alt="Logo"
               style={{
                 display: "block",
-                width: "200px"
+                width: "200px",
               }}
             />
             <h4
               style={{
                 fontWeight: "bold",
                 fontFamily: "cursive",
-                marginLeft: 20
+                marginLeft: 20,
               }}
             >
               NOTRE CHARTE
@@ -289,7 +288,7 @@ console.log(snapshot);
             backgroundColor: "#fff",
             color: "#332861",
             marginTop: "2%",
-            fontFamily: "cursive"
+            fontFamily: "cursive",
           }}
           spacing={0}
         >
@@ -329,7 +328,7 @@ console.log(snapshot);
               width: "100%",
               fontWeight: "400",
               backgroundColor: "#fff",
-              color: "#332861"
+              color: "#332861",
             }}
           >
             <Button
@@ -338,10 +337,10 @@ console.log(snapshot);
                 color: "rgb(89, 79, 118)",
                 fontWeight: "bold",
                 margin: 0,
-                backgroundColor: "#e3f3fd"
+                backgroundColor: "#e3f3fd",
               }}
               onClick={() => {
-                this.setState({modal:false});
+                this.setState({ modal: false });
               }}
             >
               J’ai compris !
@@ -350,7 +349,6 @@ console.log(snapshot);
         </MuiDialogActions>
       </Dialog>
       <List className={classes.list}>
-
         <ListItem className={classes.listItem}>
           <Link to="/" className={classes.dropdownLink}>
             <Button
@@ -358,7 +356,8 @@ console.log(snapshot);
               className={classes.navLink}
               style={{ padding: 0 }}
             >
-              <MenuBookOutlinedIcon style={{ width: 22, height: 22 }} /> Histoires
+              <MenuBookOutlinedIcon style={{ width: 22, height: 22 }} />{" "}
+              Histoires
             </Button>
           </Link>
         </ListItem>
@@ -369,7 +368,8 @@ console.log(snapshot);
               className={classes.navLink}
               style={{ padding: 0 }}
             >
-              <PeopleOutlineOutlinedIcon style={{ width: 22, height: 22 }} /> utilisateurs
+              <PeopleOutlineOutlinedIcon style={{ width: 22, height: 22 }} />{" "}
+              utilisateurs
             </Button>
           </Link>
         </ListItem>
@@ -380,34 +380,42 @@ console.log(snapshot);
               className={classes.navLink}
               style={{ padding: 0 }}
             >
-              <Badge badgeContent={this.state.vue} max={99} color="secondary"
+              <Badge
+                badgeContent={this.state.vue}
+                max={99}
+                color="secondary"
                 anchorOrigin={{
-                  vertical: 'top',
-                  horizontal: 'left',
-                }}>
+                  vertical: "top",
+                  horizontal: "left",
+                }}
+              >
                 <MailIcon style={{ width: 22, height: 22 }} />
-              </Badge> Messages
+              </Badge>{" "}
+              Messages
             </Button>
           </Link>
         </ListItem>
         <ListItem className={classes.listItem}>
           <div>
-
             <Link onClick={this.handleClick} className={classes.dropdownLink}>
               <Button
                 color="transparent"
                 className={classes.navLink}
                 style={{ padding: 0 }}
               >
-
-                <Badge badgeContent={this.state.nbrReq} max={99} color="secondary"
+                <Badge
+                  badgeContent={this.state.nbrReq}
+                  max={99}
+                  color="secondary"
                   anchorOrigin={{
-                    vertical: 'top',
-                    horizontal: 'left',
-                  }}>
+                    vertical: "top",
+                    horizontal: "left",
+                  }}
+                >
                   <LanguageIcon style={{ width: 22, height: 22 }} />
-                </Badge> Réseau
-            </Button>
+                </Badge>{" "}
+                Réseau
+              </Button>
             </Link>
 
             <Menu
@@ -417,76 +425,101 @@ console.log(snapshot);
               anchorEl={this.state.anchorEl}
               keepMounted
               open={open}
-              onClose={()=>this.handleClose()}
+              onClose={() => this.handleClose()}
               anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'center',
+                vertical: "bottom",
+                horizontal: "center",
               }}
               transformOrigin={{
-                vertical: 'top',
-                horizontal: 'center',
+                vertical: "top",
+                horizontal: "center",
               }}
               PaperProps={{
                 style: {
                   // maxHeight: ITEM_HEIGHT * 4.5,
-                  width: '36ch',
+                  width: "36ch",
                 },
               }}
             >
               <SimpleBar
                 style={{
                   maxHeight: ITEM_HEIGHT * 4.5,
-                  width: '36ch',
+                  width: "36ch",
                   marginLeft: "auto",
-                  marginRight: "auto"
+                  marginRight: "auto",
                 }}
               >
                 {this.state.requestFriend.length == 0 ? (
-                  <MenuItem ><span style={{ textAlign: 'center', width: '100%', color: '#1e1548' }}>aucune nouvelle invitation</span></MenuItem>
-                ) :
+                  <MenuItem>
+                    <span
+                      style={{
+                        textAlign: "center",
+                        width: "100%",
+                        color: "#1e1548",
+                      }}
+                    >
+                      aucune nouvelle invitation
+                    </span>
+                  </MenuItem>
+                ) : (
                   this.state.requestFriend.map((friend) => (
-                    <MenuItem >
-                      <div style={{ display: 'contents' }}>
+                    <MenuItem>
+                      <div style={{ display: "contents" }}>
                         {friend.userOne.lienPhoto == "" ? (
                           <Avatar
                             style={{
-                              borderStyle: 'solid', borderWidth: 1.2,
-                              borderColor: '#1e1548'
+                              borderStyle: "solid",
+                              borderWidth: 1.2,
+                              borderColor: "#1e1548",
                             }}
                             alt=""
-                            src={config.API_URL + "images/defaultPhotoProfil.jpg"}
+                            src={
+                              config.API_URL +
+                              "images/asset/defaultPhotoProfil.jpg"
+                            }
                           />
                         ) : (
-                            <Avatar
-                              style={{
-                                borderStyle: 'solid', borderWidth: 1.2,
-                                borderColor: '#1e1548'
-                              }}
-                              alt=""
-                              src={friend.userOne.lienPhoto}
-                            />
-                          )}
-                        <span style={{ marginLeft: 6, color: '#1e1548' }}>{friend.userOne.pseudo}</span>
+                          <Avatar
+                            style={{
+                              borderStyle: "solid",
+                              borderWidth: 1.2,
+                              borderColor: "#1e1548",
+                            }}
+                            alt=""
+                            src={friend.userOne.lienPhoto}
+                          />
+                        )}
+                        <span style={{ marginLeft: 6, color: "#1e1548" }}>
+                          {friend.userOne.pseudo}
+                        </span>
                       </div>
-                      <Tooltip
-                        title="Accepter"
-                      >
-                        <ButtonBase onClick={() => { this.accepteRequest(friend.id, friend.userOne.id) }} style={{ marginLeft: 'auto' }}>
-                          <CheckCircleOutlineRoundedIcon style={{ color: '#1e1548' }} />
+                      <Tooltip title="Accepter">
+                        <ButtonBase
+                          onClick={() => {
+                            this.accepteRequest(friend.id, friend.userOne.id);
+                          }}
+                          style={{ marginLeft: "auto" }}
+                        >
+                          <CheckCircleOutlineRoundedIcon
+                            style={{ color: "#1e1548" }}
+                          />
                         </ButtonBase>
                       </Tooltip>
-                      <Tooltip
-                        title="Refuser"
-
-                      >
-                        <ButtonBase onClick={() => { this.refuseRequest(friend.id) }} style={{ marginLeft: 5 }}>
-                          <HighlightOffRoundedIcon style={{ color: '#1e1548' }} />
+                      <Tooltip title="Refuser">
+                        <ButtonBase
+                          onClick={() => {
+                            this.refuseRequest(friend.id);
+                          }}
+                          style={{ marginLeft: 5 }}
+                        >
+                          <HighlightOffRoundedIcon
+                            style={{ color: "#1e1548" }}
+                          />
                         </ButtonBase>
                       </Tooltip>
-
-
                     </MenuItem>
-                  ))}
+                  ))
+                )}
               </SimpleBar>
               <MenuItem selected={true}>
                 <Link to="/MonReseau">
@@ -496,14 +529,14 @@ console.log(snapshot);
                       fontWeight: "bold",
                       color: "#1e1548",
                       margin: 0,
-                      textAlign: 'center',
-                      fontVariant: 'unicase',
+                      textAlign: "center",
+                      fontVariant: "unicase",
                       width: 287,
-                      textDecoration: 'underline'
+                      textDecoration: "underline",
                     }}
                   >
                     Mon Réseau
-                </h6>
+                  </h6>
                 </Link>
               </MenuItem>
             </Menu>
@@ -511,22 +544,25 @@ console.log(snapshot);
         </ListItem>
         <ListItem className={classes.listItem}>
           <div>
-
             <Link onClick={this.handleClick2} className={classes.dropdownLink}>
               <Button
                 color="transparent"
                 className={classes.navLink}
                 style={{ padding: 0 }}
               >
-
-                <Badge badgeContent={this.state.vueNotif} max={99} color="secondary"
+                <Badge
+                  badgeContent={this.state.vueNotif}
+                  max={99}
+                  color="secondary"
                   anchorOrigin={{
-                    vertical: 'top',
-                    horizontal: 'left',
-                  }}>
+                    vertical: "top",
+                    horizontal: "left",
+                  }}
+                >
                   <NotificationsNoneIcon style={{ width: 22, height: 22 }} />
-                </Badge> Notifications
-            </Button>
+                </Badge>{" "}
+                Notifications
+              </Button>
             </Link>
 
             <Menu
@@ -536,65 +572,95 @@ console.log(snapshot);
               anchorEl={this.state.anchorEl2}
               keepMounted
               open={open2}
-              onClose={()=>this.handleClose2}
+              onClose={() => this.handleClose2}
               anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'center',
+                vertical: "bottom",
+                horizontal: "center",
               }}
               transformOrigin={{
-                vertical: 'top',
-                horizontal: 'center',
+                vertical: "top",
+                horizontal: "center",
               }}
               PaperProps={{
                 style: {
                   // maxHeight: ITEM_HEIGHT * 4.5,
-                  width: '36ch',
+                  width: "36ch",
                 },
               }}
             >
               <SimpleBar
                 style={{
                   maxHeight: 252,
-                  width: '36ch',
+                  width: "36ch",
                   marginLeft: "auto",
-                  marginRight: "auto"
+                  marginRight: "auto",
                 }}
               >
                 {this.state.notifications.length == 0 ? (
-                  <MenuItem ><span style={{ textAlign: 'center', width: '100%', color: '#1e1548' }}>aucune notification</span></MenuItem>
-                ) :
+                  <MenuItem>
+                    <span
+                      style={{
+                        textAlign: "center",
+                        width: "100%",
+                        color: "#1e1548",
+                      }}
+                    >
+                      aucune notification
+                    </span>
+                  </MenuItem>
+                ) : (
                   this.state.notifications.map((notification) => (
                     <Link to={notification.lien}>
-                      <MenuItem >
-                        <div style={{ display: 'flex' }}>
+                      <MenuItem>
+                        <div style={{ display: "flex" }}>
                           {notification.lienDessin == "" ? (
                             <Avatar
                               style={{
-                                borderStyle: 'solid', borderWidth: 1.2,
-                                borderColor: '#1e1548'
+                                borderStyle: "solid",
+                                borderWidth: 1.2,
+                                borderColor: "#1e1548",
                               }}
                               alt=""
-                              src={config.API_URL + "images/defaultPhotoProfil.jpg"}
+                              src={
+                                config.API_URL +
+                                "images/asset/defaultPhotoProfil.jpg"
+                              }
                             />
                           ) : (
-                              <Avatar
-                                style={{
-                                  borderStyle: 'solid', borderWidth: 1.2,
-                                  borderColor: '#1e1548'
-                                }}
-                                alt=""
-                                src={notification.lienDessin}
-                              />
-                            )}
+                            <Avatar
+                              style={{
+                                borderStyle: "solid",
+                                borderWidth: 1.2,
+                                borderColor: "#1e1548",
+                              }}
+                              alt=""
+                              src={notification.lienDessin}
+                            />
+                          )}
                           <div style={{ marginLeft: 6, maxWidth: 280 }}>
-                            <span style={{ color: '#1e1548' }}>{notification.pseudo}</span>
-                            <ListItemText primary={
-                              <React.Fragment>
-                                <p style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: 'black', width: 244 }}>
-                                  {notification.text}
-                                </p>
-                              </React.Fragment>
-                            } secondary={moment(notification.dateDeCreation).fromNow()} />
+                            <span style={{ color: "#1e1548" }}>
+                              {notification.pseudo}
+                            </span>
+                            <ListItemText
+                              primary={
+                                <React.Fragment>
+                                  <p
+                                    style={{
+                                      whiteSpace: "nowrap",
+                                      overflow: "hidden",
+                                      textOverflow: "ellipsis",
+                                      color: "black",
+                                      width: 244,
+                                    }}
+                                  >
+                                    {notification.text}
+                                  </p>
+                                </React.Fragment>
+                              }
+                              secondary={moment(
+                                notification.dateDeCreation
+                              ).fromNow()}
+                            />
                           </div>
                         </div>
                         {/* <Tooltip
@@ -606,14 +672,13 @@ console.log(snapshot);
                   </Tooltip> */}
                       </MenuItem>
                     </Link>
-                  ))}
+                  ))
+                )}
               </SimpleBar>
-
             </Menu>
           </div>
         </ListItem>
         <ListItem className={classes.listItem}>
-
           <Link className={classes.dropdownLink} style={{ padding: 0 }}>
             <Tooltip
               id="instagram-tooltip"
@@ -625,32 +690,38 @@ console.log(snapshot);
               <CustomDropdown
                 noLiPadding
                 buttonText={
-                  <div style={{ display: 'contents' }}>
+                  <div style={{ display: "contents" }}>
                     {this.state.user.lienPhoto == "" ? (
                       <Avatar
                         style={{
-                          borderStyle: 'solid', borderWidth: 1.2,
-                          borderColor: '#1e1548'
+                          borderStyle: "solid",
+                          borderWidth: 1.2,
+                          borderColor: "#1e1548",
                         }}
                         alt=""
-                        src={config.API_URL + "images/defaultPhotoProfil.jpg"}
+                        src={
+                          config.API_URL + "images/asset/defaultPhotoProfil.jpg"
+                        }
                       />
                     ) : (
-                        <Avatar
-                          style={{
-                            borderStyle: 'solid', borderWidth: 1.2,
-                            borderColor: '#1e1548'
-                          }}
-                          alt=""
-                          src={this.state.user.lienPhoto}
-                        />
-                      )}
-                    <span style={{ marginLeft: 6, color: '#1e1548' }}>{this.state.user.pseudo}</span>
+                      <Avatar
+                        style={{
+                          borderStyle: "solid",
+                          borderWidth: 1.2,
+                          borderColor: "#1e1548",
+                        }}
+                        alt=""
+                        src={this.state.user.lienPhoto}
+                      />
+                    )}
+                    <span style={{ marginLeft: 6, color: "#1e1548" }}>
+                      {this.state.user.pseudo}
+                    </span>
                   </div>
                 }
                 buttonProps={{
                   className: classes.navLink,
-                  color: "transparent"
+                  color: "transparent",
                 }}
                 dropdownList={[
                   <Link to="/LesHistoires" className={classes.dropdownLink}>
@@ -667,7 +738,7 @@ console.log(snapshot);
                     style={{
                       fontSize: "13px",
                       fontFamily: "Roboto",
-                      fontWeight: 400
+                      fontWeight: 400,
                     }}
                     onClick={() => {
                       setModal(true);
@@ -675,9 +746,15 @@ console.log(snapshot);
                   >
                     NOTRE CHARTE
                   </ButtonBase>,
-                  <Link onClick={() => { localStorage.clear() }} className={classes.dropdownLink} divider>
+                  <Link
+                    onClick={() => {
+                      localStorage.clear();
+                    }}
+                    className={classes.dropdownLink}
+                    divider
+                  >
                     DÉCONNEXION
-                  </Link>
+                  </Link>,
                 ]}
               />
             </Tooltip>

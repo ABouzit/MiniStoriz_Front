@@ -23,6 +23,8 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import Search from "@material-ui/icons/Search";
 import PhotoCamera from "@material-ui/icons/CameraAltOutlined";
 import ButtonBase from "@material-ui/core/ButtonBase";
+import CheckCircle from "@material-ui/icons/CheckCircle";
+import Cancel from "@material-ui/icons/Cancel";
 import {
   BrowserView,
   MobileView,
@@ -49,14 +51,16 @@ import Avatar from "@material-ui/core/Avatar";
 import { subscriber, messageService } from "./../../services/messageService";
 import MonCompte from "./Sections/MonCompte";
 import { Input } from "@material-ui/core";
-import useForceUpdate from "use-force-update";
 import Badge from "@material-ui/core/Badge";
 import { Redirect } from "react-router-dom";
 import HeaderGloble from "components/Header/HeaderGloble";
 const dashboardRoutes = [];
 
 const useStyles = makeStyles(styles);
-
+function useForceUpdate() {
+  const [value, setValue] = React.useState(0); // integer state
+  return () => setValue(value => ++value); // update the state to force render
+}
 export default function MonComptePage(props) {
   const [refresh, setRefresh] = React.useState(false);
   const [search, setSearch] = React.useState("");
@@ -67,6 +71,7 @@ export default function MonComptePage(props) {
   const [userCurrent, setUserCurrent] = React.useState(
     JSON.parse(localStorage.getItem("user"))
   );
+  let forceUpdate = useForceUpdate();
   let refreshCallBackFunction = publierData => {
     console.log(publierData);
     setRefresh(true);
@@ -83,6 +88,7 @@ export default function MonComptePage(props) {
         setImgProf(v.user.lienPhoto);
         setImgCov(v.user.lienCouverture);
         setUser(v.user);
+        console.log("hn");
       }
     });
     window.addEventListener("scroll", scrollBalise);
@@ -90,6 +96,7 @@ export default function MonComptePage(props) {
       window.removeEventListener("scroll", scrollBalise);
     };
   });
+
   const scrollBalise = () => {
     const windowsScrollTop = window.pageYOffset;
     if (!isMobile) {
@@ -140,7 +147,7 @@ export default function MonComptePage(props) {
               margin: 0,
               padding: 0,
               boxShadow:
-                "0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12)"
+                "0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12)",
             }}
           >
             <Parallax
@@ -152,7 +159,7 @@ export default function MonComptePage(props) {
               style={{
                 height: "240px",
                 marginLeft: "auto",
-                marginRight: "auto"
+                marginRight: "auto",
               }}
             >
               <div style={{ width: "95%", textAlign: "end" }}>
@@ -163,7 +170,7 @@ export default function MonComptePage(props) {
                   multiple
                   type="file"
                   style={{ display: "none" }}
-                  onChange={file =>
+                  onChange={(file) =>
                     subscriber.next({ couverture: file.target.files[0] })
                   }
                 ></Input>
@@ -181,12 +188,21 @@ export default function MonComptePage(props) {
             {isMobile ? (
               <div style={{ display: "contents" }}>
                 <GridContainer justify="center" style={{ marginTop: "0%" }}>
-                  <GridItem xs={11} sm={11} md={11}>
+                  <GridItem
+                    xs={11}
+                    sm={11}
+                    md={11}
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                    }}
+                  >
                     <Card
                       style={{
                         backgroundColor: "white",
                         marginTop: 0,
-                        borderRadius: 0
+                        borderRadius: 0,
                       }}
                     >
                       <div
@@ -194,7 +210,7 @@ export default function MonComptePage(props) {
                           textAlign: "-webkit-center",
                           position: "absolute",
                           top: -65,
-                          width: "100%"
+                          width: "100%",
                         }}
                       >
                         {imgProf == "" ? (
@@ -202,7 +218,7 @@ export default function MonComptePage(props) {
                             overlap="circle"
                             anchorOrigin={{
                               vertical: "top",
-                              horizontal: "right"
+                              horizontal: "right",
                             }}
                             badgeContent={
                               <Avatar style={{ backgroundColor: "#fafafa" }}>
@@ -214,9 +230,9 @@ export default function MonComptePage(props) {
                                     multiple
                                     type="file"
                                     style={{ display: "none" }}
-                                    onChange={file =>
+                                    onChange={(file) =>
                                       subscriber.next({
-                                        profil: file.target.files[0]
+                                        profil: file.target.files[0],
                                       })
                                     }
                                   ></Input>
@@ -233,14 +249,15 @@ export default function MonComptePage(props) {
                             <Avatar
                               alt=""
                               src={
-                                config.API_URL + "images/defaultPhotoProfil.jpg"
+                                config.API_URL +
+                                "images/asset/defaultPhotoProfil.jpg"
                               }
                               style={{
                                 width: 130,
                                 height: 130,
                                 borderStyle: "solid",
                                 borderWidth: 7,
-                                borderColor: "white"
+                                borderColor: "white",
                               }}
                             />
                           </Badge>
@@ -249,7 +266,7 @@ export default function MonComptePage(props) {
                             overlap="circle"
                             anchorOrigin={{
                               vertical: "top",
-                              horizontal: "right"
+                              horizontal: "right",
                             }}
                             badgeContent={
                               <Avatar style={{ backgroundColor: "#fafafa" }}>
@@ -261,9 +278,9 @@ export default function MonComptePage(props) {
                                     multiple
                                     type="file"
                                     style={{ display: "none" }}
-                                    onChange={file =>
+                                    onChange={(file) =>
                                       subscriber.next({
-                                        profil: file.target.files[0]
+                                        profil: file.target.files[0],
                                       })
                                     }
                                   ></Input>
@@ -285,7 +302,7 @@ export default function MonComptePage(props) {
                                 height: 130,
                                 borderStyle: "solid",
                                 borderWidth: 7,
-                                borderColor: "white"
+                                borderColor: "white",
                               }}
                             />
                           </Badge>
@@ -297,7 +314,7 @@ export default function MonComptePage(props) {
                           fontWeight: "bold",
                           color: "black",
                           marginTop: 65,
-                          textAlign: "center"
+                          textAlign: "center",
                         }}
                       >
                         {user.pseudo}
@@ -312,7 +329,7 @@ export default function MonComptePage(props) {
                               style={{
                                 fontFamily: "cursive",
                                 color: "black",
-                                textAlign: "center"
+                                textAlign: "center",
                               }}
                             >
                               Histoires
@@ -324,7 +341,7 @@ export default function MonComptePage(props) {
                                 fontFamily: "monospace",
                                 fontWeight: "bold",
                                 color: "black",
-                                textAlign: "center"
+                                textAlign: "center",
                               }}
                             >
                               {user.nombreHistoire}
@@ -340,7 +357,7 @@ export default function MonComptePage(props) {
                               style={{
                                 fontFamily: "cursive",
                                 color: "black",
-                                textAlign: "center"
+                                textAlign: "center",
                               }}
                             >
                               Réseau
@@ -352,7 +369,7 @@ export default function MonComptePage(props) {
                                 fontFamily: "monospace",
                                 fontWeight: "bold",
                                 color: "black",
-                                textAlign: "center"
+                                textAlign: "center",
                               }}
                             >
                               {user.nombreReseau}
@@ -368,7 +385,7 @@ export default function MonComptePage(props) {
                               style={{
                                 fontFamily: "cursive",
                                 color: "black",
-                                textAlign: "center"
+                                textAlign: "center",
                               }}
                             >
                               Note moyenne
@@ -401,7 +418,7 @@ export default function MonComptePage(props) {
                                     textColor: "transparent",
                                     pathColor: "#2e99b0",
                                     trailColor: "#d6d6d6",
-                                    strokeLinecap: "butt"
+                                    strokeLinecap: "butt",
                                   })}
                                 >
                                   <div
@@ -409,14 +426,14 @@ export default function MonComptePage(props) {
                                       height: "100%",
                                       justifyContent: "center",
                                       alignItems: "center",
-                                      display: "flex"
+                                      display: "flex",
                                     }}
                                   >
                                     <p
                                       style={{
                                         color: "#2e99b0",
                                         fontSize: 12,
-                                        margin: 0
+                                        margin: 0,
                                       }}
                                     >
                                       {parseFloat(
@@ -466,7 +483,7 @@ export default function MonComptePage(props) {
                                     textColor: "transparent",
                                     pathColor: "#ff2e4c",
                                     trailColor: "#d6d6d6",
-                                    strokeLinecap: "butt"
+                                    strokeLinecap: "butt",
                                   })}
                                 >
                                   <div
@@ -474,14 +491,14 @@ export default function MonComptePage(props) {
                                       height: "100%",
                                       justifyContent: "center",
                                       alignItems: "center",
-                                      display: "flex"
+                                      display: "flex",
                                     }}
                                   >
                                     <p
                                       style={{
                                         color: "#ff2e4c",
                                         fontSize: 12,
-                                        margin: 0
+                                        margin: 0,
                                       }}
                                     >
                                       {parseFloat(
@@ -509,7 +526,7 @@ export default function MonComptePage(props) {
                           style={{
                             marginTop: "2%",
                             marginLeft: -30,
-                            marginRight: -30
+                            marginRight: -30,
                           }}
                         />
                         <GridContainer justify="center">
@@ -524,7 +541,7 @@ export default function MonComptePage(props) {
                                   marginTop: "2%",
                                   textAlign: "center",
                                   fontVariant: "unicase",
-                                  textDecoration: "underline"
+                                  textDecoration: "underline",
                                 }}
                               >
                                 Mon Réseau
@@ -536,7 +553,7 @@ export default function MonComptePage(props) {
                           style={{
                             marginTop: "2%",
                             marginLeft: -30,
-                            marginRight: -30
+                            marginRight: -30,
                           }}
                         />
 
@@ -552,7 +569,7 @@ export default function MonComptePage(props) {
                                   marginTop: "2%",
                                   textAlign: "center",
                                   fontVariant: "unicase",
-                                  textDecoration: "underline"
+                                  textDecoration: "underline",
                                 }}
                               >
                                 Mes Oeuvres
@@ -562,6 +579,31 @@ export default function MonComptePage(props) {
                         </GridContainer>
                       </CardBody>
                     </Card>
+                    <Button
+                      variant="contained"
+                      color="white"
+                      component="span"
+                      onClick={() => {
+                        if (!user.demandeResignation) {
+                          subscriber.next({ desactive: true });
+                          console.log("push");
+                          forceUpdate();
+                        } else {
+                          subscriber.next({ desactive: false });
+                          console.log("push");
+                          forceUpdate();
+                        }
+                      }}
+                    >
+                      {!user.demandeResignation ? (
+                        <CheckCircle style={{ marginRight: 5 }} />
+                      ) : (
+                        <Cancel style={{ marginRight: 5 }} />
+                      )}
+                      {!user.demandeResignation
+                        ? "Desactiver compte"
+                        : "Annuler Demande"}
+                    </Button>
                   </GridItem>
                 </GridContainer>
                 <div
@@ -573,7 +615,7 @@ export default function MonComptePage(props) {
                     textAlign: "left",
                     zIndex: 10,
                     bottom: 5,
-                    right: -5
+                    right: -5,
                   }}
                 >
                   <Fab
@@ -581,9 +623,10 @@ export default function MonComptePage(props) {
                       window.scrollTo(0, 0);
                     }}
                     variant="extended"
-                    size="small" style={{
+                    size="small"
+                    style={{
                       color: "white",
-                      backgroundColor: "#1f1748"
+                      backgroundColor: "#1f1748",
                     }}
                     aria-label="add"
                     className={classes.margin}
@@ -595,12 +638,21 @@ export default function MonComptePage(props) {
             ) : (
               <div id="navBarLeft">
                 <GridContainer justify="center" id="navBarLeft1">
-                  <GridItem xs={11} sm={11} md={11}>
+                  <GridItem
+                    xs={11}
+                    sm={11}
+                    md={11}
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                    }}
+                  >
                     <Card
                       style={{
                         backgroundColor: "white",
                         marginTop: 0,
-                        borderRadius: 0
+                        borderRadius: 0,
                       }}
                     >
                       <div
@@ -608,13 +660,13 @@ export default function MonComptePage(props) {
                           textAlign: "-webkit-center",
                           position: "absolute",
                           top: -65,
-                          width: "100%"
+                          width: "100%",
                         }}
                       >
                         <div
                           style={{
                             position: "relative",
-                            display: "inline-grid"
+                            display: "inline-grid",
                           }}
                         >
                           {imgProf == "" ? (
@@ -622,7 +674,7 @@ export default function MonComptePage(props) {
                               overlap="circle"
                               anchorOrigin={{
                                 vertical: "top",
-                                horizontal: "right"
+                                horizontal: "right",
                               }}
                               badgeContent={
                                 <Avatar style={{ backgroundColor: "#fafafa" }}>
@@ -634,9 +686,9 @@ export default function MonComptePage(props) {
                                       multiple
                                       type="file"
                                       style={{ display: "none" }}
-                                      onChange={file =>
+                                      onChange={(file) =>
                                         subscriber.next({
-                                          profil: file.target.files[0]
+                                          profil: file.target.files[0],
                                         })
                                       }
                                     ></Input>
@@ -654,14 +706,14 @@ export default function MonComptePage(props) {
                                 alt=""
                                 src={
                                   config.API_URL +
-                                  "images/defaultPhotoProfil.jpg"
+                                  "images/asset/defaultPhotoProfil.jpg"
                                 }
                                 style={{
                                   width: 130,
                                   height: 130,
                                   borderStyle: "solid",
                                   borderWidth: 7,
-                                  borderColor: "white"
+                                  borderColor: "white",
                                 }}
                               />
                             </Badge>
@@ -670,7 +722,7 @@ export default function MonComptePage(props) {
                               overlap="circle"
                               anchorOrigin={{
                                 vertical: "top",
-                                horizontal: "right"
+                                horizontal: "right",
                               }}
                               badgeContent={
                                 <Avatar style={{ backgroundColor: "#fafafa" }}>
@@ -682,9 +734,9 @@ export default function MonComptePage(props) {
                                       multiple
                                       type="file"
                                       style={{ display: "none" }}
-                                      onChange={file =>
+                                      onChange={(file) =>
                                         subscriber.next({
-                                          profil: file.target.files[0]
+                                          profil: file.target.files[0],
                                         })
                                       }
                                     ></Input>
@@ -706,7 +758,7 @@ export default function MonComptePage(props) {
                                   height: 130,
                                   borderStyle: "solid",
                                   borderWidth: 7,
-                                  borderColor: "white"
+                                  borderColor: "white",
                                 }}
                               />
                             </Badge>
@@ -719,7 +771,7 @@ export default function MonComptePage(props) {
                           fontWeight: "bold",
                           color: "black",
                           marginTop: 65,
-                          textAlign: "center"
+                          textAlign: "center",
                         }}
                       >
                         {user.pseudo}
@@ -734,7 +786,7 @@ export default function MonComptePage(props) {
                               style={{
                                 fontFamily: "cursive",
                                 color: "black",
-                                textAlign: "center"
+                                textAlign: "center",
                               }}
                             >
                               Histoires
@@ -746,7 +798,7 @@ export default function MonComptePage(props) {
                                 fontFamily: "monospace",
                                 fontWeight: "bold",
                                 color: "black",
-                                textAlign: "center"
+                                textAlign: "center",
                               }}
                             >
                               {user.nombreHistoire}
@@ -762,7 +814,7 @@ export default function MonComptePage(props) {
                               style={{
                                 fontFamily: "cursive",
                                 color: "black",
-                                textAlign: "center"
+                                textAlign: "center",
                               }}
                             >
                               Réseau
@@ -774,7 +826,7 @@ export default function MonComptePage(props) {
                                 fontFamily: "monospace",
                                 fontWeight: "bold",
                                 color: "black",
-                                textAlign: "center"
+                                textAlign: "center",
                               }}
                             >
                               {user.nombreReseau}
@@ -790,7 +842,7 @@ export default function MonComptePage(props) {
                               style={{
                                 fontFamily: "cursive",
                                 color: "black",
-                                textAlign: "center"
+                                textAlign: "center",
                               }}
                             >
                               Note moyenne
@@ -823,7 +875,7 @@ export default function MonComptePage(props) {
                                     textColor: "transparent",
                                     pathColor: "#2e99b0",
                                     trailColor: "#d6d6d6",
-                                    strokeLinecap: "butt"
+                                    strokeLinecap: "butt",
                                   })}
                                 >
                                   <div
@@ -831,14 +883,14 @@ export default function MonComptePage(props) {
                                       height: "100%",
                                       justifyContent: "center",
                                       alignItems: "center",
-                                      display: "flex"
+                                      display: "flex",
                                     }}
                                   >
                                     <p
                                       style={{
                                         color: "#2e99b0",
                                         fontSize: 15,
-                                        margin: 0
+                                        margin: 0,
                                       }}
                                     >
                                       {parseFloat(
@@ -888,7 +940,7 @@ export default function MonComptePage(props) {
                                     textColor: "transparent",
                                     pathColor: "#ff2e4c",
                                     trailColor: "#d6d6d6",
-                                    strokeLinecap: "butt"
+                                    strokeLinecap: "butt",
                                   })}
                                 >
                                   <div
@@ -896,14 +948,14 @@ export default function MonComptePage(props) {
                                       height: "100%",
                                       justifyContent: "center",
                                       alignItems: "center",
-                                      display: "flex"
+                                      display: "flex",
                                     }}
                                   >
                                     <p
                                       style={{
                                         color: "#ff2e4c",
                                         fontSize: 15,
-                                        margin: 0
+                                        margin: 0,
                                       }}
                                     >
                                       {parseFloat(
@@ -931,7 +983,7 @@ export default function MonComptePage(props) {
                           style={{
                             marginTop: "2%",
                             marginLeft: -30,
-                            marginRight: -30
+                            marginRight: -30,
                           }}
                         />
                         <GridContainer justify="center">
@@ -946,7 +998,7 @@ export default function MonComptePage(props) {
                                   marginTop: "2%",
                                   textAlign: "center",
                                   fontVariant: "unicase",
-                                  textDecoration: "underline"
+                                  textDecoration: "underline",
                                 }}
                               >
                                 Mon Réseau
@@ -958,7 +1010,7 @@ export default function MonComptePage(props) {
                           style={{
                             marginTop: "2%",
                             marginLeft: -30,
-                            marginRight: -30
+                            marginRight: -30,
                           }}
                         />
 
@@ -974,7 +1026,7 @@ export default function MonComptePage(props) {
                                   marginTop: "2%",
                                   textAlign: "center",
                                   fontVariant: "unicase",
-                                  textDecoration: "underline"
+                                  textDecoration: "underline",
                                 }}
                               >
                                 Mes Oeuvres
@@ -984,6 +1036,31 @@ export default function MonComptePage(props) {
                         </GridContainer>
                       </CardBody>
                     </Card>
+                    <Button
+                      variant="contained"
+                      color="white"
+                      component="span"
+                      onClick={() => {
+                        if (!user.demandeResignation) {
+                          subscriber.next({ desactive: true });
+                          console.log("push");
+                          forceUpdate();
+                        } else {
+                          subscriber.next({ desactive: false });
+                          console.log("push");
+                          forceUpdate();
+                        }
+                      }}
+                    >
+                      {!user.demandeResignation ? (
+                        <CheckCircle style={{ marginRight: 5 }} />
+                      ) : (
+                        <Cancel style={{ marginRight: 5 }} />
+                      )}
+                      {!user.demandeResignation
+                        ? "Desactiver compte"
+                        : "Annuler Demande"}
+                    </Button>
                   </GridItem>
                 </GridContainer>
               </div>

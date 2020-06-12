@@ -177,7 +177,7 @@ export default function MesOeuvresPage(props) {
             setImgUrl("");
           }}
           reactModalStyle={{
-            overlay: { zIndex: 2000 }
+            overlay: { zIndex: 2000 },
           }}
         />
       ) : (
@@ -206,7 +206,7 @@ export default function MesOeuvresPage(props) {
               margin: 0,
               padding: 0,
               boxShadow:
-                "0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12)"
+                "0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12)",
             }}
           >
             {user.lienCouverture == null ? (
@@ -216,7 +216,7 @@ export default function MesOeuvresPage(props) {
                   height: "240px",
                   marginLeft: "auto",
                   marginRight: "auto",
-                  display: "block"
+                  display: "block",
                 }}
               ></Parallax>
             ) : (
@@ -237,7 +237,7 @@ export default function MesOeuvresPage(props) {
                     height: "240px",
                     marginLeft: "auto",
                     marginRight: "auto",
-                    display: "block"
+                    display: "block",
                   }}
                 ></Parallax>
               </ButtonBase>
@@ -254,7 +254,7 @@ export default function MesOeuvresPage(props) {
                       style={{
                         backgroundColor: "white",
                         marginTop: 0,
-                        borderRadius: 0
+                        borderRadius: 0,
                       }}
                     >
                       <div
@@ -262,21 +262,22 @@ export default function MesOeuvresPage(props) {
                           textAlign: "-webkit-center",
                           position: "absolute",
                           top: -65,
-                          width: "100%"
+                          width: "100%",
                         }}
                       >
                         {user.lienPhoto == "" ? (
                           <Avatar
                             alt=""
                             src={
-                              config.API_URL + "images/defaultPhotoProfil.jpg"
+                              config.API_URL +
+                              "images/asset/defaultPhotoProfil.jpg"
                             }
                             style={{
                               width: 130,
                               height: 130,
                               borderStyle: "solid",
                               borderWidth: 7,
-                              borderColor: "white"
+                              borderColor: "white",
                             }}
                           />
                         ) : (
@@ -288,7 +289,7 @@ export default function MesOeuvresPage(props) {
                             style={{
                               width: "130px",
                               height: "130px",
-                              borderRadius: "50%"
+                              borderRadius: "50%",
                             }}
                           >
                             <Avatar
@@ -299,7 +300,7 @@ export default function MesOeuvresPage(props) {
                                 height: 130,
                                 borderStyle: "solid",
                                 borderWidth: 7,
-                                borderColor: "white"
+                                borderColor: "white",
                               }}
                             />
                           </ButtonBase>
@@ -311,7 +312,7 @@ export default function MesOeuvresPage(props) {
                           fontWeight: "bold",
                           color: "black",
                           marginTop: 65,
-                          textAlign: "center"
+                          textAlign: "center",
                         }}
                       >
                         {user.pseudo}
@@ -326,7 +327,7 @@ export default function MesOeuvresPage(props) {
                               style={{
                                 fontFamily: "cursive",
                                 color: "black",
-                                textAlign: "center"
+                                textAlign: "center",
                               }}
                             >
                               Histoires
@@ -338,7 +339,7 @@ export default function MesOeuvresPage(props) {
                                 fontFamily: "monospace",
                                 fontWeight: "bold",
                                 color: "black",
-                                textAlign: "center"
+                                textAlign: "center",
                               }}
                             >
                               {user.nombreHistoire}
@@ -354,7 +355,7 @@ export default function MesOeuvresPage(props) {
                               style={{
                                 fontFamily: "cursive",
                                 color: "black",
-                                textAlign: "center"
+                                textAlign: "center",
                               }}
                             >
                               Réseau
@@ -366,7 +367,7 @@ export default function MesOeuvresPage(props) {
                                 fontFamily: "monospace",
                                 fontWeight: "bold",
                                 color: "black",
-                                textAlign: "center"
+                                textAlign: "center",
                               }}
                             >
                               {user.nombreReseau}
@@ -382,7 +383,7 @@ export default function MesOeuvresPage(props) {
                               style={{
                                 fontFamily: "cursive",
                                 color: "black",
-                                textAlign: "center"
+                                textAlign: "center",
                               }}
                             >
                               Note moyenne
@@ -415,7 +416,7 @@ export default function MesOeuvresPage(props) {
                                     textColor: "transparent",
                                     pathColor: "#2e99b0",
                                     trailColor: "#d6d6d6",
-                                    strokeLinecap: "butt"
+                                    strokeLinecap: "butt",
                                   })}
                                 >
                                   <div
@@ -423,14 +424,14 @@ export default function MesOeuvresPage(props) {
                                       height: "100%",
                                       justifyContent: "center",
                                       alignItems: "center",
-                                      display: "flex"
+                                      display: "flex",
                                     }}
                                   >
                                     <p
                                       style={{
                                         color: "#2e99b0",
                                         fontSize: 12,
-                                        margin: 0
+                                        margin: 0,
                                       }}
                                     >
                                       {parseFloat(
@@ -480,7 +481,7 @@ export default function MesOeuvresPage(props) {
                                     textColor: "transparent",
                                     pathColor: "#ff2e4c",
                                     trailColor: "#d6d6d6",
-                                    strokeLinecap: "butt"
+                                    strokeLinecap: "butt",
                                   })}
                                 >
                                   <div
@@ -488,14 +489,14 @@ export default function MesOeuvresPage(props) {
                                       height: "100%",
                                       justifyContent: "center",
                                       alignItems: "center",
-                                      display: "flex"
+                                      display: "flex",
                                     }}
                                   >
                                     <p
                                       style={{
                                         color: "#ff2e4c",
                                         fontSize: 12,
-                                        margin: 0
+                                        margin: 0,
                                       }}
                                     >
                                       {parseFloat(
@@ -523,7 +524,7 @@ export default function MesOeuvresPage(props) {
                           style={{
                             marginTop: "2%",
                             marginLeft: -30,
-                            marginRight: -30
+                            marginRight: -30,
                           }}
                         />
                         {view == "" ? (
@@ -540,7 +541,7 @@ export default function MesOeuvresPage(props) {
                                       marginTop: "2%",
                                       textAlign: "center",
                                       fontVariant: "unicase",
-                                      textDecoration: "underline"
+                                      textDecoration: "underline",
                                     }}
                                   >
                                     Mon Réseau
@@ -552,7 +553,7 @@ export default function MesOeuvresPage(props) {
                               style={{
                                 marginTop: "2%",
                                 marginLeft: -30,
-                                marginRight: -30
+                                marginRight: -30,
                               }}
                             />
 
@@ -568,7 +569,7 @@ export default function MesOeuvresPage(props) {
                                       marginTop: "2%",
                                       textAlign: "center",
                                       fontVariant: "unicase",
-                                      textDecoration: "underline"
+                                      textDecoration: "underline",
                                     }}
                                   >
                                     Mon Profil
@@ -591,7 +592,7 @@ export default function MesOeuvresPage(props) {
                                       marginTop: "2%",
                                       textAlign: "center",
                                       fontVariant: "unicase",
-                                      textDecoration: "underline"
+                                      textDecoration: "underline",
                                     }}
                                   >
                                     Mon Réseau
@@ -603,7 +604,7 @@ export default function MesOeuvresPage(props) {
                               style={{
                                 marginTop: "4%",
                                 marginLeft: -30,
-                                marginRight: -30
+                                marginRight: -30,
                               }}
                             />
                             <GridContainer
@@ -670,7 +671,7 @@ export default function MesOeuvresPage(props) {
                       labelText="Recherche"
                       id="material"
                       formControlProps={{
-                        fullWidth: true
+                        fullWidth: true,
                       }}
                       value={search}
                       onChange={(search, event) => {
@@ -682,14 +683,14 @@ export default function MesOeuvresPage(props) {
                           <ButtonBase
                             onClick={subscriber.next({
                               search: search,
-                              filtre: filtre
+                              filtre: filtre,
                             })}
                           >
                             <InputAdornment position="end">
                               <Search />
                             </InputAdornment>
                           </ButtonBase>
-                        )
+                        ),
                       }}
                     />
                   </GridItem>
@@ -754,7 +755,7 @@ export default function MesOeuvresPage(props) {
                     textAlign: "left",
                     zIndex: 10,
                     bottom: 5,
-                    right: -5
+                    right: -5,
                   }}
                 >
                   <Fab
@@ -765,7 +766,7 @@ export default function MesOeuvresPage(props) {
                     size="small"
                     style={{
                       color: "white",
-                      backgroundColor: "#1f1748"
+                      backgroundColor: "#1f1748",
                     }}
                     aria-label="add"
                     className={classes.margin}
@@ -782,7 +783,7 @@ export default function MesOeuvresPage(props) {
                       style={{
                         backgroundColor: "white",
                         marginTop: 0,
-                        borderRadius: 0
+                        borderRadius: 0,
                       }}
                     >
                       <div
@@ -790,21 +791,22 @@ export default function MesOeuvresPage(props) {
                           textAlign: "-webkit-center",
                           position: "absolute",
                           top: -65,
-                          width: "100%"
+                          width: "100%",
                         }}
                       >
                         {user.lienPhoto == "" ? (
                           <Avatar
                             alt=""
                             src={
-                              config.API_URL + "images/defaultPhotoProfil.jpg"
+                              config.API_URL +
+                              "images/asset/defaultPhotoProfil.jpg"
                             }
                             style={{
                               width: 130,
                               height: 130,
                               borderStyle: "solid",
                               borderWidth: 7,
-                              borderColor: "white"
+                              borderColor: "white",
                             }}
                           />
                         ) : (
@@ -816,7 +818,7 @@ export default function MesOeuvresPage(props) {
                             style={{
                               width: "130px",
                               height: "130px",
-                              borderRadius: "50%"
+                              borderRadius: "50%",
                             }}
                           >
                             <Avatar
@@ -827,7 +829,7 @@ export default function MesOeuvresPage(props) {
                                 height: 130,
                                 borderStyle: "solid",
                                 borderWidth: 7,
-                                borderColor: "white"
+                                borderColor: "white",
                               }}
                             />
                           </ButtonBase>
@@ -839,7 +841,7 @@ export default function MesOeuvresPage(props) {
                           fontWeight: "bold",
                           color: "black",
                           marginTop: 65,
-                          textAlign: "center"
+                          textAlign: "center",
                         }}
                       >
                         {user.pseudo}
@@ -854,7 +856,7 @@ export default function MesOeuvresPage(props) {
                               style={{
                                 fontFamily: "cursive",
                                 color: "black",
-                                textAlign: "center"
+                                textAlign: "center",
                               }}
                             >
                               Histoires
@@ -866,7 +868,7 @@ export default function MesOeuvresPage(props) {
                                 fontFamily: "monospace",
                                 fontWeight: "bold",
                                 color: "black",
-                                textAlign: "center"
+                                textAlign: "center",
                               }}
                             >
                               {user.nombreHistoire}
@@ -882,7 +884,7 @@ export default function MesOeuvresPage(props) {
                               style={{
                                 fontFamily: "cursive",
                                 color: "black",
-                                textAlign: "center"
+                                textAlign: "center",
                               }}
                             >
                               Réseau
@@ -894,7 +896,7 @@ export default function MesOeuvresPage(props) {
                                 fontFamily: "monospace",
                                 fontWeight: "bold",
                                 color: "black",
-                                textAlign: "center"
+                                textAlign: "center",
                               }}
                             >
                               {user.nombreReseau}
@@ -910,7 +912,7 @@ export default function MesOeuvresPage(props) {
                               style={{
                                 fontFamily: "cursive",
                                 color: "black",
-                                textAlign: "center"
+                                textAlign: "center",
                               }}
                             >
                               Note moyenne
@@ -943,7 +945,7 @@ export default function MesOeuvresPage(props) {
                                     textColor: "transparent",
                                     pathColor: "#2e99b0",
                                     trailColor: "#d6d6d6",
-                                    strokeLinecap: "butt"
+                                    strokeLinecap: "butt",
                                   })}
                                 >
                                   <div
@@ -951,14 +953,14 @@ export default function MesOeuvresPage(props) {
                                       height: "100%",
                                       justifyContent: "center",
                                       alignItems: "center",
-                                      display: "flex"
+                                      display: "flex",
                                     }}
                                   >
                                     <p
                                       style={{
                                         color: "#2e99b0",
                                         fontSize: 15,
-                                        margin: 0
+                                        margin: 0,
                                       }}
                                     >
                                       {parseFloat(
@@ -1008,7 +1010,7 @@ export default function MesOeuvresPage(props) {
                                     textColor: "transparent",
                                     pathColor: "#ff2e4c",
                                     trailColor: "#d6d6d6",
-                                    strokeLinecap: "butt"
+                                    strokeLinecap: "butt",
                                   })}
                                 >
                                   <div
@@ -1016,14 +1018,14 @@ export default function MesOeuvresPage(props) {
                                       height: "100%",
                                       justifyContent: "center",
                                       alignItems: "center",
-                                      display: "flex"
+                                      display: "flex",
                                     }}
                                   >
                                     <p
                                       style={{
                                         color: "#ff2e4c",
                                         fontSize: 15,
-                                        margin: 0
+                                        margin: 0,
                                       }}
                                     >
                                       {parseFloat(
@@ -1051,7 +1053,7 @@ export default function MesOeuvresPage(props) {
                           style={{
                             marginTop: "2%",
                             marginLeft: -30,
-                            marginRight: -30
+                            marginRight: -30,
                           }}
                         />
                         {view == "" ? (
@@ -1068,7 +1070,7 @@ export default function MesOeuvresPage(props) {
                                       marginTop: "2%",
                                       textAlign: "center",
                                       fontVariant: "unicase",
-                                      textDecoration: "underline"
+                                      textDecoration: "underline",
                                     }}
                                   >
                                     Mon Réseau
@@ -1080,7 +1082,7 @@ export default function MesOeuvresPage(props) {
                               style={{
                                 marginTop: "2%",
                                 marginLeft: -30,
-                                marginRight: -30
+                                marginRight: -30,
                               }}
                             />
 
@@ -1096,7 +1098,7 @@ export default function MesOeuvresPage(props) {
                                       marginTop: "2%",
                                       textAlign: "center",
                                       fontVariant: "unicase",
-                                      textDecoration: "underline"
+                                      textDecoration: "underline",
                                     }}
                                   >
                                     Mon Profil
@@ -1119,7 +1121,7 @@ export default function MesOeuvresPage(props) {
                                       marginTop: "2%",
                                       textAlign: "center",
                                       fontVariant: "unicase",
-                                      textDecoration: "underline"
+                                      textDecoration: "underline",
                                     }}
                                   >
                                     Mon Réseau
@@ -1131,7 +1133,7 @@ export default function MesOeuvresPage(props) {
                               style={{
                                 marginTop: "4%",
                                 marginLeft: -30,
-                                marginRight: -30
+                                marginRight: -30,
                               }}
                             />
                             <GridContainer
@@ -1198,7 +1200,7 @@ export default function MesOeuvresPage(props) {
                       labelText="Recherche"
                       id="material"
                       formControlProps={{
-                        fullWidth: true
+                        fullWidth: true,
                       }}
                       value={search}
                       onChange={(search, event) => {
@@ -1210,14 +1212,14 @@ export default function MesOeuvresPage(props) {
                           <ButtonBase
                             onClick={subscriber.next({
                               search: search,
-                              filtre: filtre
+                              filtre: filtre,
                             })}
                           >
                             <InputAdornment position="end">
                               <Search />
                             </InputAdornment>
                           </ButtonBase>
-                        )
+                        ),
                       }}
                     />
                   </GridItem>
@@ -1234,41 +1236,41 @@ export default function MesOeuvresPage(props) {
                       variant="contained"
                       style={{ width: "-webkit-fill-available" }}
                     >
-                        <ColorButton
+                      <ColorButton
                         onClick={() => {
                           subscriber.next({ search: search, filtre: 1 });
                           setFiltre(1);
                           window.scrollTo(0, 0);
                         }}
                       >
-                          Les plus lues
+                        Les plus lues
                       </ColorButton>
-                        <ColorButton
+                      <ColorButton
                         onClick={() => {
                           subscriber.next({ search: search, filtre: 2 });
                           setFiltre(2);
                           window.scrollTo(0, 0);
                         }}
                       >
-                          Les plus populaires
+                        Les plus populaires
                       </ColorButton>
-                        <ColorButton
+                      <ColorButton
                         onClick={() => {
                           subscriber.next({ search: search, filtre: 3 });
                           setFiltre(3);
                           window.scrollTo(0, 0);
                         }}
                       >
-                          Les plus recentes
+                        Les plus recentes
                       </ColorButton>
-                        <ColorButton
+                      <ColorButton
                         onClick={() => {
                           subscriber.next({ search: search, filtre: 4 });
                           setFiltre(4);
                           window.scrollTo(0, 0);
                         }}
                       >
-                          Les plus anciennes
+                        Les plus anciennes
                       </ColorButton>
                     </ButtonGroup>
                   </GridItem>

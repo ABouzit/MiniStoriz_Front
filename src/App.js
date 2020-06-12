@@ -25,9 +25,11 @@ import HomePage from "views/HomePage/HomePage.js";
 import Messages from "views/ChatPage/ChatPage.js";
 import ActivationPage from "views/ActivationPage/ActivationPage.js";
 import UsersPage from "views/UsersPage/UsersPage.js";
+import ContactPage from "views/ContactPage/ContactPage";
 import "firebase/database";
 import * as firebase from "firebase/app";
 import HeaderGlobale from "components/Header/HeaderGloble";
+import ErrorPage from "views/404Page/ErrorPage";
 firebase.initializeApp(config.firebaseConfig);
 var hist = createBrowserHistory();
 export default class App extends React.Component {
@@ -59,7 +61,9 @@ export default class App extends React.Component {
           </Link> */}
 
           <Switch>
+            <Route path="/Contact" component={ContactPage} />
             <Route path="/material" component={Components} />
+            <Route path="/404" component={ErrorPage} />
             {/* <Route path="/landing-page" component={AllHistoires} /> */}
             <Route path="/Publier/:type" component={PublierViewPage} />
             <Route

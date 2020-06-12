@@ -55,6 +55,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "watch": "npm run start dev",
     "build": "react-scripts build && gulp licenses",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",

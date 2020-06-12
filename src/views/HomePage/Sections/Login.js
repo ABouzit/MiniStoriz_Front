@@ -1,5 +1,5 @@
 import React from "react";
-import PropTypes from "prop-types";
+import PropTypes, { string } from "prop-types";
 // react component for creating beautiful carousel
 import Slider from "react-slick";
 // @material-ui/core components
@@ -56,6 +56,9 @@ import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
 import { Base64 } from "js-base64";
 import { Redirect } from "react-router-dom";
 import { isMobile } from "react-device-detect";
+import * as firebase from "firebase/app";
+import "firebase/database";
+import Buttons from "@material-ui/core/Button";
 class Login extends React.Component {
   constructor(props) {
     super(props);
@@ -74,6 +77,7 @@ class Login extends React.Component {
       errorPrenom: false,
       errorVille: false,
       errorPseudo: false,
+      errorDesactive: false,
       updatePassword: false,
       password: "",
       errorPassword: false,
@@ -84,6 +88,8 @@ class Login extends React.Component {
       signinPassword: false,
       signinUtilisateur: false,
       alertError: false,
+      bloquedUser: false,
+      bloquedText: "",
       user: ""
     };
     this.handleClose = this.handleClose.bind(this);
@@ -108,7 +114,10 @@ class Login extends React.Component {
       signinError: false,
       signinPassword: false,
       signUpSuccess: false,
-      updatePassword: false
+      updatePassword: false,
+      errorDesactive: false,
+      bloquedUser: false,
+      bloquedText: ""
     });
   };
   fetchUser() {
@@ -224,6 +233,26 @@ class Login extends React.Component {
               _this.forceUpdate();
             }
           );
+        } else if (
+          typeof res.data == "string" &&
+          res.data.indexOf("vous avez ete bloquee jusqu'au ") > -1
+        ) {
+          _this.setState({ bloquedUser: true, bloquedText: res.data }, () => {
+            _this.forceUpdate();
+          });
+        } else if (
+          typeof res.data == "object" &&
+          res.data.error == "errorDesactive"
+        ) {
+          _this.setState(
+            {
+              user: res.data.user,
+              errorDesactive: true
+            },
+            () => {
+              _this.forceUpdate();
+            }
+          );
         } else {
           localStorage.setItem("user", JSON.stringify(res.data));
           _this.setState({ redirect: 1 }, () => {
@@ -233,6 +262,23 @@ class Login extends React.Component {
         console.log(res);
       });
     }
+  }
+  activeCompte() {
+    let us = this.state.user;
+    us.demandeActivation = true;
+    console.log(us);
+    Axios.put(config.API_URL + "users/demandeResignation", us).then(res => {
+      this.handleClose();
+      this.forceUpdate();
+      this.setState({ user: "" });
+    });
+    firebase
+      .database()
+      .ref("activeUsers/" + us.id)
+      .set({
+        stat: "DEMANDEACTIVE",
+        numbe: 100000 + Math.random() * (100000 - 1)
+      });
   }
   signUp() {
     const _this = this;
@@ -314,6 +360,12 @@ class Login extends React.Component {
             _this.forceUpdate();
           });
         } else {
+          firebase
+            .database()
+            .ref("newUsers")
+            .set({
+              numbe: 100000 + Math.random() * (100000 - 1)
+            });
           _this.setState({ signUpSuccess: true }, () => {
             _this.forceUpdate();
           });
@@ -544,10 +596,10 @@ class Login extends React.Component {
                         >
                           {isMobile ? (
                             <Divider />
-                          ):(
+                          ) : (
                             <Divider orientation="vertical" flexItem />
                           )}
-                          
+
                           <div style={{ width: "90%" }}>
                             <GridItem xs={10} sm={10} md={10}>
                               <h4
@@ -733,7 +785,7 @@ class Login extends React.Component {
                         >
                           {isMobile ? (
                             <Divider />
-                          ):(
+                          ) : (
                             <Divider orientation="vertical" flexItem />
                           )}
                           <div style={{ width: "90%" }}>
@@ -1038,7 +1090,7 @@ class Login extends React.Component {
                         >
                           {isMobile ? (
                             <Divider />
-                          ):(
+                          ) : (
                             <Divider orientation="vertical" flexItem />
                           )}
                           <div style={{ width: "90%" }}>
@@ -1285,6 +1337,41 @@ class Login extends React.Component {
                     </Alert>
                   </Snackbar>
                   <Snackbar
+                    open={this.state.errorDesactive}
+                    autoHideDuration={6000}
+                    onClose={this.handleClose}
+                  >
+                    <Alert
+                      onClose={this.handleClose}
+                      severity="error"
+                      action={
+                        <div>
+                          <Buttons
+                            color="inherit"
+                            size="small"
+                            onClick={() => {
+                              this.activeCompte();
+                            }}
+                          >
+                            OUI
+                          </Buttons>
+                          <Buttons
+                            color="inherit"
+                            size="small"
+                            onClick={() => {
+                              this.handleClose();
+                              this.setState({ user: "" });
+                            }}
+                          >
+                            NON
+                          </Buttons>
+                        </div>
+                      }
+                    >
+                      Voulez vous activer votre compte ?
+                    </Alert>
+                  </Snackbar>
+                  <Snackbar
                     open={this.state.signUpSuccess}
                     autoHideDuration={80000}
                     onClose={this.handleClose}
@@ -1311,6 +1398,15 @@ class Login extends React.Component {
                   >
                     <Alert onClose={this.handleClose} severity="error">
                       Comptes utilisateur introuvable !
+                    </Alert>
+                  </Snackbar>
+                  <Snackbar
+                    open={this.state.bloquedUser}
+                    autoHideDuration={6000}
+                    onClose={this.handleClose}
+                  >
+                    <Alert onClose={this.handleClose} severity="error">
+                      {this.state.bloquedText}
                     </Alert>
                   </Snackbar>
                   <Snackbar

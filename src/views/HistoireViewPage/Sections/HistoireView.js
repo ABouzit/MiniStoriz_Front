@@ -8,11 +8,13 @@ import AddIcon from "@material-ui/icons/ArrowBackOutlined";
 import { withStyles } from "@material-ui/core/styles";
 import { Link, withRouter } from "react-router-dom";
 // core components
+import DeleteOutlinedIcon from "@material-ui/icons/DeleteOutlined";
 import Tooltip from "@material-ui/core/Tooltip";
 import GridContainer from "components/Grid/GridContainer.js";
 import GridItem from "components/Grid/GridItem.js";
 import Card from "components/Card/Card.js";
 import CardBody from "components/Card/CardBody.js";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import Button from "components/CustomButtons/Button.js";
 import Buttons from "@material-ui/core/Button";
 import Button2 from "@material-ui/core/Button";
@@ -41,6 +43,7 @@ import { isMobile } from "react-device-detect";
 import Fab from "@material-ui/core/Fab";
 import Snackbar from "@material-ui/core/Snackbar";
 //scroll bare text
+import MoreVert from "@material-ui/icons/MoreVert";
 import Avatar from "@material-ui/core/Avatar";
 import List from "@material-ui/core/List";
 import ListItemText from "@material-ui/core/ListItemText";
@@ -59,6 +62,8 @@ import InputLabel from "@material-ui/core/InputLabel";
 import moment from "moment";
 import Menu from "@material-ui/core/Menu";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
+import Report from "@material-ui/icons/Report";
+import ReportOff from "@material-ui/icons/ReportOff";
 // import Pagination from "components/Pagination/Pagination.js";
 import Pagination from "@material-ui/lab/Pagination";
 // @material-ui/icons
@@ -112,6 +117,9 @@ class HistoireView extends React.Component {
         "#dd00f3",
         "#dd00f3"
       ],
+      userTextSignal: false,
+      userDessinSignal: false,
+      menuAnchorEl: null,
       errorCommentaire: false,
       redirect: 0,
       user: "",
@@ -123,6 +131,7 @@ class HistoireView extends React.Component {
       histoire: "",
       planches: [],
       commentaires: [],
+      commentsSignal: [],
       page: 1,
       pageUsers: 1,
       counter: 1,
@@ -141,6 +150,7 @@ class HistoireView extends React.Component {
       ratingTextTemp: 0,
       commentaireNbr: 1,
       deleteHistoire: false,
+      submitSignal: true,
       settings: {
         beforeChange: (current, next) => {
           this.setState({ counter: next + 1 });
@@ -223,6 +233,7 @@ class HistoireView extends React.Component {
         slidesToScroll: 1,
         autoplay: false
       },
+      uploadingCommentSignal: true,
       commentaire: "",
       histoires: [],
       histoireUsers: [],
@@ -237,8 +248,11 @@ class HistoireView extends React.Component {
     console.log(this.state.commentaires);
     this.next = this.next.bind(this);
     this.handleClickUpdate = this.handleClickUpdate.bind(this);
+    this.handleClick = this.handleClick.bind(this);
     this.previous = this.previous.bind(this);
+    
   }
+
   componentDidMount() {
     const users = JSON.parse(localStorage.getItem("user"));
     if (!users) {
@@ -254,6 +268,44 @@ class HistoireView extends React.Component {
     this.fetchHistoireAndPlanchesAndCommentes(
       this.props.match.params.histoireId
     );
+    firebase
+      .database()
+      .ref("deleteStoriz/" + this.props.match.params.histoireId)
+      .on("value", snapshot => {
+        console.log(snapshot);
+        if (snapshot && snapshot.val()) {
+          this.fetchHistoireNew(this.props.match.params.histoireId);
+        }
+      });
+    firebase
+      .database()
+      .ref("comments/" + this.props.match.params.histoireId)
+      .on("value", snapshot => {
+        console.log(snapshot);
+        if (snapshot && snapshot.val() && snapshot.val().from !== users.id) {
+          this.fetchCommentaires2();
+        }
+      });
+  }
+  fetchHistoireNew(id) {
+    Axios.get(config.API_URL + "histoires/byId/" + id)
+      .then(histoire => {
+        if (
+          histoire.data[0].etatHistoire === "ARCHIVE" &&
+          ((histoire.data[0].userDessin &&
+            histoire.data[0].userDessin.id !== this.state.user.id) ||
+            !histoire.data[0].userDessin) &&
+          ((histoire.data[0].userText &&
+            histoire.data[0].userText.id !== this.state.user.id) ||
+            !histoire.data[0].userText)
+        ) {
+          this.props.history.push("/404");
+        } else {
+          console.log(JSON.stringify(histoire));
+          this.setState({ histoire: histoire.data[0] }, () => {});
+        }
+      })
+      .catch(res => this.props.history.push("/404"));
   }
   componentWillReceiveProps(nextProps) {
     if (
@@ -293,60 +345,299 @@ class HistoireView extends React.Component {
           "/" +
           0
       ).then(commentaires => {
-        this.setState({ commentaires: commentaires.data });
+        this.setState({ commentaires: commentaires.data }, () => {
+          console.log("//////////////");
+          this.fetchSignalUserDessin().then(() =>
+            this.fetchSignalUserText().then(this.fetchSignalCommentes())
+          );
+        });
+      });
+    });
+  }
+  fetchCommentaires2() {
+    const id = this.props.match.params.histoireId;
+
+    Axios.get(
+      config.API_URL +
+        "impressions/histoire/" +
+        id +
+        "/take/" +
+        3 * this.state.commentaireNbr +
+        "/" +
+        0
+    ).then(commentaires => {
+      this.setState({ commentaires: commentaires.data }, () => {
+        console.log("//////////////");
+        this.fetchSignalUserDessin().then(() =>
+          this.fetchSignalUserText().then(() => {
+            this.fetchSignalCommentes();
+            this.forceUpdate();
+          })
+        );
+      });
+    });
+  }
+  fetchSignalUserText() {
+    if (this.state.histoire.userText) {
+      if (this.state.histoire.userText === this.state.user.id) {
+        this.setState({
+          userTextSignal: false
+        });
+        return Promise.resolve();
+      } else {
+        return Axios.get(
+          config.API_URL +
+            "signaler/between/" +
+            this.state.user.id +
+            "/" +
+            this.state.histoire.userText.id
+        ).then(res => {
+          if (res.data.length === 0) {
+            this.setState({
+              userTextSignal: false
+            });
+            return Promise.resolve();
+          } else {
+            this.setState({
+              userTextSignal: true
+            });
+            return Promise.resolve();
+          }
+        });
+      }
+    } else {
+      this.setState({
+        userTextSignal: true
+      });
+      return Promise.resolve();
+    }
+  }
+  fetchSignalUserDessin() {
+    if (this.state.histoire.userDessin) {
+      if (this.state.histoire.userDessin === this.state.user.id) {
+        this.setState({
+          userDessinSignal: true
+        });
+        return Promise.resolve();
+      } else {
+        return Axios.get(
+          config.API_URL +
+            "signaler/between/" +
+            this.state.user.id +
+            "/" +
+            this.state.histoire.userDessin.id
+        ).then(res => {
+          if (res.data.length === 0) {
+            this.setState({
+              userDessinSignal: false
+            });
+            return Promise.resolve();
+          } else {
+            this.setState({
+              userDessinSignal: true
+            });
+            return Promise.resolve();
+          }
+        });
+      }
+    } else {
+      this.setState({
+        userDessinSignal: true
+      });
+      return Promise.resolve();
+    }
+  }
+  fetchSignalCommentes() {
+    console.log("///////////////");
+    var tab = [];
+    this.setState({ commentsSignal: [] }, () => {
+      return Promise.all(
+        this.state.commentaires.map((commentaire, index) => {
+          console.log(commentaire);
+          console.log(this.state.user.id);
+          if (commentaire.user.id !== this.state.user.id) {
+            return Axios.get(
+              config.API_URL +
+                "signaler/between/" +
+                this.state.user.id +
+                "/" +
+                commentaire.user.id
+            ).then(res => {
+              if (res.data.length === 0) {
+                console.log(this.state.commentsSignal);
+                return Promise.resolve();
+              } else {
+                tab.push(commentaire.user.id);
+
+                return Promise.resolve();
+              }
+            });
+          } else {
+            console.log(this.state.commentsSignal);
+            return Promise.resolve();
+          }
+        })
+      ).then(() => {
+        return this.setState(
+          { uploadingCommentSignal: false, commentsSignal: tab },
+          () => {
+            console.log(this.state.commentsSignal);
+            this.forceUpdate();
+            return Promise.resolve();
+          }
+        );
       });
     });
   }
   deleteHistoire() {
-    Axios.delete(
-      config.API_URL +
-        "impressions/histoire/" +
-        this.props.match.params.histoireId
-    )
-      .then(res => {
-        this.props.history.push("/");
-      })
-      .catch(function(error) {
-        console.log(error);
+    let hist = this.state.histoire;
+    hist.demandeSuppression = !this.state.histoire.demandeSuppression;
+    Axios.put(config.API_URL + "histoires/", hist).then(res => {
+      console.log(res);
+      this.setState({ deleteHistoire: false });
+      Axios.get(config.API_URL + "histoires/byId/" + hist.id).then(histoire => {
+        console.log(JSON.stringify(histoire));
+        this.setState({ histoire: histoire.data[0] }, () =>
+          console.log(this.state.histoire)
+        );
       });
+    });
+    if (
+      !hist.userText ||
+      !hist.userDessin ||
+      hist.userText.id === hist.userDessin.id
+    ) {
+      if (!hist.userText) {
+        firebase
+          .database()
+          .ref("deleteStoriz/" + hist.id + "/" + hist.userDessin.id)
+          .set({
+            numbe: 100000 + Math.random() * (100000 - 1)
+          });
+      } else if (!hist.userDessin) {
+        firebase
+          .database()
+          .ref("deleteStoriz/" + hist.id + "/" + hist.userText.id)
+          .set({
+            numbe: 100000 + Math.random() * (100000 - 1)
+          });
+      } else if (hist.userDessin.id === hist.userDessin.id) {
+        firebase
+          .database()
+          .ref("deleteStoriz/" + hist.id + "/" + hist.userText.id)
+          .set({
+            numbe: 100000 + Math.random() * (100000 - 1)
+          });
+      }
+    } else {
+      {
+        firebase
+          .database()
+          .ref("deleteStoriz/" + hist.id + "/" + hist.userDessin.id)
+          .set({
+            numbe: 100000 + Math.random() * (100000 - 1)
+          });
+        firebase
+          .database()
+          .ref("deleteStoriz/" + hist.id + "/" + hist.userText.id)
+          .set({
+            numbe: 100000 + Math.random() * (100000 - 1)
+          });
+      }
+    }
+  }
+  handleClose() {
+    this.setState({ menuAnchorEl: null });
+  }
+  signaler(id) {
+    if (this.state.submitSignal) {
+      this.setState({ submitSignal: false });
+      Axios.post(config.API_URL + "signaler", {
+        signaler: { id: this.state.user.id },
+        signaled: { id: id }
+      }).then(() => {
+        this.fetchSignalUserText().then(() =>
+          this.fetchSignalUserDessin()
+            .then(() => this.fetchSignalCommentes())
+            .then(() => this.setState({ submitSignal: true }))
+        );
+      });
+    }
+  }
+  designaler(id) {
+    if (this.state.submitSignal) {
+      this.setState({ submitSignal: false });
+      Axios.delete(
+        config.API_URL + "signaler/between/" + this.state.user.id + "/" + id
+      ).then(res => {
+        this.fetchSignalUserText().then(() =>
+          this.fetchSignalUserDessin()
+            .then(() => this.fetchSignalCommentes())
+            .then(() => this.setState({ submitSignal: true }))
+        );
+      });
+    }
   }
   fetchHistoireAndPlanchesAndCommentes(id) {
     console.log(id);
     if (id) {
-      Axios.get(config.API_URL + "histoires/byId/" + id).then(histoire => {
-        console.log(JSON.stringify(histoire));
-        this.setState({ histoire: histoire.data[0] }, () => {
-          this.state.histoire.nombreVue = this.state.histoire.nombreVue + 1;
-          Axios.put(config.API_URL + "histoires/", this.state.histoire).then(
-            res => {
-              Axios.get(config.API_URL + "planches/histoire/" + id).then(
-                planches => {
-                  this.setState({ planches: planches.data });
-                  if (this.state.planches.lenght > 18) {
-                    this.state.settings.dots = false;
-                  } else {
-                    this.state.settings.dots = true;
+      Axios.get(config.API_URL + "histoires/byId/" + id)
+        .then(histoire => {
+          if (
+            histoire.data[0].etatHistoire === "ARCHIVE" &&
+            ((histoire.data[0].userDessin &&
+              histoire.data[0].userDessin.id !== this.state.user.id) ||
+              !histoire.data[0].userDessin) &&
+            ((histoire.data[0].userText &&
+              histoire.data[0].userText.id !== this.state.user.id) ||
+              !histoire.data[0].userText)
+          ) {
+            this.props.history.push("/404");
+          } else {
+            console.log(JSON.stringify(histoire));
+            this.setState({ histoire: histoire.data[0] }, () => {
+              this.state.histoire.nombreVue = this.state.histoire.nombreVue + 1;
+              Axios.put(
+                config.API_URL + "histoires/",
+                this.state.histoire
+              ).then(res => {
+                Axios.get(config.API_URL + "planches/histoire/" + id).then(
+                  planches => {
+                    this.setState({ planches: planches.data });
+                    if (this.state.planches.lenght > 18) {
+                      this.state.settings.dots = false;
+                    } else {
+                      this.state.settings.dots = true;
+                    }
                   }
-                }
-              );
-              Axios.get(
-                config.API_URL +
-                  "impressions/histoire/" +
-                  id +
-                  "/take/" +
-                  3 +
-                  "/" +
-                  0
-              ).then(commentaires => {
-                this.setState({
-                  commentaires: commentaires.data,
-                  commentaireNbr: 1
+                );
+                Axios.get(
+                  config.API_URL +
+                    "impressions/histoire/" +
+                    id +
+                    "/take/" +
+                    3 +
+                    "/" +
+                    0
+                ).then(commentaires => {
+                  this.setState(
+                    {
+                      commentaires: commentaires.data,
+                      commentaireNbr: 1
+                    },
+                    () =>
+                      this.fetchSignalUserDessin().then(() =>
+                        this.fetchSignalUserText().then(() =>
+                          this.fetchSignalCommentes()
+                        )
+                      )
+                  );
                 });
               });
-            }
-          );
-        });
-      });
+            });
+          }
+        })
+        .catch(res => this.props.history.push("/404"));
     }
   }
   submitCommantaire() {
@@ -408,17 +699,25 @@ class HistoireView extends React.Component {
             ratingTextTemp: 0,
             commentaire: ""
           });
+          firebase
+            .database()
+            .ref("comments/" + this.state.histoire.id)
+            .set({
+              from: this.state.user.id,
+              numbe: 100000 + Math.random() * (100000 - 1)
+            });
           Axios.get(
             config.API_URL +
               "impressions/histoire/" +
               this.state.histoire.id +
               "/take/" +
-              3 +
+              3 * this.state.commentaireNbr +
               "/" +
               0
           ).then(commentaires =>
             this.setState({ commentaires: commentaires.data })
           );
+          this.fetchSignalCommentes();
           this.forceUpdate();
         });
       else this.setState({ errorCommentaire: true });
@@ -481,7 +780,9 @@ class HistoireView extends React.Component {
   handleClickUpdate(event) {
     this.setState({ nemuUpdate: event.currentTarget, openMenuUpdate: true });
   }
-
+  handleClick(event) {
+    this.setState({ menuAnchorEl: event.currentTarget });
+  }
   handleCloseUpdate() {
     this.setState({ nemuUpdate: null, openMenuUpdate: false });
   }
@@ -711,7 +1012,13 @@ class HistoireView extends React.Component {
                             </IconButton>
                           </Tooltip>
                         </Link>
-                        <Tooltip title="Supprimer l'histoire">
+                        <Tooltip
+                          title={
+                            this.state.histoire.demandeSuppression
+                              ? "Annuler la demande"
+                              : "Demande de Supprimer"
+                          }
+                        >
                           <IconButton
                             aria-controls="customized-menu"
                             aria-haspopup="true"
@@ -720,9 +1027,15 @@ class HistoireView extends React.Component {
                               this.setState({ deleteHistoire: true });
                             }}
                           >
-                            <DeleteForeverOutlinedIcon
-                              style={{ color: "#1e1548" }}
-                            />
+                            {this.state.histoire.demandeSuppression ? (
+                              <DeleteForeverOutlinedIcon
+                                style={{ color: "#1e1548" }}
+                              />
+                            ) : (
+                              <DeleteOutlinedIcon
+                                style={{ color: "#1e1548" }}
+                              />
+                            )}
                           </IconButton>
                         </Tooltip>
                       </div>
@@ -762,7 +1075,13 @@ class HistoireView extends React.Component {
                             </IconButton>
                           </Tooltip>
                         </Link>
-                        <Tooltip title="Supprimer l'histoire">
+                        <Tooltip
+                          title={
+                            this.state.histoire.demandeSuppression
+                              ? "Annuler la demande"
+                              : "Demande de Supprimer"
+                          }
+                        >
                           <IconButton
                             aria-controls="customized-menu"
                             aria-haspopup="true"
@@ -771,9 +1090,15 @@ class HistoireView extends React.Component {
                               this.setState({ deleteHistoire: true });
                             }}
                           >
-                            <DeleteForeverOutlinedIcon
-                              style={{ color: "#1e1548" }}
-                            />
+                            {this.state.histoire.demandeSuppression ? (
+                              <DeleteForeverOutlinedIcon
+                                style={{ color: "#1e1548" }}
+                              />
+                            ) : (
+                              <DeleteOutlinedIcon
+                                style={{ color: "#1e1548" }}
+                              />
+                            )}
                           </IconButton>
                         </Tooltip>
                       </div>
@@ -813,7 +1138,13 @@ class HistoireView extends React.Component {
                             </IconButton>
                           </Tooltip>
                         </Link>
-                        <Tooltip title="Supprimer l'histoire">
+                        <Tooltip
+                          title={
+                            this.state.histoire.demandeSuppression
+                              ? "Annuler la demande"
+                              : "Demande de Supprimer"
+                          }
+                        >
                           <IconButton
                             aria-controls="customized-menu"
                             aria-haspopup="true"
@@ -822,9 +1153,15 @@ class HistoireView extends React.Component {
                               this.setState({ deleteHistoire: true });
                             }}
                           >
-                            <DeleteForeverOutlinedIcon
-                              style={{ color: "#1e1548" }}
-                            />
+                            {this.state.histoire.demandeSuppression ? (
+                              <DeleteForeverOutlinedIcon
+                                style={{ color: "#1e1548" }}
+                              />
+                            ) : (
+                              <DeleteOutlinedIcon
+                                style={{ color: "#1e1548" }}
+                              />
+                            )}
                           </IconButton>
                         </Tooltip>
                       </div>
@@ -842,7 +1179,12 @@ class HistoireView extends React.Component {
                   }}
                 >
                   {this.state.histoire.userDessin ? (
-                    <GridItem xs={12} sm={12} md={6} style={{ padding: 0 }}>
+                    <GridItem
+                      xs={12}
+                      sm={12}
+                      md={6}
+                      style={{ padding: 0, position: "relative" }}
+                    >
                       <ListItem>
                         <Link
                           to={
@@ -860,7 +1202,7 @@ class HistoireView extends React.Component {
                                 alt=""
                                 src={
                                   config.API_URL +
-                                  "images/defaultPhotoProfil.jpg"
+                                  "images/asset/defaultPhotoProfil.jpg"
                                 }
                               />
                             ) : (
@@ -898,6 +1240,58 @@ class HistoireView extends React.Component {
                           </ListItemText>
                         </Link>
                       </ListItem>
+                      <div
+                        style={{
+                          position: "absolute",
+                          top: 10,
+                          right: 40
+                        }}
+                      >
+                        {this.state.user.id !==
+                        this.state.histoire.userDessin.id ? (
+                          this.state.uploadingCommentSignal === true ? (
+                            <CircularProgress disableShrink size={20} />
+                          ) : this.state.userDessinSignal === false ? (
+                            <Tooltip
+                              disableFocusListener
+                              disableTouchListener
+                              title={"Signaler"}
+                            >
+                              <ButtonBase
+                                aria-controls="simple-menu"
+                                aria-haspopup="true"
+                                onClick={() =>
+                                  this.signaler(
+                                    this.state.histoire.userDessin.id
+                                  )
+                                }
+                              >
+                                <Report />
+                              </ButtonBase>
+                            </Tooltip>
+                          ) : (
+                            <Tooltip
+                              disableFocusListener
+                              disableTouchListener
+                              title={"annuler le signal"}
+                            >
+                              <ButtonBase
+                                aria-controls="simple-menu"
+                                aria-haspopup="true"
+                                onClick={() =>
+                                  this.designaler(
+                                    this.state.histoire.userDessin.id
+                                  )
+                                }
+                              >
+                                <ReportOff />
+                              </ButtonBase>
+                            </Tooltip>
+                          )
+                        ) : (
+                          <div></div>
+                        )}
+                      </div>
                     </GridItem>
                   ) : (
                     <GridItem
@@ -908,7 +1302,12 @@ class HistoireView extends React.Component {
                     ></GridItem>
                   )}
                   {this.state.histoire.userText ? (
-                    <GridItem xs={12} sm={12} md={6} style={{ padding: 0 }}>
+                    <GridItem
+                      xs={12}
+                      sm={12}
+                      md={6}
+                      style={{ padding: 0, position: "relative" }}
+                    >
                       <ListItem>
                         <Link
                           to={
@@ -925,7 +1324,7 @@ class HistoireView extends React.Component {
                                 alt=""
                                 src={
                                   config.API_URL +
-                                  "images/defaultPhotoProfil.jpg"
+                                  "images/asset/defaultPhotoProfil.jpg"
                                 }
                               />
                             ) : (
@@ -957,6 +1356,56 @@ class HistoireView extends React.Component {
                           </ListItemText>
                         </Link>
                       </ListItem>
+                      <div
+                        style={{
+                          position: "absolute",
+                          top: 10,
+                          right: 40
+                        }}
+                      >
+                        {this.state.histoire.userText.id !==
+                        this.state.user.id ? (
+                          this.state.uploadingCommentSignal === true ? (
+                            <CircularProgress disableShrink size={20} />
+                          ) : this.state.userTextSignal === false ? (
+                            <Tooltip
+                              disableFocusListener
+                              disableTouchListener
+                              title={"Signaler"}
+                            >
+                              <ButtonBase
+                                aria-controls="simple-menu"
+                                aria-haspopup="true"
+                                onClick={() =>
+                                  this.signaler(this.state.histoire.userText.id)
+                                }
+                              >
+                                <Report />
+                              </ButtonBase>
+                            </Tooltip>
+                          ) : (
+                            <Tooltip
+                              disableFocusListener
+                              disableTouchListener
+                              title={"annuler le signal"}
+                            >
+                              <ButtonBase
+                                aria-controls="simple-menu"
+                                aria-haspopup="true"
+                                onClick={() =>
+                                  this.designaler(
+                                    this.state.histoire.userText.id
+                                  )
+                                }
+                              >
+                                <ReportOff />
+                              </ButtonBase>
+                            </Tooltip>
+                          )
+                        ) : (
+                          <div></div>
+                        )}
+                      </div>
                     </GridItem>
                   ) : (
                     <GridItem
@@ -1114,7 +1563,7 @@ class HistoireView extends React.Component {
                                             }
                                           : {
                                               textAlign: "-webkit-center",
-                                            background: "#2f99b1",
+                                              background: "#2f99b1",
                                               borderRadius:
                                                 "15px 15px 15px 15px",
                                               height: "100%",
@@ -1189,8 +1638,7 @@ class HistoireView extends React.Component {
                                       isMobile
                                         ? {
                                             height: 400,
-                                            backgroundColor:
-                                              "#fcd77f",
+                                            backgroundColor: "#fcd77f",
                                             borderRadius: "15px 15px 15px 15px",
                                             borderRadiusTopLeft: 15,
                                             padding: 0,
@@ -1200,8 +1648,7 @@ class HistoireView extends React.Component {
                                           }
                                         : {
                                             height: 550,
-                                            backgroundColor:
-                                              "#fcd77f",
+                                            backgroundColor: "#fcd77f",
                                             borderRadius: "15px 15px 15px 15px",
                                             borderRadiusTopLeft: 15,
                                             padding: 0,
@@ -1278,13 +1725,13 @@ class HistoireView extends React.Component {
                                         isMobile
                                           ? {
                                               textAlign: "-webkit-center",
-                                                background: "#2f99b1",
+                                              background: "#2f99b1",
                                               borderRadius: "15px 15px 0px 0px",
                                               height: "100%"
                                             }
                                           : {
                                               textAlign: "-webkit-center",
-                                                background: "#2f99b1",
+                                              background: "#2f99b1",
                                               borderRadius: "15px 0px 0px 15px",
                                               height: "100%"
                                             }
@@ -1333,8 +1780,7 @@ class HistoireView extends React.Component {
                                       isMobile
                                         ? {
                                             height: 400,
-                                            backgroundColor:
-                                              "#fcd77f",
+                                            backgroundColor: "#fcd77f",
                                             borderRadius: "0px 0px 15px 15px",
                                             borderRadiusTopLeft: 15,
                                             padding: 0,
@@ -1344,8 +1790,7 @@ class HistoireView extends React.Component {
                                           }
                                         : {
                                             height: 550,
-                                            backgroundColor:
-                                              "#fcd77f",
+                                            backgroundColor: "#fcd77f",
                                             borderRadius: "0px 15px 15px 0px",
                                             borderRadiusTopLeft: 15,
                                             padding: 0,
@@ -1469,7 +1914,12 @@ class HistoireView extends React.Component {
                     return (
                       <div key={index}>
                         <GridContainer>
-                          <GridItem xs={12} sm={12} md={12}>
+                          <GridItem
+                            xs={12}
+                            sm={12}
+                            md={12}
+                            style={{ position: "relative" }}
+                          >
                             <ListItem
                               alignItems="flex-start"
                               className={classes.card}
@@ -1493,7 +1943,7 @@ class HistoireView extends React.Component {
                                       alt=""
                                       src={
                                         config.API_URL +
-                                        "images/defaultPhotoProfil.jpg"
+                                        "images/asset/defaultPhotoProfil.jpg"
                                       }
                                       style={{
                                         border: "aliceblue",
@@ -1525,6 +1975,55 @@ class HistoireView extends React.Component {
                                 }
                               />
                             </ListItem>
+                            <div
+                              style={{
+                                position: "absolute",
+                                top: 25,
+                                right: 40
+                              }}
+                            >
+                              {this.state.user.id !== commentaire.user.id ? (
+                                this.state.uploadingCommentSignal === true ? (
+                                  <CircularProgress disableShrink size={20} />
+                                ) : this.state.commentsSignal.indexOf(
+                                    commentaire.user.id
+                                  ) === -1 ? (
+                                  <Tooltip
+                                    disableFocusListener
+                                    disableTouchListener
+                                    title={"Signaler"}
+                                  >
+                                    <ButtonBase
+                                      aria-controls="simple-menu"
+                                      aria-haspopup="true"
+                                      onClick={() =>
+                                        this.signaler(commentaire.user.id)
+                                      }
+                                    >
+                                      <Report />
+                                    </ButtonBase>
+                                  </Tooltip>
+                                ) : (
+                                  <Tooltip
+                                    disableFocusListener
+                                    disableTouchListener
+                                    title={"annuler le signal"}
+                                  >
+                                    <ButtonBase
+                                      aria-controls="simple-menu"
+                                      aria-haspopup="true"
+                                      onClick={() =>
+                                        this.designaler(commentaire.user.id)
+                                      }
+                                    >
+                                      <ReportOff />
+                                    </ButtonBase>
+                                  </Tooltip>
+                                )
+                              ) : (
+                                <div></div>
+                              )}
+                            </div>
                           </GridItem>
                           <GridItem xs={12} sm={12} md={12}>
                             <GridContainer
@@ -1705,7 +2204,9 @@ class HistoireView extends React.Component {
                     {this.state.user.lienPhoto == "" ? (
                       <Avatar
                         alt=""
-                        src={config.API_URL + "images/defaultPhotoProfil.jpg"}
+                        src={
+                          config.API_URL + "images/asset/defaultPhotoProfil.jpg"
+                        }
                       />
                     ) : (
                       <Avatar alt="" src={this.state.user.lienPhoto} />
@@ -1927,7 +2428,7 @@ class HistoireView extends React.Component {
                           commentaire: ""
                         });
                       }}
-                      style={{ backgroundColor: "rgb(255, 44, 77)"}}
+                      style={{ backgroundColor: "rgb(255, 44, 77)" }}
                     >
                       Annuler
                     </Button>
@@ -1977,7 +2478,9 @@ class HistoireView extends React.Component {
                 </div>
               }
             >
-              Voulez vous vraiment supprimer cette histoire !
+              {!this.state.histoire.demandeSuppression
+                ? "Voulez vous proceder a la suppression de cette histoire ?"
+                : "Vouler vous annuler la suppresssion de cette histoire?"}
             </Alert>
           </Snackbar>
         </div>

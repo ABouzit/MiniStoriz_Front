@@ -38,7 +38,7 @@ import SimpleBar from "simplebar-react";
 import "simplebar/dist/simplebar.min.css";
 import Axios from "axios";
 import config from "config/config";
-import { Input } from "@material-ui/core";
+import { Input, Chip } from "@material-ui/core";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
@@ -112,8 +112,9 @@ class MesOeuvres extends React.Component {
       if (typeof this.props.match.params.userId === "undefined") {
         this.setState({ idUser: user.id }, () => {
           this.fetchUser();
-          this.fetchHistoire();
+          this.fetchMesHistoire();
           this.forceUpdate();
+          console.log(this.props.match.params.userId);
         });
       } else {
         this.setState(
@@ -181,13 +182,20 @@ class MesOeuvres extends React.Component {
     });
   }
   handleChangePage() {
+    let path = "";
+    if (typeof this.props.match.params.userId === "undefined") {
+      path = "histoires/takeByMe/";
+    } else {
+      path = "histoires/takeByUser/";
+    }
     if (this.state.numberPage == this.state.page) {
       this.setState({ showMore: false });
     }
     if (this.state.search === "") {
       Axios.get(
         config.API_URL +
-          "histoires/takeByUser/6/" +
+          path +
+          "6/" +
           (this.state.page - 1) * 6 +
           "/" +
           this.state.currentFiltre +
@@ -203,7 +211,8 @@ class MesOeuvres extends React.Component {
     } else {
       Axios.get(
         config.API_URL +
-          "histoires/takeByUser/6/" +
+          path +
+          "6/" +
           (this.state.page - 1) * 6 +
           "/" +
           this.state.currentFiltre +
@@ -244,16 +253,47 @@ class MesOeuvres extends React.Component {
       });
     });
   }
-
+  fetchMesHistoire() {
+    console.log("URL api" + config.API_URL);
+    Axios.get(
+      config.API_URL +
+        "histoires/takeByMe/6/" +
+        (this.state.page - 1) * 6 +
+        "/1/xxxx/" +
+        this.state.idUser,
+      {}
+    ).then(res => {
+      console.log(res.data);
+      this.setState({ histoires: res.data, showMore: true });
+    });
+    Axios.get(
+      config.API_URL + "histoires/numberHistoiresByMe/" + this.state.idUser,
+      {}
+    ).then(res => {
+      this.setState({ numberPage: Math.ceil(res.data / 6) }, () => {
+        if (res.data <= 6) {
+          this.setState({ showMore: false });
+        }
+      });
+    });
+  }
   searchCheck() {
+    let path = "";
+    let path2 = "";
+    let path3 = "";
+    if (typeof this.props.match.params.userId === "undefined") {
+      path = "histoires/takeByMe/";
+      path2 = "histoires/numberHistoiresSearchByMe/";
+      path3 = "histoires/numberHistoiresByMe/";
+    } else {
+      path = "histoires/takeByUser/";
+      path2 = "histoires/numberHistoiresSearchById/";
+      path3 = "histoires/numberHistoiresById/";
+    }
     if (this.state.currentFiltre == 1) {
       if (this.state.search !== "") {
         Axios.get(
-          config.API_URL +
-            "histoires/numberHistoiresSearchById/" +
-            this.state.search +
-            "/" +
-            this.state.idUser,
+          config.API_URL + path2 + this.state.search + "/" + this.state.idUser,
           {}
         ).then(res => {
           this.setState({ numberPage: Math.ceil(res.data / 6) }, () => {
@@ -264,7 +304,8 @@ class MesOeuvres extends React.Component {
         });
         Axios.get(
           config.API_URL +
-            "histoires/takeByUser/6/" +
+            path +
+            "6/" +
             (this.state.page - 1) +
             "/" +
             this.state.currentFiltre +
@@ -281,10 +322,7 @@ class MesOeuvres extends React.Component {
       }
 
       if (this.state.search === "") {
-        Axios.get(
-          config.API_URL + "histoires/numberHistoiresById/" + this.state.idUser,
-          {}
-        ).then(res => {
+        Axios.get(config.API_URL + path3 + this.state.idUser, {}).then(res => {
           this.setState({ numberPage: Math.ceil(res.data / 6) }, () => {
             if (res.data <= 6) {
               this.setState({ showMore: false });
@@ -293,7 +331,8 @@ class MesOeuvres extends React.Component {
         });
         Axios.get(
           config.API_URL +
-            "histoires/takeByUser/6/" +
+            path +
+            "6/" +
             (this.state.page - 1) +
             "/" +
             this.state.currentFiltre +
@@ -309,11 +348,7 @@ class MesOeuvres extends React.Component {
     } else if (this.state.currentFiltre == 2) {
       if (this.state.search !== "") {
         Axios.get(
-          config.API_URL +
-            "histoires/numberHistoiresSearchById/" +
-            this.state.search +
-            "/" +
-            this.state.idUser,
+          config.API_URL + path2 + this.state.search + "/" + this.state.idUser,
           {}
         ).then(res => {
           this.setState({ numberPage: Math.ceil(res.data / 6) }, () => {
@@ -324,7 +359,8 @@ class MesOeuvres extends React.Component {
         });
         Axios.get(
           config.API_URL +
-            "histoires/takeByUser/6/" +
+            path +
+            "6/" +
             (this.state.page - 1) * 6 +
             "/" +
             this.state.currentFiltre +
@@ -341,7 +377,8 @@ class MesOeuvres extends React.Component {
       if (this.state.search === "") {
         Axios.get(
           config.API_URL +
-            "histoires/takeByUser/6/" +
+            path +
+            "6/" +
             (this.state.page - 1) * 6 +
             "/" +
             this.state.currentFiltre +
@@ -352,10 +389,7 @@ class MesOeuvres extends React.Component {
           this.setState({ histoires: res.data, currentFiltre: 2 });
           this.forceUpdate();
         });
-        Axios.get(
-          config.API_URL + "histoires/numberHistoiresById/" + this.state.idUser,
-          {}
-        ).then(res => {
+        Axios.get(config.API_URL + path3 + this.state.idUser, {}).then(res => {
           this.setState({ numberPage: Math.ceil(res.data / 6) }, () => {
             if (res.data <= 6) {
               this.setState({ showMore: false });
@@ -366,11 +400,7 @@ class MesOeuvres extends React.Component {
     } else if (this.state.currentFiltre == 3) {
       if (this.state.search !== "") {
         Axios.get(
-          config.API_URL +
-            "histoires/numberHistoiresSearchById/" +
-            this.state.search +
-            "/" +
-            this.state.idUser,
+          config.API_URL + path2 + this.state.search + "/" + this.state.idUser,
           {}
         ).then(res => {
           this.setState({ numberPage: Math.ceil(res.data / 6) }, () => {
@@ -381,7 +411,8 @@ class MesOeuvres extends React.Component {
         });
         Axios.get(
           config.API_URL +
-            "histoires/takeByUser/6/" +
+            path +
+            "6/" +
             (this.state.page - 1) * 6 +
             "/" +
             this.state.currentFiltre +
@@ -398,7 +429,8 @@ class MesOeuvres extends React.Component {
       if (this.state.search === "") {
         Axios.get(
           config.API_URL +
-            "histoires/takeByUser/6/" +
+            path +
+            "6/" +
             (this.state.page - 1) * 6 +
             "/" +
             this.state.currentFiltre +
@@ -409,10 +441,7 @@ class MesOeuvres extends React.Component {
           this.setState({ histoires: res.data, currentFiltre: 3 });
           this.forceUpdate();
         });
-        Axios.get(
-          config.API_URL + "histoires/numberHistoiresById/" + this.state.idUser,
-          {}
-        ).then(res => {
+        Axios.get(config.API_URL + path3 + this.state.idUser, {}).then(res => {
           this.setState({ numberPage: Math.ceil(res.data / 6) }, () => {
             if (res.data <= 6) {
               this.setState({ showMore: false });
@@ -423,11 +452,7 @@ class MesOeuvres extends React.Component {
     } else if (this.state.currentFiltre == 4) {
       if (this.state.search !== "") {
         Axios.get(
-          config.API_URL +
-            "histoires/numberHistoiresSearchById/" +
-            this.state.search +
-            "/" +
-            this.state.idUser,
+          config.API_URL + path2 + this.state.search + "/" + this.state.idUser,
           {}
         ).then(res => {
           this.setState({ numberPage: Math.ceil(res.data / 6) }, () => {
@@ -438,7 +463,8 @@ class MesOeuvres extends React.Component {
         });
         Axios.get(
           config.API_URL +
-            "histoires/takeUser/6/" +
+            path +
+            "6/" +
             (this.state.page - 1) * 6 +
             "/" +
             this.state.currentFiltre +
@@ -455,7 +481,8 @@ class MesOeuvres extends React.Component {
       if (this.state.search === "") {
         Axios.get(
           config.API_URL +
-            "histoires/takeUser/6/" +
+            path +
+            "6/" +
             (this.state.page - 1) * 6 +
             "/" +
             this.state.currentFiltre +
@@ -466,10 +493,7 @@ class MesOeuvres extends React.Component {
           this.setState({ histoires: res.data, currentFiltre: 4 });
           this.forceUpdate();
         });
-        Axios.get(
-          config.API_URL + "histoires/numberHistoiresById/" + this.state.idUser,
-          {}
-        ).then(res => {
+        Axios.get(config.API_URL + path3 + this.state.idUser, {}).then(res => {
           this.setState({ numberPage: Math.ceil(res.data / 6) }, () => {
             if (res.data <= 6) {
               this.setState({ showMore: false });
@@ -707,17 +731,45 @@ function CardHistoire(props) {
         {/* {histoire.nombreVue ? histoire.nombreVue : 0} vues -{" "}
           {this.getDay(histoire.dateDeCreation)} */}
       </h5>
-      <h6
-        style={{
-          fontFamily: "monospace",
-          color: "black",
-          marginLeft: "5%",
-          textAlign: "left"
-        }}
-      >
-        {functionDate(histoire.dateDeCreation)}
-        {/* {this.getDay()} */}
-      </h6>
+      <GridContainer>
+        <GridItem md={6} sm={6} lg={6}>
+          <h6
+            style={{
+              fontFamily: "monospace",
+              color: "black",
+              marginLeft: "10%",
+              textAlign: "left"
+            }}
+          >
+            {functionDate(histoire.dateDeCreation)}
+            {/* {this.getDay()} */}
+          </h6>
+        </GridItem>
+        <GridItem md={6} sm={6} lg={6}>
+          {histoire.etatHistoire === "EN_ATTANTE" ? (
+            <Chip
+              size="small"
+              label="EN_ATTENTE"
+              style={{ color: "white", backgroundColor: "rgb(119, 119, 119)" }}
+            />
+          ) : histoire.etatHistoire === "VALIDE" ? (
+            <Chip
+              size="small"
+              color="success"
+              label="VALIDE"
+              style={{ color: "white", backgroundColor: "rgb(46, 153, 176)" }}
+            />
+          ) : (
+            <Chip
+              size="small"
+              color="danger"
+              label="ARCHIVE"
+              style={{ color: "white", backgroundColor: "rgb(255, 46, 76)" }}
+            />
+          )}
+        </GridItem>
+      </GridContainer>
+
       <CardBody>
         <Divider />
         {histoire.userText ? (
@@ -815,7 +867,7 @@ function CardHistoire(props) {
                 <GridItem xs={4} sm={4} md={4}>
                   <Avatar
                     alt=""
-                    src={config.API_URL + "images/defaultPhotoProfil.jpg"}
+                    src={config.API_URL + "images/asset/defaultPhotoProfil.jpg"}
                     // style={{ width: 200, height: 200 }}
                   />
                 </GridItem>
@@ -933,7 +985,7 @@ function CardHistoire(props) {
                 <GridItem xs={4} sm={4} md={4}>
                   <Avatar
                     alt=""
-                    src={config.API_URL + "images/defaultPhotoProfil.jpg"}
+                    src={config.API_URL + "images/asset/defaultPhotoProfil.jpg"}
                     // style={{ width: 200, height: 200 }}
                   />
                 </GridItem>

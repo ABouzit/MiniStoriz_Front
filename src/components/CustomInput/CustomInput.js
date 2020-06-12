@@ -31,7 +31,7 @@ export default function CustomInput(props) {
     readOnly,
     type,
     autoComplete,
-    onChange
+    onChange,disabled
   } = props;
 
   const labelClasses = classNames({
@@ -87,6 +87,7 @@ export default function CustomInput(props) {
         readOnly={readOnly}
         onChange={onChange}
         {...inputProps}
+        disabled={disabled}
       />
     </FormControl>
   );

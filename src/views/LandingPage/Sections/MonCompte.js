@@ -230,7 +230,7 @@ class MonCompte extends React.Component {
                 {this.state.imgProfil == "" ? (
                   <Avatar
                     alt=""
-                    src={config.API_URL + "images/defaultPhotoProfil.jpg"}
+                    src={config.API_URL + "images/asset/defaultPhotoProfil.jpg"}
                     style={{ width: 200, height: 200 }}
                   />
                 ) : (

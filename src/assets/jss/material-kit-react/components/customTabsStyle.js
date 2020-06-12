@@ -2,7 +2,8 @@ const customTabsStyle = {
   cardTitle: {
     float: "left",
     padding: "10px 10px 10px 0px",
-    lineHeight: "24px"
+    lineHeight: "24px",
+    backgroundColor: "rgb(47, 153, 177)"
   },
   cardTitleRTL: {
     float: "right",

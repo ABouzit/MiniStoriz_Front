@@ -1008,6 +1008,7 @@ class AllHistoires extends React.Component {
                         )
                       }
                     ]}
+                    
                   />
                 </GridItem>
               </GridContainer>
@@ -1094,7 +1095,7 @@ function CardHistoire(props) {
           height: "240px",
           width: "100%",
           textAlign: "center",
-          display: "block"
+          display: "block",
         }}
       >
         <Parallax
@@ -1107,7 +1108,7 @@ function CardHistoire(props) {
             marginRight: "auto",
             display: "block",
             borderTopLeftRadius: 6,
-            borderTopRightRadius: 6
+            borderTopRightRadius: 6,
           }}
         ></Parallax>
         {/* <img
@@ -1134,7 +1135,7 @@ function CardHistoire(props) {
           fontWeight: "bold",
           color: "black",
           marginLeft: "5%",
-          textAlign: "left"
+          textAlign: "left",
         }}
       >
         {histoire.titreHistoire}
@@ -1146,7 +1147,7 @@ function CardHistoire(props) {
           fontFamily: "monospace",
           color: "black",
           marginLeft: "5%",
-          textAlign: "left"
+          textAlign: "left",
         }}
       >
         {functionDate(histoire.dateDeCreation)}
@@ -1172,7 +1173,7 @@ function CardHistoire(props) {
                       color: "black",
                       fontWeight: "bold",
                       marginLeft: "5%",
-                      textAlign: "left"
+                      textAlign: "left",
                     }}
                   >
                     {histoire.userText.pseudo}
@@ -1208,7 +1209,7 @@ function CardHistoire(props) {
                         textColor: "transparent",
                         pathColor: "#2e99b0",
                         trailColor: "#d6d6d6",
-                        strokeLinecap: "butt"
+                        strokeLinecap: "butt",
                       })}
                     >
                       <div
@@ -1216,14 +1217,14 @@ function CardHistoire(props) {
                           height: "100%",
                           justifyContent: "center",
                           alignItems: "center",
-                          display: "flex"
+                          display: "flex",
                         }}
                       >
                         <p
                           style={{
                             color: "#2e99b0",
                             fontSize: 15,
-                            margin: 0
+                            margin: 0,
                           }}
                         >
                           {parseFloat(
@@ -1249,7 +1250,7 @@ function CardHistoire(props) {
                 <GridItem xs={4} sm={4} md={4}>
                   <Avatar
                     alt=""
-                    src={config.API_URL + "images/defaultPhotoProfil.jpg"}
+                    src={config.API_URL + "images/asset/defaultPhotoProfil.jpg"}
                     // style={{ width: 200, height: 200 }}
                   />
                 </GridItem>
@@ -1260,7 +1261,7 @@ function CardHistoire(props) {
                       color: "black",
                       fontWeight: "bold",
                       marginLeft: "5%",
-                      textAlign: "left"
+                      textAlign: "left",
                     }}
                   >
                     non spécifié
@@ -1289,7 +1290,7 @@ function CardHistoire(props) {
                       color: "black",
                       fontWeight: "bold",
                       marginLeft: "5%",
-                      textAlign: "left"
+                      textAlign: "left",
                     }}
                   >
                     {histoire.userDessin.pseudo}
@@ -1325,7 +1326,7 @@ function CardHistoire(props) {
                         textColor: "transparent",
                         pathColor: "#ff2e4c",
                         trailColor: "#d6d6d6",
-                        strokeLinecap: "butt"
+                        strokeLinecap: "butt",
                       })}
                     >
                       <div
@@ -1333,14 +1334,14 @@ function CardHistoire(props) {
                           height: "100%",
                           justifyContent: "center",
                           alignItems: "center",
-                          display: "flex"
+                          display: "flex",
                         }}
                       >
                         <p
                           style={{
                             color: "#ff2e4c",
                             fontSize: 15,
-                            margin: 0
+                            margin: 0,
                           }}
                         >
                           {parseFloat(
@@ -1367,7 +1368,7 @@ function CardHistoire(props) {
                 <GridItem xs={4} sm={4} md={4}>
                   <Avatar
                     alt=""
-                    src={config.API_URL + "images/defaultPhotoProfil.jpg"}
+                    src={config.API_URL + "images/asset/defaultPhotoProfil.jpg"}
                     // style={{ width: 200, height: 200 }}
                   />
                 </GridItem>
@@ -1378,7 +1379,7 @@ function CardHistoire(props) {
                       color: "black",
                       fontWeight: "bold",
                       marginLeft: "5%",
-                      textAlign: "left"
+                      textAlign: "left",
                     }}
                   >
                     non spécifié

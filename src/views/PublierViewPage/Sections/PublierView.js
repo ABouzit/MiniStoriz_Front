@@ -97,7 +97,7 @@ import Moment from "moment";
 import * as Core from "@material-ui/core";
 import "react-circular-progressbar/dist/styles.css";
 import { Redirect } from "react-router-dom";
-import CircularProgress from '@material-ui/core/CircularProgress';
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 class PublierView extends React.Component {
   constructor(props) {
@@ -267,22 +267,20 @@ class PublierView extends React.Component {
     console.log(file);
     const allowedFileTypes = ["image/png", "image/jpeg", "image/gif"];
     if (file[0] && allowedFileTypes.indexOf(file[0].type) > -1) {
-      
-    
-    var reader = new FileReader();
-    var url = reader.readAsDataURL(file[0]);
-    let data = new FormData();
-    data.append("file", file[0]);
-    reader.onloadend = function(e) {
-      this.setState({
-        imgHistoire: reader.result,
-        dataImgHistoire: data,
-        lienImgHistoire: "images/histoires/" + file[0].name
-      });
-    }.bind(this);
-    console.log(this.state.imgHistoire); // Would see a path?
+      var reader = new FileReader();
+      var url = reader.readAsDataURL(file[0]);
+      let data = new FormData();
+      data.append("file", file[0]);
+      reader.onloadend = function(e) {
+        this.setState({
+          imgHistoire: reader.result,
+          dataImgHistoire: data,
+          lienImgHistoire: "images/histoires/" + file[0].name
+        });
+      }.bind(this);
+      console.log(this.state.imgHistoire); // Would see a path?
+    }
   }
-}
 
   next() {
     this.setState({
@@ -491,26 +489,141 @@ class PublierView extends React.Component {
                   }
                 }
               })
-            ).then(res => {
-              _this.setState(
+            ).then(() => {
+              if (
+                !_this.state.userText ||
+                !_this.state.userDessin ||
+                _this.state.userText.id === _this.state.userDessin.id
+              ) {
+                if (!_this.state.userText) {
+                  firebase
+                    .database()
+                    .ref("newStoriz/" + _this.state.userDessin.id)
+                    .set({
+                      from: _this.state.userLocal.id,
+                      numbe: 100000 + Math.random() * (100000 - 1)
+                    })
+                    .then(() => {
+                      _this.setState(
+                        {
+                          imgSrc: "",
+                          dataImgPlanche: "",
+                          lienImgPlanche: "",
+                          testNext: 0,
+                          testNextText: 0,
+                          textHistoire: "",
+                          titreHistoire: "",
+                          imgHistoire: "",
+                          lienImgHistoire: "",
+                          dataImgHistoire: "",
+                          planche: [{ text: "", img: "", data: "", lien: "" }],
+                          lienInputUpload: "",
+                          lienInputUploadhistoire: "",
+                          submit: false
+                        },
+                        () => _this.props.history.push("/lesHistoires")
+                      );
+                    });
+                } else if (!_this.state.userDessin) {
+                  firebase
+                    .database()
+                    .ref("newStoriz/" + _this.state.userText.id)
+                    .set({
+                      from: _this.state.userLocal.id,
+                      numbe: 100000 + Math.random() * (100000 - 1)
+                    })
+                    .then(() => {
+                      _this.setState(
+                        {
+                          imgSrc: "",
+                          dataImgPlanche: "",
+                          lienImgPlanche: "",
+                          testNext: 0,
+                          testNextText: 0,
+                          textHistoire: "",
+                          titreHistoire: "",
+                          imgHistoire: "",
+                          lienImgHistoire: "",
+                          dataImgHistoire: "",
+                          planche: [{ text: "", img: "", data: "", lien: "" }],
+                          lienInputUpload: "",
+                          lienInputUploadhistoire: "",
+                          submit: false
+                        },
+                        () => _this.props.history.push("/lesHistoires")
+                      );
+                    });
+                } else if (
+                  _this.state.userDessin.id === _this.state.userDessin.id
+                ) {
+                  firebase
+                    .database()
+                    .ref("newStoriz/" + _this.state.userText.id)
+                    .set({
+                      from: _this.state.userLocal.id,
+                      numbe: 100000 + Math.random() * (100000 - 1)
+                    })
+                    .then(() => {
+                      _this.setState(
+                        {
+                          imgSrc: "",
+                          dataImgPlanche: "",
+                          lienImgPlanche: "",
+                          testNext: 0,
+                          testNextText: 0,
+                          textHistoire: "",
+                          titreHistoire: "",
+                          imgHistoire: "",
+                          lienImgHistoire: "",
+                          dataImgHistoire: "",
+                          planche: [{ text: "", img: "", data: "", lien: "" }],
+                          lienInputUpload: "",
+                          lienInputUploadhistoire: "",
+                          submit: false
+                        },
+                        () => _this.props.history.push("/lesHistoires")
+                      );
+                    });
+                }
+              } else {
                 {
-                  imgSrc: "",
-                  dataImgPlanche: "",
-                  lienImgPlanche: "",
-                  testNext: 0,
-                  testNextText: 0,
-                  textHistoire: "",
-                  titreHistoire: "",
-                  imgHistoire: "",
-                  lienImgHistoire: "",
-                  dataImgHistoire: "",
-                  planche: [{ text: "", img: "", data: "", lien: "" }],
-                  lienInputUpload: "",
-                  lienInputUploadhistoire: "",
-                  submit: false
-                },
-                () => _this.props.history.push("/lesHistoires")
-              );
+                  firebase
+                    .database()
+                    .ref("newStoriz/" + _this.state.userDessin.id)
+                    .set({
+                      from: _this.state.userLocal.id,
+                      numbe: 100000 + Math.random() * (100000 - 1)
+                    });
+                  firebase
+                    .database()
+                    .ref("newStoriz/" + _this.state.userText.id)
+                    .set({
+                      from: _this.state.userLocal.id,
+                      numbe: 100000 + Math.random() * (100000 - 1)
+                    })
+                    .then(() => {
+                      _this.setState(
+                        {
+                          imgSrc: "",
+                          dataImgPlanche: "",
+                          lienImgPlanche: "",
+                          testNext: 0,
+                          testNextText: 0,
+                          textHistoire: "",
+                          titreHistoire: "",
+                          imgHistoire: "",
+                          lienImgHistoire: "",
+                          dataImgHistoire: "",
+                          planche: [{ text: "", img: "", data: "", lien: "" }],
+                          lienInputUpload: "",
+                          lienInputUploadhistoire: "",
+                          submit: false
+                        },
+                        () => _this.props.history.push("/lesHistoires")
+                      );
+                    });
+                }
+              }
             });
           })
           .catch(function(error) {
@@ -626,6 +739,7 @@ class PublierView extends React.Component {
                 })
               ).then(res => {
                 console.log(res);
+
                 if (
                   _this.state.userDessin &&
                   _this.state.userText &&
@@ -651,25 +765,148 @@ class PublierView extends React.Component {
                       });
                   }
                 }
-                _this.setState(
+                if (
+                  !_this.state.userText ||
+                  !_this.state.userDessin ||
+                  _this.state.userText.id === _this.state.userDessin.id
+                ) {
+                  if (!_this.state.userText) {
+                    firebase
+                      .database()
+                      .ref("newStoriz/" + _this.state.userDessin.id)
+                      .set({
+                        from: _this.state.userLocal.id,
+                        numbe: 100000 + Math.random() * (100000 - 1)
+                      })
+                      .then(() => {
+                        _this.setState(
+                          {
+                            imgSrc: "",
+                            dataImgPlanche: "",
+                            lienImgPlanche: "",
+                            testNext: 0,
+                            testNextText: 0,
+                            textHistoire: "",
+                            titreHistoire: "",
+                            imgHistoire: "",
+                            lienImgHistoire: "",
+                            dataImgHistoire: "",
+                            planche: [
+                              { text: "", img: "", data: "", lien: "" }
+                            ],
+                            lienInputUpload: "",
+                            lienInputUploadhistoire: "",
+                            submit: false
+                          },
+                          () => _this.props.history.push("/lesHistoires")
+                        );
+                      });
+                  } else if (!_this.state.userDessin) {
+                    firebase
+                      .database()
+                      .ref("newStoriz/" + _this.state.userText.id)
+                      .set({
+                        from: _this.state.userLocal.id,
+                        numbe: 100000 + Math.random() * (100000 - 1)
+                      })
+                      .then(() => {
+                        _this.setState(
+                          {
+                            imgSrc: "",
+                            dataImgPlanche: "",
+                            lienImgPlanche: "",
+                            testNext: 0,
+                            testNextText: 0,
+                            textHistoire: "",
+                            titreHistoire: "",
+                            imgHistoire: "",
+                            lienImgHistoire: "",
+                            dataImgHistoire: "",
+                            planche: [
+                              { text: "", img: "", data: "", lien: "" }
+                            ],
+                            lienInputUpload: "",
+                            lienInputUploadhistoire: "",
+                            submit: false
+                          },
+                          () => _this.props.history.push("/lesHistoires")
+                        );
+                      });
+                  } else if (
+                    _this.state.userDessin.id === _this.state.userDessin.id
+                  ) {
+                    firebase
+                      .database()
+                      .ref("newStoriz/" + _this.state.userText.id)
+                      .set({
+                        from: _this.state.userLocal.id,
+                        numbe: 100000 + Math.random() * (100000 - 1)
+                      })
+                      .then(() => {
+                        _this.setState(
+                          {
+                            imgSrc: "",
+                            dataImgPlanche: "",
+                            lienImgPlanche: "",
+                            testNext: 0,
+                            testNextText: 0,
+                            textHistoire: "",
+                            titreHistoire: "",
+                            imgHistoire: "",
+                            lienImgHistoire: "",
+                            dataImgHistoire: "",
+                            planche: [
+                              { text: "", img: "", data: "", lien: "" }
+                            ],
+                            lienInputUpload: "",
+                            lienInputUploadhistoire: "",
+                            submit: false
+                          },
+                          () => _this.props.history.push("/lesHistoires")
+                        );
+                      });
+                  }
+                } else {
                   {
-                    imgSrc: "",
-                    dataImgPlanche: "",
-                    lienImgPlanche: "",
-                    testNext: 0,
-                    testNextText: 0,
-                    textHistoire: "",
-                    titreHistoire: "",
-                    imgHistoire: "",
-                    lienImgHistoire: "",
-                    dataImgHistoire: "",
-                    planche: [{ text: "", img: "", data: "", lien: "" }],
-                    lienInputUpload: "",
-                    lienInputUploadhistoire: "",
-                    submit: false
-                  },
-                  () => _this.props.history.push("/lesHistoires")
-                );
+                    firebase
+                      .database()
+                      .ref("newStoriz/" + _this.state.userDessin.id)
+                      .set({
+                        from: _this.state.userLocal.id,
+                        numbe: 100000 + Math.random() * (100000 - 1)
+                      });
+                    firebase
+                      .database()
+                      .ref("newStoriz/" + _this.state.userText.id)
+                      .set({
+                        from: _this.state.userLocal.id,
+                        numbe: 100000 + Math.random() * (100000 - 1)
+                      })
+                      .then(() => {
+                        _this.setState(
+                          {
+                            imgSrc: "",
+                            dataImgPlanche: "",
+                            lienImgPlanche: "",
+                            testNext: 0,
+                            testNextText: 0,
+                            textHistoire: "",
+                            titreHistoire: "",
+                            imgHistoire: "",
+                            lienImgHistoire: "",
+                            dataImgHistoire: "",
+                            planche: [
+                              { text: "", img: "", data: "", lien: "" }
+                            ],
+                            lienInputUpload: "",
+                            lienInputUploadhistoire: "",
+                            submit: false
+                          },
+                          () => _this.props.history.push("/lesHistoires")
+                        );
+                      });
+                  }
+                }
               });
             })
             .catch(function(error) {
@@ -683,16 +920,16 @@ class PublierView extends React.Component {
           url: config.API_URL + "sendImage/histoires/",
           data: this.state.dataImgHistoire,
           headers: { "Content-Type": "multipart/form-data" }
-        }).then(res => {
-          let s = res.data.filePath.replace("\\", "/").replace("\\", "/");
-          return Axios.put(config.API_URL + "histoires", {
-            id: idHistoire,
-            userText: this.state.userText,
-            userDessin: this.state.userDessin,
-            lienIllustration: config.API_URL + s,
-            titreHistoire: this.state.titreHistoire
-          })
-            .then(function(response) {
+        })
+          .then(res => {
+            let s = res.data.filePath.replace("\\", "/").replace("\\", "/");
+            return Axios.put(config.API_URL + "histoires", {
+              id: idHistoire,
+              userText: this.state.userText,
+              userDessin: this.state.userDessin,
+              lienIllustration: config.API_URL + s,
+              titreHistoire: this.state.titreHistoire
+            }).then(function(response) {
               Promise.all(
                 _this.state.planche.map((planch, index) => {
                   if (index > 0) {
@@ -742,11 +979,11 @@ class PublierView extends React.Component {
                   () => _this.props.history.push("/lesHistoires")
                 );
               });
-            })
-            .catch(function(error) {
-              console.log(error);
             });
-        });
+          })
+          .catch(function(error) {
+            console.log(error);
+          });
       }
     }
   }
@@ -1029,7 +1266,7 @@ class PublierView extends React.Component {
                                 alt=""
                                 src={
                                   config.API_URL +
-                                  "images/defaultPhotoProfil.jpg"
+                                  "images/asset/defaultPhotoProfil.jpg"
                                 }
                               />
                             ) : (
@@ -1085,7 +1322,7 @@ class PublierView extends React.Component {
                                 alt=""
                                 src={
                                   config.API_URL +
-                                  "images/defaultPhotoProfil.jpg"
+                                  "images/asset/defaultPhotoProfil.jpg"
                                 }
                               />
                             ) : (
@@ -1154,7 +1391,7 @@ class PublierView extends React.Component {
                                   alt=""
                                   src={
                                     config.API_URL +
-                                    "images/defaultPhotoProfil.jpg"
+                                    "images/asset/defaultPhotoProfil.jpg"
                                   }
                                 />
                               ) : (
@@ -1225,7 +1462,7 @@ class PublierView extends React.Component {
                                         alt=""
                                         src={
                                           config.API_URL +
-                                          "images/defaultPhotoProfil.jpg"
+                                          "images/asset/defaultPhotoProfil.jpg"
                                         }
                                       />
                                     ) : (
@@ -1293,7 +1530,7 @@ class PublierView extends React.Component {
                                   alt=""
                                   src={
                                     config.API_URL +
-                                    "images/defaultPhotoProfil.jpg"
+                                    "images/asset/defaultPhotoProfil.jpg"
                                   }
                                 />
                               ) : (
@@ -1363,7 +1600,7 @@ class PublierView extends React.Component {
                                         alt=""
                                         src={
                                           config.API_URL +
-                                          "images/defaultPhotoProfil.jpg"
+                                          "images/asset/defaultPhotoProfil.jpg"
                                         }
                                       />
                                     ) : (
@@ -1439,7 +1676,7 @@ class PublierView extends React.Component {
                                 alt=""
                                 src={
                                   config.API_URL +
-                                  "images/defaultPhotoProfil.jpg"
+                                  "images/asset/defaultPhotoProfil.jpg"
                                 }
                               />
                             ) : (
@@ -1490,7 +1727,7 @@ class PublierView extends React.Component {
                                 alt=""
                                 src={
                                   config.API_URL +
-                                  "images/defaultPhotoProfil.jpg"
+                                  "images/asset/defaultPhotoProfil.jpg"
                                 }
                               />
                             ) : (
@@ -1598,7 +1835,7 @@ class PublierView extends React.Component {
                             this.state.titreHistoire == "" && this.state.submit
                               ? {
                                   borderLeftWidth: 15,
-                                boderColor: "rgb(255, 44, 77)"
+                                  boderColor: "rgb(255, 44, 77)"
                                 }
                               : {
                                   borderWidth: 10
@@ -1666,7 +1903,7 @@ class PublierView extends React.Component {
                             style={
                               this.state.imgHistoire == "" && this.state.submit
                                 ? {
-                                  background: "rgb(255, 44, 77)",
+                                    background: "rgb(255, 44, 77)",
                                     color: "white"
                                   }
                                 : {
@@ -1806,14 +2043,14 @@ class PublierView extends React.Component {
                                       isMobile
                                         ? {
                                             textAlign: "-webkit-center",
-                                          background: "#2f99b1",
+                                            background: "#2f99b1",
                                             borderRadius: "15px 15px 15px 15px",
                                             height: "100%",
                                             width: "100%"
                                           }
                                         : {
                                             textAlign: "-webkit-center",
-                                          background: "#2f99b1",
+                                            background: "#2f99b1",
                                             borderRadius: "15px 15px 15px 15px",
                                             height: "100%",
                                             width: "100%"
@@ -1898,7 +2135,8 @@ class PublierView extends React.Component {
                                               planche.img === "" &&
                                               this.state.submit
                                                 ? {
-                                                  background: "rgb(255, 44, 77)",
+                                                    background:
+                                                      "rgb(255, 44, 77)",
                                                     color: "white",
                                                     marginLeft: 15
                                                   }
@@ -1949,7 +2187,7 @@ class PublierView extends React.Component {
                                     isMobile
                                       ? {
                                           height: 400,
-                                        backgroundColor: "#fcd77f",
+                                          backgroundColor: "#fcd77f",
                                           borderRadius: "15px 15px 15px 15px",
                                           borderRadiusTopLeft: 15,
                                           padding: 0,
@@ -1959,7 +2197,7 @@ class PublierView extends React.Component {
                                         }
                                       : {
                                           height: 550,
-                                        backgroundColor: "#fcd77f",
+                                          backgroundColor: "#fcd77f",
                                           borderRadius: "15px 15px 15px 15px",
                                           borderRadiusTopLeft: 15,
                                           padding: 0,
@@ -2060,13 +2298,13 @@ class PublierView extends React.Component {
                                       isMobile
                                         ? {
                                             textAlign: "-webkit-center",
-                                              background: "#2f99b1",
+                                            background: "#2f99b1",
                                             borderRadius: "15px 15px 0px 0px",
                                             height: "100%"
                                           }
                                         : {
                                             textAlign: "-webkit-center",
-                                              background: "#2f99b1",
+                                            background: "#2f99b1",
                                             borderRadius: "15px 0px 0px 15px",
                                             height: "100%"
                                           }
@@ -2152,7 +2390,8 @@ class PublierView extends React.Component {
                                                 planche.img === "" &&
                                                 this.state.submit
                                                   ? {
-                                                    background: "rgb(255, 44, 77)",
+                                                      background:
+                                                        "rgb(255, 44, 77)",
                                                       color: "white",
                                                       marginLeft: 15
                                                     }
@@ -2182,7 +2421,7 @@ class PublierView extends React.Component {
                                     isMobile
                                       ? {
                                           height: 400,
-                                        backgroundColor: "#fcd77f",
+                                          backgroundColor: "#fcd77f",
                                           borderRadius: "0px 0px 15px 15px",
                                           borderRadiusTopLeft: 15,
                                           padding: 0,
@@ -2192,7 +2431,7 @@ class PublierView extends React.Component {
                                         }
                                       : {
                                           height: 550,
-                                        backgroundColor: "#fcd77f",
+                                          backgroundColor: "#fcd77f",
                                           borderRadius: "0px 15px 15px 0px",
                                           borderRadiusTopLeft: 15,
                                           padding: 0,
@@ -2294,19 +2533,21 @@ class PublierView extends React.Component {
                   }}
                 >
                   {this.state.chargement == false ? (
-                  <Button
-                    variant="contained"
-                    style={{
-                      backgroundColor: "rgb(31, 23, 72)",
-                      marginLeft: 15
-                    }}
-                    color="rgb(90, 81, 127)"
-                    onClick={() => this.saveHistoireWithPlanche()}
-                  >
-                    Publier Histoire
-                  </Button>
-                  ):(
-                    <CircularProgress style={{marginRight: 55, color: 'rgb(31, 23, 72)'}} />
+                    <Button
+                      variant="contained"
+                      style={{
+                        backgroundColor: "rgb(31, 23, 72)",
+                        marginLeft: 15
+                      }}
+                      color="rgb(90, 81, 127)"
+                      onClick={() => this.saveHistoireWithPlanche()}
+                    >
+                      Publier Histoire
+                    </Button>
+                  ) : (
+                    <CircularProgress
+                      style={{ marginRight: 55, color: "rgb(31, 23, 72)" }}
+                    />
                   )}
                 </GridItem>
               </GridContainer>

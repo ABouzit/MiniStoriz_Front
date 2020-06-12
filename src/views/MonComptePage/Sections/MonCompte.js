@@ -46,8 +46,9 @@ import { subscriber, messageService } from "./../../../services/messageService";
 import { Redirect } from "react-router-dom";
 import { Base64 } from "js-base64";
 import { isMobile } from "react-device-detect";
-import CircularProgress from '@material-ui/core/CircularProgress';
-
+import CircularProgress from "@material-ui/core/CircularProgress";
+import * as firebase from "firebase/app";
+import "firebase/database";
 class MonCompte extends React.Component {
   constructor(props) {
     super(props);
@@ -115,7 +116,49 @@ class MonCompte extends React.Component {
       if (v.couverture instanceof Blob) {
         this.savePhotoCov(v.couverture);
       }
+      if (v.desactive == true) {
+        console.log("push2");
+        this.demandeDesactive();
+      }
+      if (v.desactive == false) {
+        console.log("push2");
+        this.annulerDemandeDesactive();
+      }
     });
+  }
+  demandeDesactive() {
+    console.log("push3");
+    let us = this.state.user;
+    us.demandeResignation = true;
+    console.log(us)
+    Axios.put(config.API_URL + "users/demandeResignation", us).then((res) => {
+      subscriber.next({ user: us });
+      this.forceUpdate();
+    });
+    firebase
+      .database()
+      .ref("activeUsers/" + us.id)
+      .set({
+        stat: "DEMANDEDESACTIVE",
+        numbe: 100000 + Math.random() * (100000 - 1),
+      });
+  }
+  annulerDemandeDesactive() {
+    console.log("push4");
+    let us = this.state.user;
+    us.demandeResignation = false;
+     console.log(us);
+    Axios.put(config.API_URL + "users/demandeResignation", us).then((res) => {
+      subscriber.next({ user: us });
+      this.forceUpdate();
+    });
+    firebase
+      .database()
+      .ref("activeUsers/" + us.id)
+      .set({
+        stat: "ACTIVE",
+        numbe: 100000 + Math.random() * (100000 - 1),
+      });
   }
   checkPass() {
     if (this.state.Npassword == this.state.Rpassword) {
@@ -239,15 +282,16 @@ class MonCompte extends React.Component {
       _this.state.user.mail = _this.state.mail;
     }
     if (Base64.encode(_this.state.password) !== _this.state.user.motDePasse) {
-      
       _this.state.user.motDePasse = Base64.encode(_this.state.password);
-      console.log(_this.state.user.password)
+      console.log(_this.state.user.password);
     }
     if (_this.state.ville !== _this.state.user.ville) {
       _this.state.user.ville = _this.state.ville;
     }
     if (_this.state.updatePhotoCov == 1 && _this.state.updatePhoto == 0) {
-      _this.setState({ changement: true }, () => {_this.forceUpdate()});
+      _this.setState({ changement: true }, () => {
+        _this.forceUpdate();
+      });
       return Axios.post(
         config.API_URL + "sendImage/photoProfile/",
         this.state.dataImgCov
@@ -260,22 +304,27 @@ class MonCompte extends React.Component {
             const user = _this.state.userLocal;
             user.lienPhoto = _this.state.lienImgProfil;
             user.pseudo = _this.state.pseudo;
-            _this.setState({ change: false, userLocal: user, changement: false }, () => {
-              localStorage.setItem(
-                "user",
-                JSON.stringify(_this.state.userLocal)
-              );
-              subscriber.next("change");
-              _this.forceUpdate();
-            });
+            _this.setState(
+              { change: false, userLocal: user, changement: false },
+              () => {
+                localStorage.setItem(
+                  "user",
+                  JSON.stringify(_this.state.userLocal)
+                );
+                subscriber.next("change");
+                _this.forceUpdate();
+              }
+            );
           })
           .catch(function(error) {
             console.log(error);
           });
       });
     }
-    if (_this.state.updatePhoto == 1 ) {
-      _this.setState({ changement: true }, () => {_this.forceUpdate()});
+    if (_this.state.updatePhoto == 1) {
+      _this.setState({ changement: true }, () => {
+        _this.forceUpdate();
+      });
       return Axios.post(
         config.API_URL + "sendImage/photoProfile/",
         this.state.dataImgProfil
@@ -297,33 +346,39 @@ class MonCompte extends React.Component {
                     const user = _this.state.userLocal;
                     user.lienPhoto = config.API_URL + s;
                     user.pseudo = _this.state.pseudo;
-                    _this.setState({ change: false, userLocal: user, changement: false }, () => {
-                      localStorage.setItem(
-                        "user",
-                        JSON.stringify(_this.state.userLocal)
-                      );
-                      subscriber.next("change");
-                      _this.forceUpdate();
-                    });
+                    _this.setState(
+                      { change: false, userLocal: user, changement: false },
+                      () => {
+                        localStorage.setItem(
+                          "user",
+                          JSON.stringify(_this.state.userLocal)
+                        );
+                        subscriber.next("change");
+                        _this.forceUpdate();
+                      }
+                    );
                   })
                   .catch(function(error) {
                     console.log(error);
                   });
               });
             } else {
-            _this.fetchUser();
-            const user = _this.state.userLocal;
-            user.lienPhoto = config.API_URL + s;
-            user.pseudo = _this.state.pseudo;
-            _this.setState({ change: false, userLocal: user, changement: false }, () => {
-              localStorage.setItem(
-                "user",
-                JSON.stringify(_this.state.userLocal)
+              _this.fetchUser();
+              const user = _this.state.userLocal;
+              user.lienPhoto = config.API_URL + s;
+              user.pseudo = _this.state.pseudo;
+              _this.setState(
+                { change: false, userLocal: user, changement: false },
+                () => {
+                  localStorage.setItem(
+                    "user",
+                    JSON.stringify(_this.state.userLocal)
+                  );
+                  subscriber.next("change");
+                  _this.forceUpdate();
+                }
               );
-              subscriber.next("change");
-              _this.forceUpdate();
-            });
-          }
+            }
           })
           .catch(function(error) {
             console.log(error);
@@ -332,7 +387,7 @@ class MonCompte extends React.Component {
     } else {
       return Axios.put(config.API_URL + "users", _this.state.user)
         .then(res => {
-          console.log(res)
+          console.log(res);
           _this.fetchUser();
           const user = _this.state.userLocal;
           user.pseudo = _this.state.pseudo;
@@ -492,7 +547,7 @@ class MonCompte extends React.Component {
                     <span
                       style={{
                         fontFamily: "monospace",
-                        fontVariant: 'petite-caps',
+                        fontVariant: "petite-caps",
                         fontWeight: "bold",
                         color: "#1e1548",
                         fontSize: "xx-large"
@@ -579,7 +634,7 @@ class MonCompte extends React.Component {
                     <span
                       style={{
                         fontFamily: "monospace",
-                        fontVariant: 'petite-caps',
+                        fontVariant: "petite-caps",
                         fontWeight: "bold",
                         color: "#1e1548",
                         fontSize: "xx-large"
@@ -664,7 +719,7 @@ class MonCompte extends React.Component {
                     <span
                       style={{
                         fontFamily: "monospace",
-                        fontVariant: 'petite-caps',
+                        fontVariant: "petite-caps",
                         fontWeight: "bold",
                         color: "#1e1548",
                         fontSize: "xx-large"
@@ -751,7 +806,7 @@ class MonCompte extends React.Component {
                     <span
                       style={{
                         fontFamily: "monospace",
-                        fontVariant: 'petite-caps',
+                        fontVariant: "petite-caps",
                         fontWeight: "bold",
                         color: "#1e1548",
                         fontSize: "xx-large"
@@ -836,7 +891,7 @@ class MonCompte extends React.Component {
                     <span
                       style={{
                         fontFamily: "monospace",
-                        fontVariant: 'petite-caps',
+                        fontVariant: "petite-caps",
                         fontWeight: "bold",
                         color: "#1e1548",
                         fontSize: "xx-large"
@@ -923,7 +978,7 @@ class MonCompte extends React.Component {
                     <span
                       style={{
                         fontFamily: "monospace",
-                        fontVariant: 'petite-caps',
+                        fontVariant: "petite-caps",
                         fontWeight: "bold",
                         color: "#1e1548",
                         fontSize: "xx-large"
@@ -1187,10 +1242,9 @@ class MonCompte extends React.Component {
               >
                 Valider
               </Button>
-            ):(
-              <CircularProgress style={{color: "#1e1548"}} />
+            ) : (
+              <CircularProgress style={{ color: "#1e1548" }} />
             )}
-            
           </GridItem>
         </GridContainer>
       </div>
