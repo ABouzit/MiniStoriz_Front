@@ -50,6 +50,7 @@ import SimpleBar from "simplebar-react";
 import "simplebar/dist/simplebar.min.css";
 import Axios from "axios";
 import config from "config/config";
+import AddIcon from "@material-ui/icons/ArrowBackOutlined";
 import { Input } from "@material-ui/core";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
@@ -70,6 +71,7 @@ import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import Fab from "@material-ui/core/Fab";
 import Avatar from "@material-ui/core/Avatar";
 import CreateIcon from "@material-ui/icons/Create";
+import {ReactComponent as Bruche} from '../../../icons/bruche.svg';
 import BrushIcon from "@material-ui/icons/Brush";
 import CommentIcon from "@material-ui/icons/Comment";
 import VisibilityIcon from "@material-ui/icons/Visibility";
@@ -94,6 +96,7 @@ class AllHistoires extends React.Component {
     this.state = {
       page: 1,
       redirect: 0,
+      illustrer: false,
       connected: false,
       pageUsers: 1,
       numberPage: 0,
@@ -147,37 +150,74 @@ class AllHistoires extends React.Component {
     }
 
     if (this.state.search == "") {
-      Axios.get(
-        config.API_URL +
-          "histoires/take/6/" +
-          (this.state.page - 1) * 6 +
-          "/" +
-          this.state.currentFiltre +
-          "/xxxx",
-        {}
-      ).then(res => {
-        this.setState({
-          histoires: this.state.histoires.concat(res.data)
-        });
+      if (!this.state.illustrer) {
+        Axios.get(
+          config.API_URL +
+            "histoires/take/6/" +
+            (this.state.page - 1) * 6 +
+            "/" +
+            this.state.currentFiltre +
+            "/xxxx",
+          {}
+        ).then(res => {
+          this.setState({
+            histoires: this.state.histoires.concat(res.data)
+          });
 
-        this.forceUpdate();
-      });
-    } else {
-      Axios.get(
-        config.API_URL +
-          "histoires/take/6/" +
-          (this.state.page - 1) * 6 +
-          "/" +
-          this.state.currentFiltre +
-          "/" +
-          this.state.search,
-        {}
-      ).then(res => {
-        this.setState({
-          histoires: this.state.histoires.concat(res.data)
+          this.forceUpdate();
         });
-        this.forceUpdate();
-      });
+      } else {
+        Axios.get(
+          config.API_URL +
+            "histoires/illustrer/take/6/" +
+            (this.state.page - 1) * 6 +
+            "/" +
+            this.state.currentFiltre +
+            "/xxxx",
+          {}
+        ).then(res => {
+          this.setState({
+            histoires: this.state.histoires.concat(res.data)
+          });
+
+          this.forceUpdate();
+        });
+      }
+    } else {
+      if (!this.state.illustrer) {
+        Axios.get(
+          config.API_URL +
+            "histoires/take/6/" +
+            (this.state.page - 1) * 6 +
+            "/" +
+            this.state.currentFiltre +
+            "/" +
+            this.state.search,
+          {}
+        ).then(res => {
+          this.setState({
+            histoires: this.state.histoires.concat(res.data)
+          });
+          this.forceUpdate();
+        });
+      } else {
+        Axios.get(
+          config.API_URL +
+            "histoires/illustrer/take/6/" +
+            (this.state.page - 1) * 6 +
+            "/" +
+            this.state.currentFiltre +
+            "/" +
+            this.state.search,
+          {}
+        ).then(res => {
+          this.setState({
+            histoires: this.state.histoires.concat(res.data)
+          });
+          this.forceUpdate();
+        });
+      }
+      
     }
   }
   handleChangePageUsers() {
@@ -218,23 +258,42 @@ class AllHistoires extends React.Component {
     }
   }
   fetchHistoire() {
-    console.log("URL api" + config.API_URL);
-    Axios.get(
-      config.API_URL +
-        "histoires/take/6/" +
-        (this.state.page - 1) * 6 +
-        "/1/xxxx",
-      {}
-    ).then(res => {
-      this.setState({ histoires: res.data });
-    });
-    Axios.get(config.API_URL + "histoires/numberHistoires", {}).then(res => {
-      this.setState({ numberPage: Math.ceil(res.data / 6) }, () => {
-        if (res.data > 6) {
-          this.setState({ showMore: true });
-        }
+    
+    if (!this.state.illustrer) {
+      Axios.get(
+        config.API_URL +
+          "histoires/take/6/" +
+          (this.state.page - 1) * 6 +
+          "/1/xxxx",
+        {}
+      ).then(res => {
+        this.setState({ histoires: res.data });
       });
-    });
+      Axios.get(config.API_URL + "histoires/numberHistoires", {}).then(res => {
+        this.setState({ numberPage: Math.ceil(res.data / 6) }, () => {
+          if (res.data > 6) {
+            this.setState({ showMore: true });
+          }
+        });
+      });
+    } else {
+      Axios.get(
+        config.API_URL +
+          "histoires/illustrer/take/6/" +
+          (this.state.page - 1) * 6 +
+          "/1/xxxx",
+        {}
+      ).then(res => {
+        this.setState({ histoires: res.data });
+      });
+      Axios.get(config.API_URL + "histoires/illustrer/numberHistoires", {}).then(res => {
+        this.setState({ numberPage: Math.ceil(res.data / 6) }, () => {
+          if (res.data > 6) {
+            this.setState({ showMore: true });
+          }
+        });
+      });
+    }
   }
   handleChange = e => {
     this.setState({ selectedFiltre: e.target.value });
@@ -244,21 +303,67 @@ class AllHistoires extends React.Component {
     this.setState({ page: 1, showMore: true,showMoreUsers: false }, () => {
       if (this.state.currentFiltre == 1) {
         if (this.state.search !== "") {
-          this.setState({ histoireUsers: [] });
-          Axios.get(
-            config.API_URL +
-              "histoires/numberHistoiresSearch/" +
-              this.state.search,
-            {}
-          ).then(res => {
-            this.setState({ numberPage: Math.ceil(res.data / 6) }, () => {
-              if (res.data <= 6) {
-                this.setState({ showMore: false });
-              } else {
-                this.setState({ showMore: true });
-              }
+          if (!this.state.illustrer) {
+            Axios.get(
+              config.API_URL +
+                "histoires/numberHistoiresSearch/" +
+                this.state.search,
+              {}
+            ).then(res => {
+              this.setState({ numberPage: Math.ceil(res.data / 6) }, () => {
+                if (res.data <= 6) {
+                  this.setState({ showMore: false });
+                } else {
+                  this.setState({ showMore: true });
+                }
+              });
             });
-          });
+            Axios.get(
+              config.API_URL +
+                "histoires/take/6/" +
+                (this.state.page - 1) +
+                "/" +
+                this.state.currentFiltre +
+                "/" +
+                this.state.search,
+              {}
+            ).then(res => {
+              this.setState({ histoires: res.data, currentFiltre: 1 });
+              this.forceUpdate();
+              console.log(this.state.histoires);
+            });
+          } else {
+            Axios.get(
+              config.API_URL +
+                "histoires/illustrer/numberHistoiresSearch/" +
+                this.state.search,
+              {}
+            ).then(res => {
+              this.setState({ numberPage: Math.ceil(res.data / 6) }, () => {
+                if (res.data <= 6) {
+                  this.setState({ showMore: false });
+                } else {
+                  this.setState({ showMore: true });
+                }
+              });
+            });
+            Axios.get(
+              config.API_URL +
+                "histoires/illustrer/take/6/" +
+                (this.state.page - 1) +
+                "/" +
+                this.state.currentFiltre +
+                "/" +
+                this.state.search,
+              {}
+            ).then(res => {
+              this.setState({ histoires: res.data, currentFiltre: 1 });
+              this.forceUpdate();
+              console.log(this.state.histoires);
+            });
+          }
+          this.setState({ histoireUsers: [] });
+          
           Axios.get(
             config.API_URL +
               "histoires/numberHistoiresSearchUsers/" +
@@ -283,68 +388,131 @@ class AllHistoires extends React.Component {
           ).then(res => {
             this.setState({ histoireUsers: res.data });
           });
-          Axios.get(
-            config.API_URL +
-              "histoires/take/6/" +
-              (this.state.page - 1) +
-              "/" +
-              this.state.currentFiltre +
-              "/" +
-              this.state.search,
-            {}
-          ).then(res => {
-            this.setState({ histoires: res.data, currentFiltre: 1 });
-            this.forceUpdate();
-            console.log(this.state.histoires);
-          });
+          
         }
         if (this.state.search === "") {
-          Axios.get(
-            config.API_URL +
-              "histoires/take/6/" +
-              (this.state.page - 1) +
-              "/" +
-              this.state.currentFiltre +
-              "/xxxx",
-            {}
-          ).then(res => {
-            this.setState({ histoires: res.data, currentFiltre: 1 });
-            this.forceUpdate();
-            console.log(this.state.histoires);
-          });
-          Axios.get(config.API_URL + "histoires/numberHistoires", {}).then(
-            res => {
-              this.setState(
-                {
-                  numberPage: Math.ceil(res.data / 6),
-                  histoireUsers: []
-                },
-                () => {
-                  if (res.data <= 6) {
-                    this.setState({ showMore: false });
+          if (!this.state.illustrer) {
+            Axios.get(
+              config.API_URL +
+                "histoires/take/6/" +
+                (this.state.page - 1) +
+                "/" +
+                this.state.currentFiltre +
+                "/xxxx",
+              {}
+            ).then(res => {
+              this.setState({ histoires: res.data, currentFiltre: 1 });
+              this.forceUpdate();
+              console.log(this.state.histoires);
+            });
+            Axios.get(config.API_URL + "histoires/numberHistoires", {}).then(
+              res => {
+                this.setState(
+                  {
+                    numberPage: Math.ceil(res.data / 6),
+                    histoireUsers: []
+                  },
+                  () => {
+                    if (res.data <= 6) {
+                      this.setState({ showMore: false });
+                    }
                   }
-                }
-              );
-            }
-          );
+                );
+              }
+            );
+          } else {
+            Axios.get(
+              config.API_URL +
+                "histoires/illustrer/take/6/" +
+                (this.state.page - 1) +
+                "/" +
+                this.state.currentFiltre +
+                "/xxxx",
+              {}
+            ).then(res => {
+              this.setState({ histoires: res.data, currentFiltre: 1 });
+              this.forceUpdate();
+              console.log(this.state.histoires);
+            });
+            Axios.get(config.API_URL + "histoires/illustrer/numberHistoires", {}).then(
+              res => {
+                this.setState(
+                  {
+                    numberPage: Math.ceil(res.data / 6),
+                    histoireUsers: []
+                  },
+                  () => {
+                    if (res.data <= 6) {
+                      this.setState({ showMore: false });
+                    }
+                  }
+                );
+              }
+            );
+          }
+          
         }
       } else if (this.state.currentFiltre == 2) {
         if (this.state.search !== "") {
           this.setState({ histoireUsers: [] });
-          Axios.get(
-            config.API_URL +
-              "histoires/numberHistoiresSearch/" +
-              this.state.search,
-            {}
-          ).then(res => {
-            this.setState({ numberPage: Math.ceil(res.data / 6) }, () => {
-              if (res.data <= 6) {
-                this.setState({ showMore: false });
-              } else {
-                this.setState({ showMore: true });
-              }
+          if (!this.state.illustrer) {
+            Axios.get(
+              config.API_URL +
+                "histoires/numberHistoiresSearch/" +
+                this.state.search,
+              {}
+            ).then(res => {
+              this.setState({ numberPage: Math.ceil(res.data / 6) }, () => {
+                if (res.data <= 6) {
+                  this.setState({ showMore: false });
+                } else {
+                  this.setState({ showMore: true });
+                }
+              });
             });
-          });
+            Axios.get(
+              config.API_URL +
+                "histoires/take/6/" +
+                (this.state.page - 1) * 6 +
+                "/" +
+                this.state.currentFiltre +
+                "/" +
+                this.state.search,
+              {}
+            ).then(res => {
+              this.setState({ histoires: res.data, currentFiltre: 2 });
+              this.forceUpdate();
+            });
+          } else {
+            Axios.get(
+              config.API_URL +
+                "histoires/illustrer/numberHistoiresSearch/" +
+                this.state.search,
+              {}
+            ).then(res => {
+              this.setState({ numberPage: Math.ceil(res.data / 6) }, () => {
+                if (res.data <= 6) {
+                  this.setState({ showMore: false });
+                } else {
+                  this.setState({ showMore: true });
+                }
+              });
+            });
+            Axios.get(
+              config.API_URL +
+                "histoires/illustrer/take/6/" +
+                (this.state.page - 1) * 6 +
+                "/" +
+                this.state.currentFiltre +
+                "/" +
+                this.state.search,
+              {}
+            ).then(res => {
+              this.setState({ histoires: res.data, currentFiltre: 2 });
+              this.forceUpdate();
+            });
+          }
+          
           Axios.get(
             config.API_URL +
               "histoires/numberHistoiresSearchUsers/" +
@@ -369,66 +537,128 @@ class AllHistoires extends React.Component {
           ).then(res => {
             this.setState({ histoireUsers: res.data });
           });
-          Axios.get(
-            config.API_URL +
-              "histoires/take/6/" +
-              (this.state.page - 1) * 6 +
-              "/" +
-              this.state.currentFiltre +
-              "/" +
-              this.state.search,
-            {}
-          ).then(res => {
-            this.setState({ histoires: res.data, currentFiltre: 2 });
-            this.forceUpdate();
-          });
+          
         }
         if (this.state.search === "") {
-          Axios.get(
-            config.API_URL +
-              "histoires/take/6/" +
-              (this.state.page - 1) * 6 +
-              "/" +
-              this.state.currentFiltre +
-              "/xxxx",
-            {}
-          ).then(res => {
-            this.setState({ histoires: res.data, currentFiltre: 2 });
-            this.forceUpdate();
-          });
-          Axios.get(config.API_URL + "histoires/numberHistoires", {}).then(
-            res => {
-              this.setState(
-                {
-                  numberPage: Math.ceil(res.data / 6),
-                  histoireUsers: []
-                },
-                () => {
-                  if (res.data <= 6) {
-                    this.setState({ showMore: false });
+          if (!this.state.illustrer) {
+            Axios.get(
+              config.API_URL +
+                "histoires/take/6/" +
+                (this.state.page - 1) * 6 +
+                "/" +
+                this.state.currentFiltre +
+                "/xxxx",
+              {}
+            ).then(res => {
+              this.setState({ histoires: res.data, currentFiltre: 2 });
+              this.forceUpdate();
+            });
+            Axios.get(config.API_URL + "histoires/numberHistoires", {}).then(
+              res => {
+                this.setState(
+                  {
+                    numberPage: Math.ceil(res.data / 6),
+                    histoireUsers: []
+                  },
+                  () => {
+                    if (res.data <= 6) {
+                      this.setState({ showMore: false });
+                    }
                   }
-                }
-              );
-            }
-          );
+                );
+              }
+            );
+          } else {
+            Axios.get(
+              config.API_URL +
+                "histoires/illustrer/take/6/" +
+                (this.state.page - 1) * 6 +
+                "/" +
+                this.state.currentFiltre +
+                "/xxxx",
+              {}
+            ).then(res => {
+              this.setState({ histoires: res.data, currentFiltre: 2 });
+              this.forceUpdate();
+            });
+            Axios.get(config.API_URL + "histoires/illustrer/numberHistoires", {}).then(
+              res => {
+                this.setState(
+                  {
+                    numberPage: Math.ceil(res.data / 6),
+                    histoireUsers: []
+                  },
+                  () => {
+                    if (res.data <= 6) {
+                      this.setState({ showMore: false });
+                    }
+                  }
+                );
+              }
+            );
+          }
         }
       } else if (this.state.currentFiltre == 3) {
         if (this.state.search !== "") {
           this.setState({ histoireUsers: [] });
-          Axios.get(
-            config.API_URL +
-              "histoires/numberHistoiresSearch/" +
-              this.state.search,
-            {}
-          ).then(res => {
-            this.setState({ numberPage: Math.ceil(res.data / 6) }, () => {
-              if (res.data <= 6) {
-                this.setState({ showMore: false });
-              } else {
-                this.setState({ showMore: true });
-              }
+          if (!this.state.illustrer) {
+            Axios.get(
+              config.API_URL +
+                "histoires/numberHistoiresSearch/" +
+                this.state.search,
+              {}
+            ).then(res => {
+              this.setState({ numberPage: Math.ceil(res.data / 6) }, () => {
+                if (res.data <= 6) {
+                  this.setState({ showMore: false });
+                } else {
+                  this.setState({ showMore: true });
+                }
+              });
             });
-          });
+            Axios.get(
+              config.API_URL +
+                "histoires/take/6/" +
+                (this.state.page - 1) * 6 +
+                "/" +
+                this.state.currentFiltre +
+                "/" +
+                this.state.search,
+              {}
+            ).then(res => {
+              this.setState({ histoires: res.data, currentFiltre: 3 });
+              this.forceUpdate();
+            });
+          } else {
+            Axios.get(
+              config.API_URL +
+                "histoires/illustrer/numberHistoiresSearch/" +
+                this.state.search,
+              {}
+            ).then(res => {
+              this.setState({ numberPage: Math.ceil(res.data / 6) }, () => {
+                if (res.data <= 6) {
+                  this.setState({ showMore: false });
+                } else {
+                  this.setState({ showMore: true });
+                }
+              });
+            });
+            Axios.get(
+              config.API_URL +
+                "histoires/illustrer/take/6/" +
+                (this.state.page - 1) * 6 +
+                "/" +
+                this.state.currentFiltre +
+                "/" +
+                this.state.search,
+              {}
+            ).then(res => {
+              this.setState({ histoires: res.data, currentFiltre: 3 });
+              this.forceUpdate();
+            });
+          }
+          
           Axios.get(
             config.API_URL +
               "histoires/numberHistoiresSearchUsers/" +
@@ -453,66 +683,129 @@ class AllHistoires extends React.Component {
           ).then(res => {
             this.setState({ histoireUsers: res.data });
           });
-          Axios.get(
-            config.API_URL +
-              "histoires/take/6/" +
-              (this.state.page - 1) * 6 +
-              "/" +
-              this.state.currentFiltre +
-              "/" +
-              this.state.search,
-            {}
-          ).then(res => {
-            this.setState({ histoires: res.data, currentFiltre: 3 });
-            this.forceUpdate();
-          });
+          
         }
         if (this.state.search === "") {
-          Axios.get(
-            config.API_URL +
-              "histoires/take/6/" +
-              (this.state.page - 1) * 6 +
-              "/" +
-              this.state.currentFiltre +
-              "/xxxx",
-            {}
-          ).then(res => {
-            this.setState({ histoires: res.data, currentFiltre: 3 });
-            this.forceUpdate();
-          });
-          Axios.get(config.API_URL + "histoires/numberHistoires", {}).then(
-            res => {
-              this.setState(
-                {
-                  numberPage: Math.ceil(res.data / 6),
-                  histoireUsers: []
-                },
-                () => {
-                  if (res.data <= 6) {
-                    this.setState({ showMore: false });
+          if (!this.state.illustrer) {
+            Axios.get(
+              config.API_URL +
+                "histoires/take/6/" +
+                (this.state.page - 1) * 6 +
+                "/" +
+                this.state.currentFiltre +
+                "/xxxx",
+              {}
+            ).then(res => {
+              this.setState({ histoires: res.data, currentFiltre: 3 });
+              this.forceUpdate();
+            });
+            Axios.get(config.API_URL + "histoires/numberHistoires", {}).then(
+              res => {
+                this.setState(
+                  {
+                    numberPage: Math.ceil(res.data / 6),
+                    histoireUsers: []
+                  },
+                  () => {
+                    if (res.data <= 6) {
+                      this.setState({ showMore: false });
+                    }
                   }
-                }
-              );
-            }
-          );
+                );
+              }
+            );
+          } else {
+            Axios.get(
+              config.API_URL +
+                "histoires/illustrer/take/6/" +
+                (this.state.page - 1) * 6 +
+                "/" +
+                this.state.currentFiltre +
+                "/xxxx",
+              {}
+            ).then(res => {
+              this.setState({ histoires: res.data, currentFiltre: 3 });
+              this.forceUpdate();
+            });
+            Axios.get(config.API_URL + "histoires/illustrer/numberHistoires", {}).then(
+              res => {
+                this.setState(
+                  {
+                    numberPage: Math.ceil(res.data / 6),
+                    histoireUsers: []
+                  },
+                  () => {
+                    if (res.data <= 6) {
+                      this.setState({ showMore: false });
+                    }
+                  }
+                );
+              }
+            );
+          }
+          
         }
       } else if (this.state.currentFiltre == 4) {
         if (this.state.search !== "") {
           this.setState({ histoireUsers: [] });
-          Axios.get(
-            config.API_URL +
-              "histoires/numberHistoiresSearch/" +
-              this.state.search,
-            {}
-          ).then(res => {
-            this.setState({ numberPage: Math.ceil(res.data / 6) }, () => {
-              if (res.data <= 6) {
-                this.setState({ showMore: false });
-              } else {
-                this.setState({ showMore: true });
-              }
+          if (!this.state.illustrer) {
+            Axios.get(
+              config.API_URL +
+                "histoires/numberHistoiresSearch/" +
+                this.state.search,
+              {}
+            ).then(res => {
+              this.setState({ numberPage: Math.ceil(res.data / 6) }, () => {
+                if (res.data <= 6) {
+                  this.setState({ showMore: false });
+                } else {
+                  this.setState({ showMore: true });
+                }
+              });
             });
-          });
+            Axios.get(
+              config.API_URL +
+                "histoires/take/6/" +
+                (this.state.page - 1) * 6 +
+                "/" +
+                this.state.currentFiltre +
+                "/" +
+                this.state.search,
+              {}
+            ).then(res => {
+              this.setState({ histoires: res.data, currentFiltre: 4 });
+              this.forceUpdate();
+            });
+          } else {
+            Axios.get(
+              config.API_URL +
+                "histoires/illustrer/numberHistoiresSearch/" +
+                this.state.search,
+              {}
+            ).then(res => {
+              this.setState({ numberPage: Math.ceil(res.data / 6) }, () => {
+                if (res.data <= 6) {
+                  this.setState({ showMore: false });
+                } else {
+                  this.setState({ showMore: true });
+                }
+              });
+            });
+            Axios.get(
+              config.API_URL +
+                "histoires/illustrer/take/6/" +
+                (this.state.page - 1) * 6 +
+                "/" +
+                this.state.currentFiltre +
+                "/" +
+                this.state.search,
+              {}
+            ).then(res => {
+              this.setState({ histoires: res.data, currentFiltre: 4 });
+              this.forceUpdate();
+            });
+          }
+          
           Axios.get(
             config.API_URL +
               "histoires/numberHistoiresSearchUsers/" +
@@ -537,48 +830,66 @@ class AllHistoires extends React.Component {
           ).then(res => {
             this.setState({ histoireUsers: res.data });
           });
-          Axios.get(
-            config.API_URL +
-              "histoires/take/6/" +
-              (this.state.page - 1) * 6 +
-              "/" +
-              this.state.currentFiltre +
-              "/" +
-              this.state.search,
-            {}
-          ).then(res => {
-            this.setState({ histoires: res.data, currentFiltre: 4 });
-            this.forceUpdate();
-          });
+          
         }
         if (this.state.search === "") {
-          Axios.get(
-            config.API_URL +
-              "histoires/take/6/" +
-              (this.state.page - 1) * 6 +
-              "/" +
-              this.state.currentFiltre +
-              "/xxxx",
-            {}
-          ).then(res => {
-            this.setState({ histoires: res.data, currentFiltre: 4 });
-            this.forceUpdate();
-          });
-          Axios.get(config.API_URL + "histoires/numberHistoires", {}).then(
-            res => {
-              this.setState(
-                {
-                  numberPage: Math.ceil(res.data / 6),
-                  histoireUsers: []
-                },
-                () => {
-                  if (res.data <= 6) {
-                    this.setState({ showMore: false });
+          if (!this.state.illustrer) {
+            Axios.get(
+              config.API_URL +
+                "histoires/take/6/" +
+                (this.state.page - 1) * 6 +
+                "/" +
+                this.state.currentFiltre +
+                "/xxxx",
+              {}
+            ).then(res => {
+              this.setState({ histoires: res.data, currentFiltre: 4 });
+              this.forceUpdate();
+            });
+            Axios.get(config.API_URL + "histoires/numberHistoires", {}).then(
+              res => {
+                this.setState(
+                  {
+                    numberPage: Math.ceil(res.data / 6),
+                    histoireUsers: []
+                  },
+                  () => {
+                    if (res.data <= 6) {
+                      this.setState({ showMore: false });
+                    }
                   }
-                }
-              );
-            }
-          );
+                );
+              }
+            );
+          } else {
+            Axios.get(
+              config.API_URL +
+                "histoires/illustrer/take/6/" +
+                (this.state.page - 1) * 6 +
+                "/" +
+                this.state.currentFiltre +
+                "/xxxx",
+              {}
+            ).then(res => {
+              this.setState({ histoires: res.data, currentFiltre: 4 });
+              this.forceUpdate();
+            });
+            Axios.get(config.API_URL + "histoires/illustrer/numberHistoires", {}).then(
+              res => {
+                this.setState(
+                  {
+                    numberPage: Math.ceil(res.data / 6),
+                    histoireUsers: []
+                  },
+                  () => {
+                    if (res.data <= 6) {
+                      this.setState({ showMore: false });
+                    }
+                  }
+                );
+              }
+            );
+          }
         }
       }
     });
@@ -668,7 +979,12 @@ class AllHistoires extends React.Component {
   }
   redirectFunction(index) {
     if (this.state.connected) {
-      this.props.history.push("/publier/" + (index + 1));
+      if (index !== 1) {
+        this.props.history.push("/publier/" + (index + 1));
+      } else {
+        this.setState({illustrer: true},()=>{this.fetchHistoire(); this.forceUpdate()})
+      }
+      
     } else {
       this.setState({ redirect: 1 }, () => {
         this.forceUpdate();
@@ -696,21 +1012,21 @@ class AllHistoires extends React.Component {
                 position: "absolute",
                 right: 0,
                 height: 40,
-                width: 18
+                width: 17
               }}
             />
-            &
-            <EditIcon
-              style={{ position: "absolute", left: 0, height: 40, width: 18 }}
+            <small>&</small>
+            <Bruche
+              style={{ position: "absolute", left: 0, height: 40, width: 17 }}
             />
           </div>
         ),
-        name: "Text et Dessins"
+        name: "Écrire et illustrer une histoire"
       },
-      { icon: <BrushIcon />, name: "Dessins uniquement" },
-      { icon: <EditIcon />, name: "Texte uniquement" }
+      { icon: <BrushIcon />, name: "Illustrer une histoire" },
+      { icon: <Bruche style={{width: 20}} />, name: "Écrire une histoire" }
     ];
-
+    
     if (this.state.redirect == 1) {
       return <Redirect to="/Connexion" />;
     }
@@ -718,6 +1034,13 @@ class AllHistoires extends React.Component {
       return (
         <div className={classes.section} style={{ width: "99%", marginTop: 78 }}>
           <div className={classes.root}>
+            {this.state.illustrer ? (
+              <ButtonBase onClick={() => this.setState({illustrer: false},()=>{this.fetchHistoire();})}>
+                <Fab aria-label={fab2.label} style={fab2.style}>
+                  {fab2.icon}
+                </Fab>
+              </ButtonBase>
+            ):(<div></div>)}
             <Backdrop open={this.state.openBackdrop} style={{ zIndex: 1500 }} />
             <SpeedDial
               ariaLabel="SpeedDial tooltip example"
@@ -744,7 +1067,7 @@ class AllHistoires extends React.Component {
               ))}
             </SpeedDial>
           </div>
-          {this.state.search === "" && this.state.histoires.length > 0 ? (
+          {this.state.search === "" && this.state.histoires.length > 0 && !this.state.illustrer ? (
             <div>
               <GridContainer justify="center" spacing={"auto"}>
                 {this.state.histoires.map((histoire, index) => {
@@ -817,7 +1140,7 @@ class AllHistoires extends React.Component {
               </GridItem>
             </GridContainer>
           ) : (
-            <div style={{ marginTop: "6%" }}>
+            <div style={this.state.illustrer ? {marginTop: 0}:{ marginTop: "6%" }}>
               {/* <GridContainer justify="center">
               <GridItem xs={12} sm={12} md={8}>
                 <h3 className={classes.title}>
@@ -827,6 +1150,7 @@ class AllHistoires extends React.Component {
             </GridContainer> */}
               <GridContainer justify="center">
                 <GridItem xs={11} sm={11} md={12}>
+                  {!this.state.illustrer ? (
                   <CustomTabs
                     variant="fullWidth"
                     headerColor="info"
@@ -1008,8 +1332,99 @@ class AllHistoires extends React.Component {
                         )
                       }
                     ]}
-                    
                   />
+                  ):(
+                    <CustomTabs
+                    variant="fullWidth"
+                    headerColor="info"
+                    value={1}
+                    tabs={[
+                      {
+                        tabName: "Les histoires non illustrées",
+                        tabIcon: TitleIcon,
+                        tabContent: (
+                          <div style={{ minHeight: 1280 }}>
+                            <GridContainer justify="center" spacing={"auto"}>
+                              {this.state.histoires.length > 0 ? (
+                                this.state.histoires.map((histoire, index) => {
+                                  return (
+                                    <GridItem
+                                      xs={12}
+                                      sm={12}
+                                      md={4}
+                                      justify="center"
+                                      key={index}
+                                    >
+                                      {this.state.connected ? (
+                                        <Link to={"/modifier/histoire/2/" + histoire.id}>
+                                          <CardHistoire histoire={histoire} />
+                                        </Link>
+                                      ) : (
+                                        <Link
+                                          onClick={() => {
+                                            this.setState(
+                                              { redirect: 1 },
+                                              () => {
+                                                this.forceUpdate();
+                                              }
+                                            );
+                                          }}
+                                        >
+                                          <CardHistoire histoire={histoire} />
+                                        </Link>
+                                      )}
+                                    </GridItem>
+                                  );
+                                })
+                              ) : (
+                                <GridItem
+                                  xs={12}
+                                  sm={12}
+                                  md={4}
+                                  justify="center"
+                                  style={{ width: "auto" }}
+                                >
+                                  <SnackbarContent
+                                  style={{backgroundColor: '#1e1548'}}
+                                    message={
+                                      "aucun résultat correspond à votre recherche."
+                                    }
+                                  />
+                                </GridItem>
+                              )}
+                            </GridContainer>
+                            <GridContainer justify="center">
+                              <GridItem xs={4} sm={4} md={4} style={{textAlign: 'center'}}>
+                                {this.state.showMore ? (
+                                  <Tooltip
+                                    title="plus de résultats"
+                                    aria-label="plus de résultats"
+                                    onClick={() => {
+                                      this.setState(
+                                        { page: this.state.page + 1 },
+                                        () => {
+                                          this.handleChangePage();
+                                        }
+                                      );
+                                    }}
+                                  >
+                                    <Fab
+                                      color="primary"
+                                      style={fab.style}
+                                      className={classes.fab}
+                                    >
+                                      <MoreHorizIcon />
+                                    </Fab>
+                                  </Tooltip>
+                                ) : null}
+                              </GridItem>
+                            </GridContainer>
+                          </div>
+                        )
+                      }
+                    ]}
+                  />
+                  )}
                 </GridItem>
               </GridContainer>
             </div>
@@ -1100,7 +1515,7 @@ function CardHistoire(props) {
       >
         <Parallax
           image={
-            histoire.lienIllustration !== null ? histoire.lienIllustration : ""
+            histoire.lienIllustration !== null && histoire.lienIllustration !== "" ? histoire.lienIllustration : config.API_URL + "images/asset/logoHistoire.png"
           }
           style={{
             height: "240px",
@@ -1131,23 +1546,24 @@ function CardHistoire(props) {
 
       <h5
         style={{
-          fontFamily: "monospace",
-          fontWeight: "bold",
-          color: "black",
-          marginLeft: "5%",
-          textAlign: "left",
+          fontFamily: 'goudy',
+          color: "#272727e0",
+          fontWeight: 'bold',
+          fontSize: 23,
+          textAlign: "center",
+          lineHeight: 1.4,
         }}
       >
-        {histoire.titreHistoire}
-        {/* {histoire.nombreVue ? histoire.nombreVue : 0} vues -{" "}
-          {this.getDay(histoire.dateDeCreation)} */}
+        {histoire.titreHistoire[0].toUpperCase() +  
+            histoire.titreHistoire.slice(1).toLowerCase()}
       </h5>
       <h6
         style={{
-          fontFamily: "monospace",
+          fontFamily: "lato",
           color: "black",
           marginLeft: "5%",
           textAlign: "left",
+          fontVariant: 'unicase',
         }}
       >
         {functionDate(histoire.dateDeCreation)}
@@ -1169,9 +1585,9 @@ function CardHistoire(props) {
                 <GridItem xs={8} sm={8} md={8}>
                   <h6
                     style={{
-                      fontFamily: "monospace",
+                      fontFamily: "lato",
+                      textTransform: 'none',
                       color: "black",
-                      fontWeight: "bold",
                       marginLeft: "5%",
                       textAlign: "left",
                     }}
@@ -1239,7 +1655,7 @@ function CardHistoire(props) {
             </GridItem>
             <GridItem xs={3} sm={3} md={3} style={{ textAlign: "right" }}>
               <div style={{ height: 40, paddingTop: 8 }}>
-                <CreateIcon style={{ width: 20 }} />
+                <Bruche style={{width: 20}} />
               </div>
             </GridItem>
           </GridContainer>
@@ -1257,9 +1673,9 @@ function CardHistoire(props) {
                 <GridItem xs={8} sm={8} md={8}>
                   <h6
                     style={{
-                      fontFamily: "monospace",
+                      fontFamily: "lato",
+                      textTransform: 'none',
                       color: "black",
-                      fontWeight: "bold",
                       marginLeft: "5%",
                       textAlign: "left",
                     }}
@@ -1286,9 +1702,9 @@ function CardHistoire(props) {
                 <GridItem xs={8} sm={8} md={8}>
                   <h6
                     style={{
-                      fontFamily: "monospace",
+                      fontFamily: "lato",
+                      textTransform: 'none',
                       color: "black",
-                      fontWeight: "bold",
                       marginLeft: "5%",
                       textAlign: "left",
                     }}
@@ -1363,7 +1779,7 @@ function CardHistoire(props) {
           </GridContainer>
         ) : (
           <GridContainer style={{ marginTop: "4%" }}>
-            <GridItem xs={6} sm={6} md={6}>
+            <GridItem xs={12} sm={12} md={12}>
               <GridContainer>
                 <GridItem xs={4} sm={4} md={4}>
                   <Avatar
@@ -1375,7 +1791,8 @@ function CardHistoire(props) {
                 <GridItem xs={8} sm={8} md={8}>
                   <h6
                     style={{
-                      fontFamily: "monospace",
+                      fontFamily: "lato",
+                      textTransform: 'none',
                       color: "black",
                       fontWeight: "bold",
                       marginLeft: "5%",
@@ -1392,13 +1809,13 @@ function CardHistoire(props) {
         <Divider
           style={{ marginTop: "4%", marginLeft: -30, marginRight: -30 }}
         />
-        <GridContainer justify="flex-end" style={{ marginTop: "7%" }}>
-          <GridItem xs={4} sm={4} md={4}>
+        <GridContainer justify="center" style={{ marginTop: "7%" }}>
+          <GridItem xs={4} sm={4} md={4} style={{textAlign: 'center'}}>
             <small>
               <CommentIcon style={{ width: 20 }} /> {histoire.nombreComment}
             </small>{" "}
           </GridItem>
-          <GridItem xs={4} sm={4} md={4}>
+          <GridItem xs={4} sm={4} md={4} style={{textAlign: 'center'}}>
             <small>
               <VisibilityIcon style={{ width: 20 }} /> {histoire.nombreVue}
             </small>{" "}
@@ -1408,10 +1825,28 @@ function CardHistoire(props) {
     </Card>
   );
 }
+const fab2 = {
+  style: {
+    top: "100px",
+    left: "10px",
+    position: "fixed",
+    zIndex: 1999,
+    color: "white",
+    backgroundColor: "#ff2c4d",
+    "&:hover": {
+      backgroundColor: "#c40025"
+    },
+    "&:active": {
+      backgroundColor: "#c40025"
+    }
+  },
+  icon: <AddIcon />,
+  label: "Add"
+};
 const styles1 = theme => ({
   root: {
     color: "white",
-    backgroundColor: "#1f1748"
+    backgroundColor: "transparent"
   },
   customWidth: {
     width: 120

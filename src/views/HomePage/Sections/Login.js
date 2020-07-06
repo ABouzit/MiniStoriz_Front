@@ -58,7 +58,11 @@ import { Redirect } from "react-router-dom";
 import { isMobile } from "react-device-detect";
 import * as firebase from "firebase/app";
 import "firebase/database";
+import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth"
 import Buttons from "@material-ui/core/Button";
+import FacebookLogin from 'react-facebook-login';
+import GoogleLogin from 'react-google-login';
+// import TiSocialFacebookCircular from 'react-icons/lib/ti/social-facebook-circular';
 class Login extends React.Component {
   constructor(props) {
     super(props);
@@ -72,6 +76,7 @@ class Login extends React.Component {
       prenom: "",
       ville: "",
       pseudo: "",
+      loginMethode: 'EMAIL',
       errorMail: false,
       errorNom: false,
       errorPrenom: false,
@@ -89,10 +94,108 @@ class Login extends React.Component {
       signinUtilisateur: false,
       alertError: false,
       bloquedUser: false,
+      errorLoginFB: false,
+      errorLoginGoogle: false,
+      newAccount: false,
       bloquedText: "",
       user: ""
     };
     this.handleClose = this.handleClose.bind(this);
+    this.responseFacebook = this.responseFacebook.bind(this);
+    this.responseGoogle = this.responseGoogle.bind(this);
+  }
+  
+  uiConfig = {
+    signInFlow: "popup",
+    signInOptions: [
+      firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+      firebase.auth.FacebookAuthProvider.PROVIDER_ID,
+    ],
+    callbacks: {
+      signInSuccess: () => false
+    }
+  }
+  responseGoogle (response) {
+    var credential = firebase.auth.GoogleAuthProvider.credential(
+      response.tokenId);
+      
+      Axios.get(config.API_URL + "users/DispoLogin/" + response.profileObj.email, {}).then(res => {
+        console.log(res.data)
+        if (res.data.length > 0) {
+          if (res.data[0].methode == "GOOGLE") {
+            this.setState({loginMethode: 'GOOGLE'},() => {
+              console.log(credential)
+              firebase.auth().signInWithCredential(credential).catch(error => {
+                // Handle Errors here.
+                var errorCode = error.code;
+                var errorMessage = error.message;
+                // The email of the user's account used.
+                var email = error.email;
+                // The firebase.auth.AuthCredential type that was used.
+                var credential = error.credential;
+                // ...
+              });
+            })
+          } else {
+            this.setState({errorLoginGoogle: true},()=>{this.forceUpdate()})
+          }
+        } else {
+          this.setState({loginMethode: 'GOOGLE', newAccount: true},() => {
+            console.log(credential)
+            firebase.auth().signInWithCredential(credential).catch(error => {
+              // Handle Errors here.
+              var errorCode = error.code;
+              var errorMessage = error.message;
+              // The email of the user's account used.
+              var email = error.email;
+              // The firebase.auth.AuthCredential type that was used.
+              var credential = error.credential;
+              // ...
+            });
+          })
+        }
+        
+      });
+  }
+  responseFacebook (response) {
+    var credential = firebase.auth.FacebookAuthProvider.credential(
+      response.accessToken);
+      Axios.get(config.API_URL + "users/DispoLogin/" + response.email, {}).then(res => {
+        
+        if (res.data.length > 0) {
+          if (res.data[0].methode == "FACEBOOK") {
+            this.setState({loginMethode: 'FACEBOOK'},() => {
+              firebase.auth().signInWithCredential(credential).catch(error => {
+                // Handle Errors here.
+                var errorCode = error.code;
+                var errorMessage = error.message;
+                // The email of the user's account used.
+                var email = error.email;
+                // The firebase.auth.AuthCredential type that was used.
+                var credential = error.credential;
+                // ...
+              });
+            })
+          } else {
+            this.setState({errorLoginFB: true},()=>{this.forceUpdate()})
+          }
+        } else {
+          this.setState({loginMethode: 'FACEBOOK', newAccount: true},() => {
+            firebase.auth().signInWithCredential(credential).catch(error => {
+              // Handle Errors here.
+              var errorCode = error.code;
+              var errorMessage = error.message;
+              // The email of the user's account used.
+              var email = error.email;
+              // The firebase.auth.AuthCredential type that was used.
+              var credential = error.credential;
+              // ...
+            });
+          })
+        }
+        
+      });
+      
   }
   componentDidMount() {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -101,6 +204,61 @@ class Login extends React.Component {
         this.forceUpdate();
       });
     }
+    firebase.auth().onAuthStateChanged(users => {
+      if (!!users) {
+        this.signUpMethod(users)
+      }
+      
+      console.log("user", users)
+
+    })
+    
+  }
+  signUpMethod(user) {
+    const _this = this;
+    var generator = require("generate-password");
+    var methode = this.state.loginMethode;
+    var password = generator.generate({
+      length: 10,
+      numbers: true
+    });
+    return Axios.post(config.API_URL + "users/signUpMethode", {
+      nom: user.displayName.split(" ")[0],
+      prenom: user.displayName.split(" ")[1],
+      ville: "",
+      token: user.refreshToken,
+      pseudo: user.displayName.split(" ")[0].substring(0, 2)+user.displayName.split(" ")[1].substring(0, 5),
+      email: user.email,
+      lienPhoto: user.photoURL,
+      methode: methode
+    }).then(res => {
+      if (res.data == "exist") {
+        _this.setState({ errorMail: true, alertError: true }, () => {
+          _this.forceUpdate();
+        });
+      } else {
+        
+        firebase
+          .database()
+          .ref("newUsers")
+          .set({
+            numbe: 100000 + Math.random() * (100000 - 1)
+          });
+        localStorage.setItem("user", JSON.stringify(res.data));
+        console.log(res.data) 
+        if (this.state.newAccount) {
+          _this.setState({ redirect: 2 }, () => {
+            _this.forceUpdate();
+          });
+        } else {
+          _this.setState({ redirect: 1 }, () => {
+            _this.forceUpdate();
+          });
+        }
+        
+      }
+      console.log(res);
+    });
   }
 
   handleClose = (event, reason) => {
@@ -117,6 +275,8 @@ class Login extends React.Component {
       updatePassword: false,
       errorDesactive: false,
       bloquedUser: false,
+      errorLoginGoogle: false,
+      errorLoginFB: false,
       bloquedText: ""
     });
   };
@@ -378,8 +538,12 @@ class Login extends React.Component {
   render() {
     const { classes } = this.props;
     const { selectedIndex } = this.state;
+    
     if (this.state.redirect == 1) {
       return <Redirect to="/" />;
+    }
+    if (this.state.redirect == 2) {
+      return <Redirect to="/MonProfil" />;
     }
     return (
       <div
@@ -396,11 +560,11 @@ class Login extends React.Component {
                   className={classes.cardHeader}
                 >
                   {this.state.connexion == 1 ? (
-                    <h3>Identification</h3>
+                    <h3 style={{fontFamily: 'playfair'}}>Identification</h3>
                   ) : this.state.connexion == 2 ? (
-                    <h3>Réinitialiser votre mot de passe</h3>
+                    <h3 style={{fontFamily: 'playfair'}}>Réinitialiser votre mot de passe</h3>
                   ) : (
-                    <h3>Inscription</h3>
+                    <h3 style={{fontFamily: 'playfair'}}>Inscription</h3>
                   )}
 
                   {/* <div className={classes.socialLine}>
@@ -512,7 +676,7 @@ class Login extends React.Component {
                                     className={classes.inputIconsColor}
                                     style={{ color: "red" }}
                                   >
-                                    lock_outline
+                                  lock_outline
                                   </Icon>
                                 </InputAdornment>
                               ),
@@ -538,7 +702,7 @@ class Login extends React.Component {
                               endAdornment: (
                                 <InputAdornment position="end">
                                   <Icon className={classes.inputIconsColor}>
-                                    lock_outline
+                                  lock_outline
                                   </Icon>
                                 </InputAdornment>
                               ),
@@ -546,6 +710,21 @@ class Login extends React.Component {
                             }}
                           />
                         )}
+                        <Button
+                          color="primary"
+                          size="md"
+                          onClick={() => {
+                            this.setState(
+                              { errorMail: false, errorPassword: false },
+                              () => {
+                                this.checkLogin();
+                              }
+                            );
+                          }}
+                        >
+                          Connexion
+                        </Button>
+                        <br></br>
                         <ButtonBase
                           onClick={() => {
                             this.setState(
@@ -572,21 +751,8 @@ class Login extends React.Component {
                             Mot de passe oublié ?
                           </h6>
                         </ButtonBase>
-                        <br></br>
-                        <Button
-                          color="primary"
-                          size="md"
-                          onClick={() => {
-                            this.setState(
-                              { errorMail: false, errorPassword: false },
-                              () => {
-                                this.checkLogin();
-                              }
-                            );
-                          }}
-                        >
-                          Connexion
-                        </Button>
+                        
+                        
                       </GridItem>
 
                       <GridItem xs={12} sm={12} md={6}>
@@ -604,7 +770,7 @@ class Login extends React.Component {
                             <GridItem xs={10} sm={10} md={10}>
                               <h4
                                 style={{
-                                  fontFamily: "cursive",
+                                  fontFamily: "goudy",
                                   fontWeight: "bold",
                                   textAlign: "center"
                                 }}
@@ -612,33 +778,30 @@ class Login extends React.Component {
                                 Pas encore inscrit ?
                               </h4>
                             </GridItem>
+                            
                             <GridItem
                               xs={10}
                               sm={10}
                               md={10}
                               style={{ textAlign: "center" }}
                             >
-                              <Button
-                                color="primary"
-                                size="md"
-                                onClick={() => {}}
-                              >
-                                Login with FaceBook
-                              </Button>
-                            </GridItem>
-                            <GridItem
-                              xs={10}
-                              sm={10}
-                              md={10}
-                              style={{ textAlign: "center" }}
-                            >
-                              <Button
-                                color="danger"
-                                size="md"
-                                onClick={() => {}}
-                              >
-                                Login with Google
-                              </Button>
+                              <FacebookLogin
+                                appId="568131850559669"
+                                fields="name,email,picture"
+                                callback={this.responseFacebook}
+                                cssClass={classes.buttonFB}
+                                icon="fa-facebook"
+                                textButton = " &nbsp;&nbsp;Se connecter avec Facebook"
+                              />
+                              <br></br>
+                              <GoogleLogin
+                                  clientId="1009627651324-o8t6lreolfacffqla6qiekrve6v0tcqb.apps.googleusercontent.com"
+                                  buttonText="&nbsp;&nbsp;Se connecter avec Google"
+                                  onSuccess={this.responseGoogle}
+                                  onFailure={this.responseGoogle}
+                                  className={classes.buttonGoogle}
+                                  cookiePolicy={'single_host_origin'}
+                                />
                             </GridItem>
                             <GridItem
                               xs={10}
@@ -648,7 +811,7 @@ class Login extends React.Component {
                             >
                               <h4
                                 style={{
-                                  fontFamily: "cursive",
+                                  fontFamily: "goudy",
                                   fontWeight: "bold",
                                   textAlign: "center"
                                 }}
@@ -750,10 +913,9 @@ class Login extends React.Component {
                         </Button>
                         <h4
                           style={{
-                            fontFamily: "cursive",
+                            fontFamily: "goudy",
                             fontWeight: "bold",
                             textAlign: "center",
-                            fontVariant: "unicase"
                           }}
                         >
                           Ou
@@ -792,7 +954,7 @@ class Login extends React.Component {
                             <GridItem xs={10} sm={10} md={10}>
                               <h4
                                 style={{
-                                  fontFamily: "cursive",
+                                  fontFamily: "goudy",
                                   fontWeight: "bold",
                                   textAlign: "center"
                                 }}
@@ -800,33 +962,30 @@ class Login extends React.Component {
                                 Pas encore inscrit ?
                               </h4>
                             </GridItem>
+                            
                             <GridItem
                               xs={10}
                               sm={10}
                               md={10}
                               style={{ textAlign: "center" }}
                             >
-                              <Button
-                                color="primary"
-                                size="md"
-                                onClick={() => {}}
-                              >
-                                Login with FaceBook
-                              </Button>
-                            </GridItem>
-                            <GridItem
-                              xs={10}
-                              sm={10}
-                              md={10}
-                              style={{ textAlign: "center" }}
-                            >
-                              <Button
-                                color="danger"
-                                size="md"
-                                onClick={() => {}}
-                              >
-                                Login with Google
-                              </Button>
+                              <FacebookLogin
+                                appId="568131850559669"
+                                fields="name,email,picture"
+                                callback={this.responseFacebook}
+                                cssClass={classes.buttonFB}
+                                icon="fa-facebook"
+                                textButton = " &nbsp;&nbsp;Se connecter avec Facebook"
+                              />
+                              <br></br>
+                              <GoogleLogin
+                                  clientId="1009627651324-o8t6lreolfacffqla6qiekrve6v0tcqb.apps.googleusercontent.com"
+                                  buttonText="&nbsp;&nbsp;Se connecter avec Google"
+                                  onSuccess={this.responseGoogle}
+                                  onFailure={this.responseGoogle}
+                                  className={classes.buttonGoogle}
+                                  cookiePolicy={'single_host_origin'}
+                                />
                             </GridItem>
                             <GridItem
                               xs={10}
@@ -836,7 +995,7 @@ class Login extends React.Component {
                             >
                               <h4
                                 style={{
-                                  fontFamily: "cursive",
+                                  fontFamily: "goudy",
                                   fontWeight: "bold",
                                   textAlign: "center"
                                 }}
@@ -1294,7 +1453,7 @@ class Login extends React.Component {
                             >
                               <h5
                                 style={{
-                                  fontFamily: "cursive",
+                                  fontFamily: "goudy",
                                   fontWeight: "bold",
                                   textAlign: "center",
                                   marginTop: -14
@@ -1401,6 +1560,24 @@ class Login extends React.Component {
                     </Alert>
                   </Snackbar>
                   <Snackbar
+                    open={this.state.errorLoginFB}
+                    autoHideDuration={6000}
+                    onClose={this.handleClose}
+                  >
+                    <Alert onClose={this.handleClose} severity="error">
+                      Impossible de se conneter avec facebook email déjà utilisé. 
+                    </Alert>
+                  </Snackbar>
+                  <Snackbar
+                    open={this.state.errorLoginGoogle}
+                    autoHideDuration={6000}
+                    onClose={this.handleClose}
+                  >
+                    <Alert onClose={this.handleClose} severity="error">
+                      Impossible de se conneter avec google email déjà utilisé. 
+                    </Alert>
+                  </Snackbar>
+                  <Snackbar
                     open={this.state.bloquedUser}
                     autoHideDuration={6000}
                     onClose={this.handleClose}
@@ -1438,9 +1615,18 @@ class Login extends React.Component {
     );
   }
 }
-function Alert(props: AlertProps) {
+function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
+const styles1 = theme => ({
+  root: {
+    color: "white",
+    backgroundColor: "#1f1748"
+  },
+  customWidth: {
+    width: 120
+  }
+});
 Login.propTypes = {
   classes: PropTypes.object.isRequired
 };

@@ -1,5 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
+import { Prompt } from 'react-router'
 import { useTheme, fade, makeStyles } from "@material-ui/core/styles";
 // react component for creating beautiful carousel
 import Slider from "react-slick";
@@ -9,6 +10,7 @@ import AddIcon from "@material-ui/icons/ArrowBackOutlined";
 import { withStyles } from "@material-ui/core/styles";
 import { Link, withRouter } from "react-router-dom";
 import Snackbar from "@material-ui/core/Snackbar";
+import Chip from '@material-ui/core/Chip';
 // core components
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -104,8 +106,10 @@ class PublierView extends React.Component {
     super(props);
     // Don't call this.setState() here!
     this.state = {
+      shouldBlockNavigation: true,
       textHistoire: "",
       userLocal: "",
+      numberChar: 0,
       testNext: 0,
       redirect: 0,
       typePage: this.props.match.params.type,
@@ -191,6 +195,7 @@ class PublierView extends React.Component {
 
   componentDidMount() {
     const user = JSON.parse(localStorage.getItem("user"));
+    console.log(user)
     if (!user) {
       this.setState({ redirect: 1 }, () => {
         this.forceUpdate();
@@ -218,7 +223,6 @@ class PublierView extends React.Component {
       else if (this.props.match.params.type == "2")
         this.setState({
           userDessin: res.data[0],
-          userText: null
         });
       else if (this.props.match.params.type == "3")
         this.setState({
@@ -232,11 +236,56 @@ class PublierView extends React.Component {
 
   fetchHistoire(id) {
     Axios.get(config.API_URL + "histoires/byId/" + id).then(histoire => {
-      if (
+      console.log(histoire.data[0])
+      if (this.props.match.params.type !== "2" &&
         histoire.data[0].userText.id !== this.state.userLocal.id &&
         histoire.data[0].userDessin.id !== this.state.userLocal.id
+        
       ) {
         this.props.history.push("/Histoire/" + id);
+      } else if (this.props.match.params.type == "2") {
+        this.setState({userText: histoire.data[0].userText}, console.log(this.state.userDessin))
+        Axios.get(config.API_URL + "planches/histoires/" + id).then(
+          planches => {
+            console.log(planches);
+            if (planches.data[1].lien == "") {
+              this.setState(
+                {
+                  planche: planches.data,
+                  histoire: histoire.data[0],
+                  titreHistoire: histoire.data[0].titreHistoire,
+                  imgHistoire: histoire.data[0].lienIllustration,
+                  textHistoire: planches.data[1].text,
+                  userText: histoire.data[0].userText,
+                  testNext: 0,
+                  testNextText: 1,
+                  lienImgPlanche: planches.data[1].lien
+                },
+                () => {
+                  this.forceUpdate();
+                }
+              );
+            } else {
+              this.setState(
+                {
+                  planche: planches.data,
+                  histoire: histoire.data[0],
+                  titreHistoire: histoire.data[0].titreHistoire,
+                  imgHistoire: histoire.data[0].lienIllustration,
+                  textHistoire: planches.data[1].text,
+                  userText: histoire.data[0].userText,
+                  testNext: 1,
+                  testNextText: 1,
+                  lienImgPlanche: planches.data[1].lien
+                },
+                () => {
+                  this.forceUpdate();
+                }
+              );
+            }
+            
+          }
+        );
       } else {
         Axios.get(config.API_URL + "planches/histoires/" + id).then(
           planches => {
@@ -321,7 +370,8 @@ class PublierView extends React.Component {
       this.setState({ testNext: 1 });
       this.forceUpdate();
     }
-
+    console.log("UserText :"+this.state.userText)
+    console.log("userDessin :"+this.state.userDessin)
     this.slider.slickNext();
   }
   previous() {
@@ -343,6 +393,8 @@ class PublierView extends React.Component {
         this.forceUpdate();
       }
     );
+    console.log("UserText :"+this.state.userText)
+    console.log("userDessin :"+this.state.userDessin)
     this.slider.slickPrev();
   }
   gotToIndex(index) {
@@ -452,9 +504,10 @@ class PublierView extends React.Component {
       this.forceUpdate();
     });
     let idHistoire = "";
+    let etatHistoire = "";
     if (this.state.dataImgHistoire == "") {
       if (typeof this.props.match.params.histoireId === "undefined") {
-        return Axios.post(config.API_URL + "histoires", {
+        return Axios.post(config.API_URL + "histoires/"+ this.state.id, {
           userText: this.state.userText,
           userDessin: this.state.userDessin,
           lienIllustration: this.state.imgHistoire,
@@ -631,12 +684,18 @@ class PublierView extends React.Component {
           });
       } else {
         idHistoire = this.props.match.params.histoireId;
+        if (this.props.match.params.type == "2" ) {
+          etatHistoire = 'EN_ATTANTE_USER'
+        } else {
+          etatHistoire = 'EN_ATTANTE'
+        }
         return Axios.put(config.API_URL + "histoires", {
           id: idHistoire,
           userText: this.state.userText,
           userDessin: this.state.userDessin,
           lienIllustration: this.state.imgHistoire,
-          titreHistoire: this.state.titreHistoire
+          titreHistoire: this.state.titreHistoire,
+          etatHistoire: etatHistoire,
         })
           .then(function(response) {
             Promise.all(
@@ -668,6 +727,21 @@ class PublierView extends React.Component {
                 }
               })
             ).then(res => {
+              firebase
+                .database()
+                .ref("newStoriz/" + _this.state.userText.id)
+                .set({
+                  from: _this.state.userDessin.id,
+                  numbe: 100000 + Math.random() * (100000 - 1)
+                })
+              firebase
+                .database()
+                .ref("notifications/" + _this.state.userText.id)
+                .set({
+                  from: _this.state.userDessin.id,
+                  to: _this.state.userText.id,
+                  numbe: 100000 + Math.random() * (100000 - 1)
+                });
               _this.setState(
                 {
                   imgSrc: "",
@@ -915,6 +989,11 @@ class PublierView extends React.Component {
         });
       } else {
         idHistoire = this.props.match.params.histoireId;
+        if (this.props.match.params.type == "2" ) {
+          etatHistoire = 'EN_ATTANTE_USER'
+        } else {
+          etatHistoire = 'EN_ATTANTE'
+        }
         return Axios({
           method: "post",
           url: config.API_URL + "sendImage/histoires/",
@@ -928,7 +1007,8 @@ class PublierView extends React.Component {
               userText: this.state.userText,
               userDessin: this.state.userDessin,
               lienIllustration: config.API_URL + s,
-              titreHistoire: this.state.titreHistoire
+              titreHistoire: this.state.titreHistoire,
+              etatHistoire: etatHistoire,
             }).then(function(response) {
               Promise.all(
                 _this.state.planche.map((planch, index) => {
@@ -959,6 +1039,21 @@ class PublierView extends React.Component {
                   }
                 })
               ).then(res => {
+               firebase
+                .database()
+                .ref("newStoriz/" + _this.state.userText.id)
+                .set({
+                  from: _this.state.userDessin.id,
+                  numbe: 100000 + Math.random() * (100000 - 1)
+                })
+              firebase
+                .database()
+                .ref("notifications/" + _this.state.userText.id)
+                .set({
+                  from: _this.state.userDessin.id,
+                  to: _this.state.userText.id,
+                  numbe: 100000 + Math.random() * (100000 - 1)
+                });
                 _this.setState(
                   {
                     imgSrc: "",
@@ -1001,7 +1096,6 @@ class PublierView extends React.Component {
           tab.img !== "" &&
           tab.data !== "" &&
           tab.lien !== "" &&
-          this.state.dataImgHistoire !== "" &&
           this.state.titreHistoire !== ""
         ) {
           this.submit();
@@ -1013,7 +1107,6 @@ class PublierView extends React.Component {
           tab.img !== "" &&
           tab.data !== "" &&
           tab.lien !== "" &&
-          this.state.dataImgHistoire !== "" &&
           this.state.titreHistoire !== ""
         ) {
           this.submit();
@@ -1023,7 +1116,6 @@ class PublierView extends React.Component {
       } else if (this.state.typePage == 3) {
         if (
           tab.text !== "" &&
-          this.state.dataImgHistoire !== "" &&
           this.state.titreHistoire !== ""
         ) {
           this.submit();
@@ -1173,6 +1265,13 @@ class PublierView extends React.Component {
   handleCloseBackDrop = () => {
     this.setState({ openBackdrop: false });
   };
+  componentDidUpdate = () => {
+    if (this.state.shouldBlockNavigation) {
+      window.onbeforeunload = () => true
+    } else {
+      window.onbeforeunload = undefined
+    }
+  }
   //modal - carousel
   render() {
     const openDessin = Boolean(this.state.anchorElDessin);
@@ -1209,6 +1308,13 @@ class PublierView extends React.Component {
             {fab.icon}
           </Fab>
         </ButtonBase>
+        <React.Fragment>
+          <Prompt
+            when={this.state.shouldBlockNavigation}
+            message='Souhaitez-vous vraiment quitter la publication ?'
+          />
+          {/* Component JSX */}
+        </React.Fragment>
         <Snackbar
           open={this.state.openSnackBar}
           autoHideDuration={6000}
@@ -1240,6 +1346,227 @@ class PublierView extends React.Component {
                     }
               }
             >
+              <GridContainer
+                style={{
+                  width: "90%",
+                  marginLeft: "auto",
+                  marginRight: "auto",
+                  marginTop: 8
+
+                }}
+              >
+                <GridItem
+                  xs={12}
+                  sm={12}
+                  md={12}
+                  style={{ padding: 0, textAlign: "center" }}
+                >
+                  <ButtonBase
+                    onClick={() => {
+                      if (this.state.imgHistoire !== "")
+                        this.setState({
+                          isOpen: true,
+                          imgUrl: this.state.imgHistoire
+                        });
+                    }}
+                    style={
+                      isMobile
+                        ? { width: "100%", marginTop: 20 }
+                        : { width: "30%", marginTop: 25 }
+                    }
+                  >
+                    <Card
+                      style={{
+                        backgroundColor: "black",
+                        margin: 0,
+
+                        borderRadius: "15px 15px 15px 15px"
+                      }}
+                    >
+                      <Parallax
+                        style={
+                          (imagesStyles.imgCard,
+                          {
+                            opacity: 0.7,
+                            height: 150,
+                            borderRadius: "15px 15px 15px 15px"
+                          })
+                        }
+                        image={
+                          this.state.imgHistoire == ""
+                            ? config.API_URL + "images/defaultPhotoProfil.jpg"
+                            : this.state.imgHistoire
+                        }
+                      ></Parallax>
+
+                      <div
+                        style={
+                          (imagesStyles.imgCardOverlay,
+                          {
+                            alignItems: "center",
+                            position: "absolute",
+                            top: 0,
+                            right: 0,
+                            left: 0,
+                            height: "100%",
+
+                            textAlign: "center"
+                          })
+                        }
+                      >{this.props.match.params.type == "2" ? (
+                        <InputBase
+                          readOnly
+                          className={classes.margin}
+                          placeholder="titre histoire"
+                          value={this.state.titreHistoire}
+                          
+                          inputProps={
+                            this.state.titreHistoire == "" && this.state.submit
+                              ? {
+                                  borderLeftWidth: 15,
+                                  boderColor: "rgb(255, 44, 77)",
+                                  maxLength: 64
+                                }
+                              : {
+                                  borderWidth: 10,
+                                  maxLength: 64
+                                }
+                            
+                          }
+                          style={
+                            (cardTitle.cardTitle,
+                            {
+                              marginTop: 20,
+                              marginBotton: 10,
+                              fontSize: "1.5625rem",
+                              width: "100%",
+                              paddingLeft: 15,
+                              color: "white",
+                              textAlign: "left"
+                            })
+                          }
+                          onChange={value => {
+                            console.log(value.target.value);
+                            this.setState({
+                              titreHistoire: value.target.value
+                            });
+                            console.log(this.state.titreHistoire);
+                          }}
+                          onBlur={() =>
+                            this.setState({
+                              isOpen: false
+                            })
+                          }
+                        />
+                        ) : (
+                        <InputBase
+                          className={classes.margin}
+                          placeholder="titre histoire"
+                          value={this.state.titreHistoire}
+                          
+                          inputProps={
+                            this.state.titreHistoire == "" && this.state.submit
+                              ? {
+                                  borderLeftWidth: 15,
+                                  boderColor: "rgb(255, 44, 77)",
+                                  maxLength: 64
+                                }
+                              : {
+                                  borderWidth: 10,
+                                  maxLength: 64
+                                }
+                            
+                          }
+                          style={
+                            (cardTitle.cardTitle,
+                            {
+                              marginTop: 20,
+                              marginBotton: 10,
+                              fontSize: "1.5625rem",
+                              width: "100%",
+                              paddingLeft: 15,
+                              color: "white",
+                              textAlign: "left"
+                            })
+                          }
+                          onChange={value => {
+                            console.log(value.target.value);
+                            this.setState({
+                              titreHistoire: value.target.value
+                            });
+                            console.log(this.state.titreHistoire);
+                          }}
+                          onBlur={() =>
+                            this.setState({
+                              isOpen: false
+                            })
+                          }
+                        />
+                        )}
+                        {this.state.titreHistoire == "" && this.state.submit ? (
+                          <div
+                            style={{
+                              position: "absolute",
+                              top: 20,
+                              right: 10,
+                              height: "40px",
+                              width: "40px",
+                              borderRadius: "50%",
+                              backgroundColor: "transparent",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center"
+                            }}
+                          >
+                            <CloseIcon
+                              style={{
+                                color: "rgb(255, 44, 77)"
+                              }}
+                            />
+                          </div>
+                        ) : (
+                          <div></div>
+                        )}
+                        {this.props.match.params.type !== "2" ? (
+                        <div>
+                        <label htmlFor="icon-button-file1">
+                          <IconButton
+                            color="primary"
+                            aria-label="upload picture"
+                            component="span"
+                            onBlur={() =>
+                              this.setState({
+                                isOpen: false
+                              })
+                            }
+                            style={{
+                                    background: "white",
+                                    color: "grey"
+                                  }}
+                          >
+                            <PhotoCamera />
+                            
+                          </IconButton>
+                        </label>{" "}<br></br><br></br><small style={{color: 'white', fontFamily: 'lato'}}>Image d’illustration (facultative)</small>
+                        <input
+                          accept="image/*"
+                          className={classes.input}
+                          id="icon-button-file1"
+                          type="file"
+                          onTouchStart={() => this.setState({ isOpen: false })}
+                          onChange={file => {
+                            this.saveHistoire(file.target.files);
+                            this.setState({ buttonClick: false });
+                          }}
+                          onBlur={() => this.setState({ isOpen: false })}
+                        />
+                        </div>
+                        ):(<div></div>)}
+                      </div>
+                    </Card>
+                  </ButtonBase>
+                </GridItem>
+              </GridContainer>
               {!(typeof this.props.match.params.histoireId === "undefined") ? (
                 <GridContainer
                   style={{
@@ -1403,7 +1730,7 @@ class PublierView extends React.Component {
                             </ListItemAvatar>
                             <ListItemText
                               style={{
-                                paddingBottom: 20
+                                
                               }}
                             >
                               <p
@@ -1471,7 +1798,7 @@ class PublierView extends React.Component {
                                   </ListItemAvatar>
                                   <ListItemText
                                     style={{
-                                      paddingBottom: 20
+                                      
                                     }}
                                   >
                                     <p
@@ -1542,7 +1869,7 @@ class PublierView extends React.Component {
                             </ListItemAvatar>
                             <ListItemText
                               style={{
-                                paddingBottom: 20
+                                
                               }}
                             >
                               <p
@@ -1609,7 +1936,7 @@ class PublierView extends React.Component {
                                   </ListItemAvatar>
                                   <ListItemText
                                     style={{
-                                      paddingBottom: 20
+                                      
                                     }}
                                   >
                                     <p
@@ -1688,7 +2015,7 @@ class PublierView extends React.Component {
                           </ListItemAvatar>
                           <ListItemText
                             style={{
-                              paddingBottom: 20
+                              
                             }}
                           >
                             <p
@@ -1739,7 +2066,6 @@ class PublierView extends React.Component {
                           </ListItemAvatar>
                           <ListItemText
                             style={{
-                              paddingBottom: 20
                             }}
                           >
                             <p
@@ -1761,177 +2087,7 @@ class PublierView extends React.Component {
                   )}
                 </div>
               )}
-              <GridContainer
-                style={{
-                  width: "90%",
-                  marginLeft: "auto",
-                  marginRight: "auto"
-                }}
-              >
-                <GridItem
-                  xs={12}
-                  sm={12}
-                  md={12}
-                  style={{ padding: 0, display: "flex" }}
-                >
-                  <ButtonBase
-                    onClick={() => {
-                      if (this.state.imgHistoire !== "")
-                        this.setState({
-                          isOpen: true,
-                          imgUrl: this.state.imgHistoire
-                        });
-                    }}
-                    style={
-                      isMobile
-                        ? { width: "100%", marginTop: 15 }
-                        : { width: "30%", marginTop: 15 }
-                    }
-                  >
-                    <Card
-                      style={{
-                        backgroundColor: "black",
-                        margin: 0,
-
-                        borderRadius: "15px 15px 15px 15px"
-                      }}
-                    >
-                      <Parallax
-                        style={
-                          (imagesStyles.imgCard,
-                          {
-                            opacity: 0.7,
-                            height: 150,
-                            borderRadius: "15px 15px 15px 15px"
-                          })
-                        }
-                        image={
-                          this.state.imgHistoire == ""
-                            ? config.API_URL + "images/defaultPhotoProfil.jpg"
-                            : this.state.imgHistoire
-                        }
-                      ></Parallax>
-
-                      <div
-                        style={
-                          (imagesStyles.imgCardOverlay,
-                          {
-                            alignItems: "center",
-                            position: "absolute",
-                            top: 0,
-                            right: 0,
-                            left: 0,
-                            height: "100%",
-
-                            textAlign: "center"
-                          })
-                        }
-                      >
-                        <InputBase
-                          className={classes.margin}
-                          placeholder="titre histoire"
-                          value={this.state.titreHistoire}
-                          inputProps={
-                            this.state.titreHistoire == "" && this.state.submit
-                              ? {
-                                  borderLeftWidth: 15,
-                                  boderColor: "rgb(255, 44, 77)"
-                                }
-                              : {
-                                  borderWidth: 10
-                                }
-                          }
-                          style={
-                            (cardTitle.cardTitle,
-                            {
-                              marginTop: 20,
-                              marginBotton: 10,
-                              fontSize: "1.5625rem",
-                              width: "100%",
-                              paddingLeft: 15,
-                              color: "white",
-                              textAlign: "left"
-                            })
-                          }
-                          onChange={value => {
-                            console.log(value.target.value);
-                            this.setState({
-                              titreHistoire: value.target.value
-                            });
-                            console.log(this.state.titreHistoire);
-                          }}
-                          onBlur={() =>
-                            this.setState({
-                              isOpen: false
-                            })
-                          }
-                        />
-                        {this.state.titreHistoire == "" && this.state.submit ? (
-                          <div
-                            style={{
-                              position: "absolute",
-                              top: 20,
-                              right: 10,
-                              height: "40px",
-                              width: "40px",
-                              borderRadius: "50%",
-                              backgroundColor: "transparent",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center"
-                            }}
-                          >
-                            <CloseIcon
-                              style={{
-                                color: "rgb(255, 44, 77)"
-                              }}
-                            />
-                          </div>
-                        ) : (
-                          <div></div>
-                        )}
-                        <label htmlFor="icon-button-file1">
-                          <IconButton
-                            color="primary"
-                            aria-label="upload picture"
-                            component="span"
-                            onBlur={() =>
-                              this.setState({
-                                isOpen: false
-                              })
-                            }
-                            style={
-                              this.state.imgHistoire == "" && this.state.submit
-                                ? {
-                                    background: "rgb(255, 44, 77)",
-                                    color: "white"
-                                  }
-                                : {
-                                    background: "white",
-                                    color: "grey"
-                                  }
-                            }
-                          >
-                            <PhotoCamera />
-                          </IconButton>
-                        </label>{" "}
-                        <input
-                          accept="image/*"
-                          className={classes.input}
-                          id="icon-button-file1"
-                          type="file"
-                          onTouchStart={() => this.setState({ isOpen: false })}
-                          onChange={file => {
-                            this.saveHistoire(file.target.files);
-                            this.setState({ buttonClick: false });
-                          }}
-                          onBlur={() => this.setState({ isOpen: false })}
-                        />
-                      </div>
-                    </Card>
-                  </ButtonBase>
-                </GridItem>
-              </GridContainer>
+              
               <div
                 style={{
                   width: "90%",
@@ -2008,12 +2164,12 @@ class PublierView extends React.Component {
                               justify="center"
                               alignItems="center"
                             ></GridContainer>
-                            {this.state.typePage == "2" ? (
+                            {this.state.typePage == "2" && typeof this.props.match.params.histoireId === "undefined" ? (
                               <GridContainer
                                 style={{
                                   margin: 0,
                                   marginBottom: 30,
-                                  marginTop: 20
+                                  marginTop: 3
                                 }}
                                 justify="center"
                                 alignItems="center"
@@ -2155,6 +2311,228 @@ class PublierView extends React.Component {
                                   </div>
                                 </GridItem>
                               </GridContainer>
+                            ) : this.state.typePage == "2" ? (
+                              <GridContainer
+                                style={{
+                                  margin: 0,
+                                  marginBottom: 30,
+                                  marginTop: 3
+                                }}
+                                justify="center"
+                                alignItems="center"
+                              >
+                                <GridItem
+                                  xs={12}
+                                  sm={12}
+                                  md={6}
+                                  justify="center"
+                                  alignItems="center"
+                                  style={
+                                    isMobile
+                                      ? {
+                                          height: 400,
+                                          borderRadius: "15px 15px 15px 15px",
+                                          padding: 0
+                                        }
+                                      : {
+                                          height: 550,
+                                          borderRadius: "15px 15px 15px 15px",
+                                          padding: 0
+                                        }
+                                  }
+                                >
+                                  <div
+                                    style={
+                                      isMobile
+                                        ? {
+                                            textAlign: "-webkit-center",
+                                            background: "#2f99b1",
+                                            borderRadius: "15px 15px 0px 0px",
+                                            height: "100%",
+                                            width: "100%"
+                                          }
+                                        : {
+                                            textAlign: "-webkit-center",
+                                            background: "#2f99b1",
+                                            borderRadius: "15px 0px 0px 15px",
+                                            height: "100%",
+                                            width: "100%"
+                                          }
+                                    }
+                                  >
+                                    <ButtonBase
+                                      onClick={() => {
+                                        if (planche.img !== "")
+                                          this.setState({
+                                            isOpen: true,
+                                            imgUrl: planche.img
+                                          });
+                                        else if (planche.lien !== "") {
+                                          this.setState({
+                                            isOpen: true,
+                                            imgUrl: planche.lien
+                                          });
+                                        }
+                                      }}
+                                      style={{ width: "100%" }}
+                                    >
+                                      <Parallax
+                                        image={
+                                          planche.img !== ""
+                                            ? planche.img
+                                            : planche.lien
+                                        }
+                                        style={
+                                          isMobile
+                                            ? {
+                                                height: 400,
+                                                borderRadius:
+                                                  "15px 15px 15px 15px",
+                                                width: "100%",
+                                                display: "flex",
+                                                justifyContent: "center"
+                                              }
+                                            : {
+                                                height: 550,
+                                                width: "70%",
+                                                marginLeft: "auto",
+                                                marginRight: "auto",
+                                                display: "flex",
+                                                justifyContent: "center"
+                                              }
+                                        }
+                                      >
+                                        <input
+                                          accept="image/*"
+                                          className={classes.input}
+                                          id="icon-button-file"
+                                          type="file"
+                                          onTouchStart={() =>
+                                            this.setState({ isOpen: false })
+                                          }
+                                          onChange={file => {
+                                            this.savePlanches(
+                                              file.target.files
+                                            );
+                                            this.setState({
+                                              buttonClick: false
+                                            });
+                                          }}
+                                          onBlur={() =>
+                                            this.setState({ isOpen: false })
+                                          }
+                                        />
+                                        <label htmlFor="icon-button-file">
+                                          <IconButton
+                                            color="primary"
+                                            aria-label="upload picture"
+                                            component="span"
+                                            onBlur={() =>
+                                              this.setState({
+                                                isOpen: false
+                                              })
+                                            }
+                                            style={
+                                              index ===
+                                                this.state.planche.length - 1 &&
+                                              planche.img === "" &&
+                                              this.state.submit
+                                                ? {
+                                                    background:
+                                                      "rgb(255, 44, 77)",
+                                                    color: "white",
+                                                    marginLeft: 15
+                                                  }
+                                                : {
+                                                    background: "white",
+                                                    color: "grey",
+                                                    marginLeft: 15
+                                                  }
+                                            }
+                                          >
+                                            <PhotoCamera />
+                                          </IconButton>
+                                        </label>
+                                      </Parallax>
+                                    </ButtonBase>
+                                  </div>
+                                </GridItem>
+                                <GridItem
+                                    xs={12}
+                                    sm={12}
+                                    md={6}
+                                    justify="center"
+                                    alignItems="center"
+                                    style={
+                                      isMobile
+                                        ? {
+                                            height: 400,
+                                            backgroundColor: "#fcd77f",
+                                            borderRadius: "0px 0px 15px 15px",
+                                            borderRadiusTopLeft: 15,
+                                            padding: 0,
+                                            display: "flex",
+                                            justifyContent: "center",
+                                            alignItems: "center"
+                                          }
+                                        : {
+                                            height: 550,
+                                            backgroundColor: "#fcd77f",
+                                            borderRadius: "0px 15px 15px 0px",
+                                            borderRadiusTopLeft: 15,
+                                            padding: 0,
+                                            display: "flex",
+                                            justifyContent: "center",
+                                            alignItems: "center"
+                                          }
+                                    }
+                                  >
+                                    <div
+                                      style={{
+                                        width: "100%",
+                                        textAlign: 'justify'
+                                      }}
+                                    >
+                                      <SimpleBar
+                                        style={
+                                          isMobile
+                                            ? {
+                                                maxHeight: "350px",
+                                                width: "100%"
+                                              }
+                                            : {
+                                                maxHeight: "450px",
+                                                width: "100%",
+                                                marginLeft: "auto",
+                                                marginRight: "auto"
+                                              }
+                                        }
+                                      >
+                                        <p
+                                          style={{
+                                            color: "#332861",
+                                            fontFamily: 'lato',
+                                            width: "100%",
+                                            maxHeight: "450px",
+                                            margin: "0px",
+                                            paddingLeft: "30px",
+                                            paddingRight: "30px",
+                                            fontSize: "24px",
+                                            whiteSpace: 'pre-line'
+                                          }}
+                                        >
+                                          {planche.text == "" ? (<div style={
+                                            {
+                                              width: "100%",
+                                              textAlign: 'center',
+                                              fontSize: 'medium'
+                                            }
+                                          }>Cette planche ne contient aucun Texte</div>) : planche.text}
+                                        </p>
+                                      </SimpleBar>
+                                    </div>
+                                  </GridItem>
+                              </GridContainer>
                             ) : this.state.typePage == "3" ? (
                               <GridContainer
                                 style={
@@ -2163,13 +2541,13 @@ class PublierView extends React.Component {
                                         width: "100%",
                                         margin: 0,
                                         marginBottom: 30,
-                                        marginTop: 20
+                                        marginTop: 3
                                       }
                                     : {
                                         width: "100%",
                                         margin: 0,
                                         marginBottom: 30,
-                                        marginTop: 20,
+                                        marginTop: 3,
                                         marginLeft: "auto",
                                         marginRight: "auto"
                                       }
@@ -2235,6 +2613,9 @@ class PublierView extends React.Component {
                                         width: "100%",
                                         backgroundColor: "white"
                                       }}
+                                      inputProps={{
+                                        maxLength: 500
+                                      }}
                                       error={
                                         index ===
                                           this.state.planche.length - 1 &&
@@ -2255,12 +2636,20 @@ class PublierView extends React.Component {
                                       onChange={(textHistoire, event) => {
                                         this.setState({
                                           textHistoire:
-                                            textHistoire.target.value,
+                                          textHistoire.target.value,
                                           testNextText: 1
+                                        }, ()=>{
+                                          this.setState((state)=>({
+                                            numberChar: state.textHistoire.length
+                                          }));
                                         });
                                       }}
                                     />
+                                    <div style={{textAlign: 'end', marginTop: 1}}>
+                                      <Chip label={this.state.numberChar +" / 500"} color="white" variant="outlined" />
+                                    </div>
                                   </div>
+                                  
                                 </GridItem>
                               </GridContainer>
                             ) : (
@@ -2270,7 +2659,7 @@ class PublierView extends React.Component {
                                 style={{
                                   margin: 0,
                                   marginBottom: 30,
-                                  marginTop: 20
+                                  marginTop: 3
                                 }}
                               >
                                 <GridItem
@@ -2456,6 +2845,9 @@ class PublierView extends React.Component {
                                       label="Texte"
                                       multiline
                                       rows="12"
+                                      inputProps={{
+                                        maxLength: 500
+                                      }}
                                       error={
                                         index ===
                                           this.state.planche.length - 1 &&
@@ -2484,11 +2876,17 @@ class PublierView extends React.Component {
                                               textHistoire.target.value
                                           },
                                           () => {
-                                            this.testTextNext();
+                                            this.setState((state)=>({
+                                              numberChar: state.textHistoire.length
+                                            }), ()=>{this.testTextNext();});
+                                            
                                           }
                                         );
                                       }}
                                     />
+                                    <div style={{textAlign: 'end', marginTop: 1}}>
+                                      <Chip label={this.state.numberChar +" / 500"} color="white" variant="outlined" />
+                                    </div>
                                   </div>
                                 </GridItem>
                               </GridContainer>
@@ -2540,7 +2938,7 @@ class PublierView extends React.Component {
                         marginLeft: 15
                       }}
                       color="rgb(90, 81, 127)"
-                      onClick={() => this.saveHistoireWithPlanche()}
+                      onClick={() => this.setState({shouldBlockNavigation: false},()=>{this.saveHistoireWithPlanche()})}
                     >
                       Publier Histoire
                     </Button>

@@ -310,7 +310,7 @@ export default function MonComptePage(props) {
                       </div>
                       <h3
                         style={{
-                          fontFamily: "monospace",
+                          fontFamily: "lato",
                           fontWeight: "bold",
                           color: "black",
                           marginTop: 65,
@@ -327,18 +327,18 @@ export default function MonComptePage(props) {
                           <GridItem xs={8} sm={8} md={6}>
                             <h6
                               style={{
-                                fontFamily: "cursive",
+                                fontFamily: "goudy",
                                 color: "black",
                                 textAlign: "center",
                               }}
                             >
-                              Histoires
+                              Oeuvres
                             </h6>
                           </GridItem>
                           <GridItem xs={4} sm={4} md={4}>
                             <h6
                               style={{
-                                fontFamily: "monospace",
+                                fontFamily: "lato",
                                 fontWeight: "bold",
                                 color: "black",
                                 textAlign: "center",
@@ -355,7 +355,7 @@ export default function MonComptePage(props) {
                           <GridItem xs={8} sm={8} md={6}>
                             <h6
                               style={{
-                                fontFamily: "cursive",
+                                fontFamily: "goudy",
                                 color: "black",
                                 textAlign: "center",
                               }}
@@ -366,7 +366,7 @@ export default function MonComptePage(props) {
                           <GridItem xs={4} sm={4} md={4}>
                             <h6
                               style={{
-                                fontFamily: "monospace",
+                                fontFamily: "lato",
                                 fontWeight: "bold",
                                 color: "black",
                                 textAlign: "center",
@@ -383,7 +383,7 @@ export default function MonComptePage(props) {
                           <GridItem xs={12} sm={12} md={12}>
                             <h6
                               style={{
-                                fontFamily: "cursive",
+                                fontFamily: "goudy",
                                 color: "black",
                                 textAlign: "center",
                               }}
@@ -534,7 +534,7 @@ export default function MonComptePage(props) {
                             <Link to="/MonReseau">
                               <h5
                                 style={{
-                                  fontFamily: "cursive",
+                                  fontFamily: "goudy",
                                   fontWeight: "bold",
                                   color: "#1e1548",
                                   margin: 0,
@@ -562,7 +562,7 @@ export default function MonComptePage(props) {
                             <Link to="/MesOeuvres">
                               <h5
                                 style={{
-                                  fontFamily: "cursive",
+                                  fontFamily: "goudy",
                                   fontWeight: "bold",
                                   color: "#1e1548",
                                   margin: 0,
@@ -767,7 +767,7 @@ export default function MonComptePage(props) {
                       </div>
                       <h3
                         style={{
-                          fontFamily: "monospace",
+                          fontFamily: "lato",
                           fontWeight: "bold",
                           color: "black",
                           marginTop: 65,
@@ -784,18 +784,18 @@ export default function MonComptePage(props) {
                           <GridItem xs={4} sm={4} md={6}>
                             <h6
                               style={{
-                                fontFamily: "cursive",
+                                fontFamily: "goudy",
                                 color: "black",
                                 textAlign: "center",
                               }}
                             >
-                              Histoires
+                              Oeuvres
                             </h6>
                           </GridItem>
                           <GridItem xs={4} sm={4} md={4}>
                             <h6
                               style={{
-                                fontFamily: "monospace",
+                                fontFamily: "lato",
                                 fontWeight: "bold",
                                 color: "black",
                                 textAlign: "center",
@@ -812,7 +812,7 @@ export default function MonComptePage(props) {
                           <GridItem xs={4} sm={4} md={6}>
                             <h6
                               style={{
-                                fontFamily: "cursive",
+                                fontFamily: "goudy",
                                 color: "black",
                                 textAlign: "center",
                               }}
@@ -823,7 +823,7 @@ export default function MonComptePage(props) {
                           <GridItem xs={4} sm={4} md={4}>
                             <h6
                               style={{
-                                fontFamily: "monospace",
+                                fontFamily: "lato",
                                 fontWeight: "bold",
                                 color: "black",
                                 textAlign: "center",
@@ -840,7 +840,7 @@ export default function MonComptePage(props) {
                           <GridItem xs={12} sm={12} md={12}>
                             <h6
                               style={{
-                                fontFamily: "cursive",
+                                fontFamily: "goudy",
                                 color: "black",
                                 textAlign: "center",
                               }}
@@ -991,7 +991,7 @@ export default function MonComptePage(props) {
                             <Link to="/MonReseau">
                               <h5
                                 style={{
-                                  fontFamily: "cursive",
+                                  fontFamily: "goudy",
                                   fontWeight: "bold",
                                   color: "#1e1548",
                                   margin: 0,
@@ -1019,7 +1019,7 @@ export default function MonComptePage(props) {
                             <Link to="/MesOeuvres">
                               <h5
                                 style={{
-                                  fontFamily: "cursive",
+                                  fontFamily: "goudy",
                                   fontWeight: "bold",
                                   color: "#1e1548",
                                   margin: 0,

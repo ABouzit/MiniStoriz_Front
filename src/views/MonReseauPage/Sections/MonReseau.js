@@ -59,6 +59,7 @@ import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
 import InputLabel from "@material-ui/core/InputLabel";
 import moment from "moment";
+import PersonIcon from '@material-ui/icons/Person';
 // import Pagination from "components/Pagination/Pagination.js";
 import Pagination from "@material-ui/lab/Pagination";
 import Backdrop from "@material-ui/core/Backdrop";
@@ -73,7 +74,9 @@ import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import Fab from "@material-ui/core/Fab";
 import Avatar from "@material-ui/core/Avatar";
 import CreateIcon from "@material-ui/icons/Create";
+import {ReactComponent as Bruche} from '../../../icons/bruche.svg';
 import BrushIcon from "@material-ui/icons/Brush";
+import Buttons from "@material-ui/core/Button";
 import CommentIcon from "@material-ui/icons/Comment";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import {
@@ -150,7 +153,7 @@ class AllUsers extends React.Component {
           },
           () => {
             this.fetchUser();
-            this.fetchRelation(this.props.match.params.userId);
+            this.fetchRelationInit(this.props.match.params.userId);
             this.fetchUsers();
             subscriber.next({ view: this.props.match.params.userId });
             this.forceUpdate();
@@ -177,20 +180,18 @@ class AllUsers extends React.Component {
       );
     });
   }
-  fetchRelation(id) {
+  fetchRelationInit(id) {
     Axios.get(
       config.API_URL +
-        "relations/getRelationId/" +
+        "relations/getRelationType/" +
         this.state.idCurrentUser +
         "/" +
         id,
       {}
     ).then(res => {
-      console.log(res.data);
-      if (res.data > 0) {
-        subscriber.next({ ami: true });
+        console.log(res.data.ami)
+        subscriber.next({ ami: res.data.ami });
         this.forceUpdate();
-      }
     });
   }
   handleClose = (event, reason) => {
@@ -225,23 +226,24 @@ class AllUsers extends React.Component {
       }
     });
   }
-  deleteRequest(id) {
+  deleteRequest() {
     if (this.state.idCurrentUser == "") {
       var currentId = this.state.idUser;
     } else {
       var currentId = this.state.idCurrentUser;
     }
     Axios.delete(
-      config.API_URL + "relations/between/" + currentId + "/" + id
+      config.API_URL + "relations/between/" + currentId + "/" + this.state.userInv
     ).then(res => {
       firebase
         .database()
-        .ref("relations/" + id)
+        .ref("relations/" + this.state.userInv)
         .set({
           from: currentId,
-          to: id,
+          to: this.state.userInv,
           numbe: 100000 + Math.random() * (100000 - 1)
         });
+      this.setState({deleteRequest: false})
       this.searchCheck();
     });
   }
@@ -453,7 +455,7 @@ class AllUsers extends React.Component {
 
                             <h5
                               style={{
-                                fontFamily: "monospace",
+                                fontFamily: "lato",
                                 fontWeight: "bold",
                                 color: "black",
                                 marginLeft: "5%",
@@ -467,7 +469,7 @@ class AllUsers extends React.Component {
                             <div style={{ display: "flex" }}>
                               <h6
                                 style={{
-                                  fontFamily: "monospace",
+                                  fontFamily: "lato",
                                   color: "black",
                                   marginLeft: "5%",
                                   width: "50%",
@@ -479,7 +481,7 @@ class AllUsers extends React.Component {
                               </h6>
                               <h6
                                 style={{
-                                  fontFamily: "monospace",
+                                  fontFamily: "lato",
                                   color: "black",
                                   marginLeft: "5%",
                                   width: "50%",
@@ -500,7 +502,7 @@ class AllUsers extends React.Component {
                                       <div
                                         style={{ height: 40, paddingTop: 8 }}
                                       >
-                                        <CreateIcon
+                                        <Bruche
                                           style={{ width: 20, color: "black" }}
                                         />
                                       </div>
@@ -508,9 +510,8 @@ class AllUsers extends React.Component {
                                     <GridItem xs={8} sm={8} md={8}>
                                       <h6
                                         style={{
-                                          fontFamily: "monospace",
+                                          fontFamily: "lato",
                                           color: "black",
-                                          fontWeight: "bold",
                                           marginLeft: "5%",
                                           textAlign: "left",
                                         }}
@@ -528,7 +529,7 @@ class AllUsers extends React.Component {
                                 >
                                   <h6
                                     style={{
-                                      fontFamily: "monospace",
+                                      fontFamily: "lato",
                                       color: "black",
                                       fontWeight: "bold",
                                       textAlign: "center",
@@ -618,9 +619,8 @@ class AllUsers extends React.Component {
                                     <GridItem xs={8} sm={8} md={8}>
                                       <h6
                                         style={{
-                                          fontFamily: "monospace",
+                                          fontFamily: "lato",
                                           color: "black",
-                                          fontWeight: "bold",
                                           marginLeft: "5%",
                                           textAlign: "left",
                                         }}
@@ -633,7 +633,7 @@ class AllUsers extends React.Component {
                                 <GridItem xs={3} sm={3} md={3}>
                                   <h6
                                     style={{
-                                      fontFamily: "monospace",
+                                      fontFamily: "lato",
                                       color: "black",
                                       fontWeight: "bold",
                                       textAlign: "center",
@@ -727,15 +727,23 @@ class AllUsers extends React.Component {
                             md={4}
                             style={{ textAlign: "center" }}
                           >
-                            <ButtonBase
-                              onClick={() => {
-                                this.deleteRequest(user.id);
-                              }}
+                            <Tooltip
+                              title="retirer de la liste d'amis"
+                              aria-label="retirer de la liste d'amis"
+                              
                             >
-                              <small style={{ color: "#1e1548" }}>
-                                <PersonAddDisabledIcon style={{ width: 20 }} />
-                              </small>
-                            </ButtonBase>
+                              <ButtonBase
+                                onClick={() => {
+                                  this.setState({deleteRequest:true, userInv: user.id})
+                                }}
+                              >
+                                <small style={{ color: "#1e1548" }}>
+                                  <PersonIcon
+                                    style={{ width: 20 }}
+                                  />
+                                </small>
+                              </ButtonBase>
+                            </Tooltip>
                           </GridItem>
                         </GridContainer>
                       </Card>
@@ -799,8 +807,63 @@ class AllUsers extends React.Component {
               autoHideDuration={8000}
               onClose={this.handleClose}
             >
-              <Alert onClose={this.handleClose} severity="success">
-                Votre ami(e) a été supprimé
+              <Alert
+                onClose={this.handleClose}
+                severity="warning"
+                action={
+                  <div>
+                    <Buttons
+                      color="inherit"
+                      size="small"
+                      onClick={() => {
+                        this.deleteRequest(this.state.userInv);
+                      }}
+                    >
+                      OUI
+                    </Buttons>
+                    <Buttons
+                      color="inherit"
+                      size="small"
+                      onClick={this.handleClose}
+                    >
+                      NON
+                    </Buttons>
+                  </div>
+                }
+              >
+                Voulez vous retirer de votre liste d'amis ?
+              </Alert>
+            </Snackbar>
+            <Snackbar
+              open={this.state.deleteRequest}
+              autoHideDuration={8000}
+              onClose={this.handleClose}
+            >
+              <Alert
+                onClose={this.handleClose}
+                severity="warning"
+                action={
+                  <div>
+                    <Buttons
+                      color="inherit"
+                      size="small"
+                      onClick={() => {
+                        this.deleteRequest(this.state.userInv,2);
+                      }}
+                    >
+                      OUI
+                    </Buttons>
+                    <Buttons
+                      color="inherit"
+                      size="small"
+                      onClick={this.handleClose}
+                    >
+                      NON
+                    </Buttons>
+                  </div>
+                }
+              >
+                Voulez vous retirer de votre liste d'amis ?
               </Alert>
             </Snackbar>
           </div>
@@ -958,7 +1021,7 @@ function CardUser(props) {
 
       <h5
         style={{
-          fontFamily: "monospace",
+          fontFamily: "lato",
           fontWeight: "bold",
           color: "black",
           marginLeft: "5%",
@@ -972,7 +1035,7 @@ function CardUser(props) {
       <div style={{ display: "flex" }}>
         <h6
           style={{
-            fontFamily: "monospace",
+            fontFamily: "lato",
             color: "black",
             marginLeft: "5%",
             width: "50%",
@@ -984,7 +1047,7 @@ function CardUser(props) {
         </h6>
         <h6
           style={{
-            fontFamily: "monospace",
+            fontFamily: "lato",
             color: "black",
             marginLeft: "5%",
             width: "50%",
@@ -1003,15 +1066,14 @@ function CardUser(props) {
             <GridContainer>
               <GridItem xs={4} sm={4} md={4}>
                 <div style={{ height: 40, paddingTop: 8 }}>
-                  <CreateIcon style={{ width: 20 }} />
+                  <Bruche style={{ width: 20 }} />
                 </div>
               </GridItem>
               <GridItem xs={8} sm={8} md={8}>
                 <h6
                   style={{
-                    fontFamily: "monospace",
+                    fontFamily: "lato",
                     color: "black",
-                    fontWeight: "bold",
                     marginLeft: "5%",
                     textAlign: "left",
                   }}
@@ -1024,7 +1086,7 @@ function CardUser(props) {
           <GridItem xs={3} sm={3} md={3} style={{ textAlign: "right" }}>
             <h6
               style={{
-                fontFamily: "monospace",
+                fontFamily: "lato",
                 color: "black",
                 fontWeight: "bold",
                 textAlign: "center",
@@ -1102,9 +1164,8 @@ function CardUser(props) {
               <GridItem xs={8} sm={8} md={8}>
                 <h6
                   style={{
-                    fontFamily: "monospace",
+                    fontFamily: "lato",
                     color: "black",
-                    fontWeight: "bold",
                     marginLeft: "5%",
                     textAlign: "left",
                   }}
@@ -1117,7 +1178,7 @@ function CardUser(props) {
           <GridItem xs={3} sm={3} md={3}>
             <h6
               style={{
-                fontFamily: "monospace",
+                fontFamily: "lato",
                 color: "black",
                 fontWeight: "bold",
                 textAlign: "center",

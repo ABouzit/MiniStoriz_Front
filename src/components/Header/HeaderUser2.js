@@ -328,7 +328,7 @@ const functionRel=(snapshot)=>{
             <h4
               style={{
                 fontWeight: "bold",
-                fontFamily: "cursive",
+                fontFamily: "goudy",
                 marginLeft: 20,
               }}
             >
@@ -345,16 +345,16 @@ const functionRel=(snapshot)=>{
             backgroundColor: "#fff",
             color: "#332861",
             marginTop: "2%",
-            fontFamily: "cursive",
+            fontFamily: "goudy",
           }}
           spacing={0}
         >
-          <h4 style={{ marginLeft: "5%", fontFamily: "cursive" }}>
+          <h4 style={{ marginLeft: "5%", fontFamily: "goudy" }}>
             En devenant mini-artiste, je m’engage à respecter les consignes
             suivantes :
           </h4>
           <br></br>
-          <h4 style={{ marginLeft: "7%", fontFamily: "cursive" }}>
+          <h4 style={{ marginLeft: "7%", fontFamily: "goudy" }}>
             Je ne communique pas de fausses informations
             <br></br>
             <br></br>
@@ -393,6 +393,7 @@ const functionRel=(snapshot)=>{
               style={{
                 color: "rgb(89, 79, 118)",
                 fontWeight: "bold",
+                fontFamily: 'goudy',
                 margin: 0,
                 backgroundColor: "#e3f3fd",
               }}
@@ -407,13 +408,13 @@ const functionRel=(snapshot)=>{
       </Dialog>
       <List className={classes.list}>
         <ListItem className={classes.listItem}>
-          <Link to="/" className={classes.dropdownLink}>
+          <Link to="/LesHistoires" className={classes.dropdownLink}>
             <Button
               color="transparent"
               className={classes.navLink}
-              style={{ padding: 0 }}
+              style={{ padding: 0, fontFamily: 'goudy', fontWeight: 'bold', alignItems: 'flex-end' }}
             >
-              <MenuBookOutlinedIcon style={{ width: 22, height: 22 }} />{" "}
+              <MenuBookOutlinedIcon style={{ width: 22, height: 22,  }} />{" "}
               Histoires
             </Button>
           </Link>
@@ -423,7 +424,7 @@ const functionRel=(snapshot)=>{
             <Button
               color="transparent"
               className={classes.navLink}
-              style={{ padding: 0 }}
+              style={{ padding: 0, fontFamily: 'goudy', fontWeight: 'bold', alignItems: 'flex-end'  }}
             >
               <PeopleOutlineOutlinedIcon style={{ width: 22, height: 22 }} />{" "}
               utilisateurs
@@ -435,7 +436,7 @@ const functionRel=(snapshot)=>{
             <Button
               color="transparent"
               className={classes.navLink}
-              style={{ padding: 0 }}
+              style={{ padding: 0, fontFamily: 'goudy', fontWeight: 'bold', alignItems: 'flex-end'  }}
             >
               <Badge
                 badgeContent={vue}
@@ -458,7 +459,7 @@ const functionRel=(snapshot)=>{
               <Button
                 color="transparent"
                 className={classes.navLink}
-                style={{ padding: 0 }}
+                style={{ padding: 0, fontFamily: 'goudy', fontWeight: 'bold', alignItems: 'flex-end'  }}
               >
                 <Badge
                   badgeContent={nbrReq}
@@ -511,6 +512,7 @@ const functionRel=(snapshot)=>{
                     <span
                       style={{
                         textAlign: "center",
+                        fontFamily: 'goudy',
                         width: "100%",
                         color: "#1e1548",
                       }}
@@ -582,7 +584,7 @@ const functionRel=(snapshot)=>{
                 <Link to="/MonReseau">
                   <h6
                     style={{
-                      fontFamily: "cursive",
+                      fontFamily: "goudy",
                       fontWeight: "bold",
                       color: "#1e1548",
                       margin: 0,
@@ -592,7 +594,7 @@ const functionRel=(snapshot)=>{
                       textDecoration: "underline",
                     }}
                   >
-                    Mon Réseau
+                    Mon réseau
                   </h6>
                 </Link>
               </MenuItem>
@@ -605,7 +607,7 @@ const functionRel=(snapshot)=>{
               <Button
                 color="transparent"
                 className={classes.navLink}
-                style={{ padding: 0 }}
+                style={{ padding: 0, fontFamily: 'goudy', fontWeight: 'bold', alignItems: 'flex-end'  }}
               >
                 <Badge
                   badgeContent={vueNotif}
@@ -658,6 +660,7 @@ const functionRel=(snapshot)=>{
                     <span
                       style={{
                         textAlign: "center",
+                        fontFamily: 'goudy',
                         width: "100%",
                         color: "#1e1548",
                       }}
@@ -771,7 +774,7 @@ const functionRel=(snapshot)=>{
                         src={user.lienPhoto}
                       />
                     )}
-                    <span style={{ marginLeft: 6, color: "#1e1548" }}>
+                    <span style={{ marginLeft: 6, color: "#1e1548", fontFamily: 'lato', fontWeight: 'bold', textTransform: 'capitalize' }}>
                       {user.pseudo}
                     </span>
                   </div>
@@ -781,24 +784,28 @@ const functionRel=(snapshot)=>{
                   color: "transparent",
                 }}
                 dropdownList={[
-                  <Link to="/MonProfil" className={classes.dropdownLink}>
+                  <Link to="/MonProfil" className={classes.dropdownLink} style={{fontFamily: "goudy",
+                  fontWeight: 'bold'}}>
                     MON PROFIL
                   </Link>,
-                  <Link to="/MesOeuvres" className={classes.dropdownLink}>
+                  <Link to="/MesOeuvres" className={classes.dropdownLink} style={{fontFamily: "goudy",
+                  fontWeight: 'bold'}}>
                     MES OEUVRES
                   </Link>,
-                  <Link to="/MonReseau" className={classes.dropdownLink}>
+                  <Link to="/MonReseau" className={classes.dropdownLink} style={{fontFamily: "goudy",
+                  fontWeight: 'bold'}}>
                     MON RESEAU
                   </Link>,
-                  <Link to="/Contact" className={classes.dropdownLink}>
+                  <Link to="/Contact" className={classes.dropdownLink} style={{fontFamily: "goudy",
+                  fontWeight: 'bold'}}>
                     CONTACTEZ-NOUS
                   </Link>,
                   <ButtonBase
                     className={classes.dropdownLink}
                     style={{
                       fontSize: "13px",
-                      fontFamily: "Roboto",
-                      fontWeight: 400,
+                      fontFamily: "goudy",
+                      fontWeight: 'bold',
                     }}
                     onClick={() => {
                       setModal(true);
@@ -808,8 +815,11 @@ const functionRel=(snapshot)=>{
                   </ButtonBase>,
                   <Link
                     onClick={() => {
+                      firebase.auth().signOut()
                       localStorage.clear();
                     }}
+                    style={{fontFamily: "goudy",
+                    fontWeight: 'bold'}}
                     className={classes.dropdownLink}
                     divider
                   >

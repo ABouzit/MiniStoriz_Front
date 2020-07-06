@@ -547,6 +547,7 @@ class Messages extends React.Component {
                           }}
                           autoHide={true}
                         >
+                          
                           {this.state.usersMessages.map((user, index) => {
                             if (user.message_userTwoId == this.state.idUser) {
                               return (
@@ -866,8 +867,10 @@ class Messages extends React.Component {
                       sm={12}
                       md={12}
                       style={{ alignItems: "center", padding: 0 }}
-                    >
+                    > 
+                      
                       <Paper>
+                        
                         <SimpleBar
                           ref={this.SimpleBar}
                           style={{
@@ -888,7 +891,14 @@ class Messages extends React.Component {
                             justify="flex-end"
                             alignItems="center"
                           >
-                            {" "}
+                            {this.state.messages.length < 1 ? (
+                              <SnackbarContent
+                              style={{backgroundColor: '#1e1548'}}
+                                message={"aucune message n'a été trouvée."
+                                }
+                              />
+                            ):(<div></div>)}
+                            
                             {this.state.messages.map((message, index) => {
                               if (
                                 message.userTwo.id !== this.state.idUserChat
@@ -1673,6 +1683,13 @@ class Messages extends React.Component {
                         alignItems="center"
                       >
                         {" "}
+                        {this.state.messages.length < 1 ? (
+                              <SnackbarContent
+                              style={{backgroundColor: '#1e1548'}}
+                                message={"aucune message n'a été trouvée."
+                                }
+                              />
+                        ):(<div></div>)}
                         {this.state.messages.map((message, index) => {
                           if (message.userTwo.id !== this.state.idUserChat) {
                             return (

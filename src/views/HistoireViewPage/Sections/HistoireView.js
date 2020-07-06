@@ -14,6 +14,7 @@ import GridContainer from "components/Grid/GridContainer.js";
 import GridItem from "components/Grid/GridItem.js";
 import Card from "components/Card/Card.js";
 import CardBody from "components/Card/CardBody.js";
+import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Button from "components/CustomButtons/Button.js";
 import Buttons from "@material-ui/core/Button";
@@ -80,6 +81,7 @@ import Divider from "@material-ui/core/Divider";
 import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
 import CommentIcon from "@material-ui/icons/Comment";
 import VisibilityIcon from "@material-ui/icons/Visibility";
+import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import FiberManualRecordIconOutlined from "@material-ui/icons/FiberManualRecordOutlined";
 import { subscriber, messageService } from "./../../../services/messageService";
 import Lightbox from "react-image-lightbox";
@@ -117,6 +119,9 @@ class HistoireView extends React.Component {
         "#dd00f3",
         "#dd00f3"
       ],
+      permition: false,
+      accepterIllustration: false,
+      refuserIllustration: false,
       userTextSignal: false,
       userDessinSignal: false,
       menuAnchorEl: null,
@@ -225,7 +230,7 @@ class HistoireView extends React.Component {
             )}
           </div>
         ),
-        dots: true,
+        dots: false,
         arrows: false,
         infinite: false,
         speed: 500,
@@ -262,6 +267,7 @@ class HistoireView extends React.Component {
     } else {
       this.setState({ user: users }, () => {
         console.log(this.state.user);
+        this.getPermitionImp();
         this.forceUpdate();
       });
     }
@@ -287,6 +293,58 @@ class HistoireView extends React.Component {
         }
       });
   }
+  accepterIllustrations(){
+    const _this = this;
+    let tmpHistoire = this.state.histoire;
+    tmpHistoire.etatHistoire = 'ACCEPTER_ILLUSTRATION';
+    return Axios.put(config.API_URL + "histoires", tmpHistoire)
+      .then(function(response) {
+        firebase
+          .database()
+          .ref("newStoriz/" + _this.state.histoire.userText.id)
+          .set({
+            from: _this.state.histoire.userDessin.id,
+            numbe: 100000 + Math.random() * (100000 - 1)
+        });
+        firebase
+          .database()
+          .ref("notifications/" + _this.state.histoire.userDessin.id)
+          .set({
+            from: _this.state.histoire.userText.id,
+            to: _this.state.histoire.userDessin.id,
+            numbe: 100000 + Math.random() * (100000 - 1)
+          });
+        _this.fetchHistoireAndPlanchesAndCommentes(
+          _this.props.match.params.histoireId
+        );
+    })
+  }
+  refuserIllustrations(){
+    const _this = this;
+    let tmpHistoire = this.state.histoire;
+    tmpHistoire.etatHistoire = 'REFUSER_ILLUSTRATION';
+    return Axios.put(config.API_URL + "histoires", tmpHistoire)
+      .then(function(response) {
+        firebase
+          .database()
+          .ref("newStoriz/" + _this.state.histoire.userText.id)
+          .set({
+            from: _this.state.histoire.userDessin.id,
+            numbe: 100000 + Math.random() * (100000 - 1)
+        })
+        firebase
+          .database()
+          .ref("notifications/" + _this.state.histoire.userDessin.id)
+          .set({
+            from: _this.state.histoire.userText.id,
+            to: _this.state.histoire.userDessin.id,
+            numbe: 100000 + Math.random() * (100000 - 1)
+          });
+        _this.fetchHistoireAndPlanchesAndCommentes(
+          _this.props.match.params.histoireId
+        );
+    })
+  }
   fetchHistoireNew(id) {
     Axios.get(config.API_URL + "histoires/byId/" + id)
       .then(histoire => {
@@ -304,6 +362,14 @@ class HistoireView extends React.Component {
           console.log(JSON.stringify(histoire));
           this.setState({ histoire: histoire.data[0] }, () => {});
         }
+      })
+      .catch(res => this.props.history.push("/404"));
+  }
+  getPermitionImp() {
+    Axios.get(config.API_URL + "impressions/permition/" + this.props.match.params.histoireId + "/" + this.state.user.id)
+      .then(permition => {
+          console.log(permition.data.permition);
+          this.setState({ permition: permition.data.permition }, () => {this.forceUpdate()});
       })
       .catch(res => this.props.history.push("/404"));
   }
@@ -331,7 +397,7 @@ class HistoireView extends React.Component {
       return;
     }
 
-    this.setState({ deleteHistoire: false });
+    this.setState({ deleteHistoire: false, accepterIllustration: false, refuserIllustration: false });
   };
   fetchCommentaires() {
     const id = this.props.match.params.histoireId;
@@ -604,11 +670,6 @@ class HistoireView extends React.Component {
                 Axios.get(config.API_URL + "planches/histoire/" + id).then(
                   planches => {
                     this.setState({ planches: planches.data });
-                    if (this.state.planches.lenght > 18) {
-                      this.state.settings.dots = false;
-                    } else {
-                      this.state.settings.dots = true;
-                    }
                   }
                 );
                 Axios.get(
@@ -646,6 +707,90 @@ class HistoireView extends React.Component {
         Axios.post(config.API_URL + "impressions", {
           histoire: this.state.histoire,
           commentaire: this.state.commentaire,
+          noteHistoire: 0,
+          noteDessin: 0,
+          isActive: true,
+          user: {
+            id: this.state.user.id,
+            lienPhoto: this.state.user.lienPhoto,
+            pseudo: this.state.user.pseudo
+          }
+        }).then(res => {
+          
+          if (!this.state.histoire.userText) {
+            firebase
+              .database()
+              .ref("notifications/" + this.state.histoire.userDessin.id)
+              .set({
+                from: this.state.user.id,
+                to: this.state.histoire.userDessin.id,
+                numbe: 100000 + Math.random() * (100000 - 1)
+              });
+          } else if (!this.state.histoire.userDessin) {
+            firebase
+              .database()
+              .ref("notifications/" + this.state.histoire.userText.id)
+              .set({
+                from: this.state.user.id,
+                to: this.state.histoire.userText.id,
+                numbe: 100000 + Math.random() * (100000 - 1)
+              });
+          } else {
+            firebase
+              .database()
+              .ref("notifications/" + this.state.histoire.userText.id)
+              .set({
+                from: this.state.user.id,
+                to: this.state.histoire.userText.id,
+                numbe: 100000 + Math.random() * (100000 - 1)
+              });
+            firebase
+              .database()
+              .ref("notifications/" + this.state.histoire.userDessin.id)
+              .set({
+                from: this.state.user.id,
+                to: this.state.histoire.userDessin.id,
+                numbe: 100000 + Math.random() * (100000 - 1)
+              });
+          }
+          this.setState({
+            ratingDessin: 0,
+            ratingText: 0,
+            ratingDessinTemp: 0,
+            ratingTextTemp: 0,
+            commentaire: "",
+            
+          });
+          firebase
+            .database()
+            .ref("comments/" + this.state.histoire.id)
+            .set({
+              from: this.state.user.id,
+              numbe: 100000 + Math.random() * (100000 - 1)
+            });
+          Axios.get(
+            config.API_URL +
+              "impressions/histoire/" +
+              this.state.histoire.id +
+              "/take/" +
+              3 * this.state.commentaireNbr +
+              "/" +
+              0
+          ).then(commentaires =>
+            this.setState({ commentaires: commentaires.data }, () => {this.forceUpdate()})
+          );
+          this.fetchHistoireAndPlanchesAndCommentes();
+          this.fetchSignalCommentes();
+          this.forceUpdate();
+        });
+      else this.setState({ errorCommentaire: true });
+    });
+  }
+  submitNote() {
+    this.setState({ commentaire: this.state.commentaire.trim() }, () => {
+        Axios.post(config.API_URL + "impressions", {
+          histoire: this.state.histoire,
+          commentaire: "",
           noteHistoire: parseFloat(this.state.ratingText),
           noteDessin: parseFloat(this.state.ratingDessin),
           isActive: true,
@@ -715,12 +860,11 @@ class HistoireView extends React.Component {
               "/" +
               0
           ).then(commentaires =>
-            this.setState({ commentaires: commentaires.data })
+            this.setState({ commentaires: commentaires.data, permition: false })
           );
           this.fetchSignalCommentes();
           this.forceUpdate();
         });
-      else this.setState({ errorCommentaire: true });
     });
   }
   next() {
@@ -958,24 +1102,7 @@ class HistoireView extends React.Component {
                       }
                 }
               >
-                {this.state.planches.lenght > 18 ? (
-                  <SampleNextArrow
-                    onClick={() => this.next()}
-                    style={Styles.NextArrow}
-                    Color={
-                      this.state.counter === this.state.planches.length
-                        ? "rgba(0, 0, 0, 0.26)"
-                        : "#332861"
-                    }
-                    disabled={
-                      this.state.counter === this.state.planches.length
-                        ? true
-                        : false
-                    }
-                  />
-                ) : (
-                  <div></div>
-                )}
+                  
                 {this.state.histoire.userDessin &&
                 this.state.histoire.userText &&
                 this.state.histoire.userDessin.id == this.state.user.id &&
@@ -996,6 +1123,46 @@ class HistoireView extends React.Component {
                       style={{ padding: 0, textAlign: "end" }}
                     >
                       <div>
+                      {this.state.histoire.etatHistoire == 'EN_ATTANTE_USER' ? (
+                          <Tooltip
+                            title={
+                              "Accepter les illustrations"
+                            }
+                          >
+                            <IconButton
+                              aria-controls="customized-menu"
+                              aria-haspopup="true"
+                              variant="contained"
+                              onClick={() => {
+                                this.setState({ accepterIllustration: true });
+                              }}
+                            >
+                              <CheckCircleOutlineIcon
+                                style={{ color: "#1e1548" }}
+                              />
+                            </IconButton>
+                          </Tooltip>
+                        ):(<div></div>)}
+                        {this.state.histoire.etatHistoire == 'EN_ATTANTE_USER' ? (
+                          <Tooltip
+                            title={
+                              "Refuser les illustrations"
+                            }
+                          >
+                            <IconButton
+                              aria-controls="customized-menu"
+                              aria-haspopup="true"
+                              variant="contained"
+                              onClick={() => {
+                                this.setState({ refuserIllustration: true });
+                              }}
+                            >
+                              <HighlightOffIcon
+                                style={{ color: "#1e1548" }}
+                              />
+                            </IconButton>
+                          </Tooltip>
+                        ):(<div></div>)}
                         <Link
                           to={
                             "/modifier/histoire/1/" +
@@ -1054,8 +1221,8 @@ class HistoireView extends React.Component {
                   >
                     <GridItem
                       xs={6}
-                      sm={4}
-                      md={2}
+                      sm={6}
+                      md={6}
                       style={{ padding: 0, textAlign: "end" }}
                     >
                       <div>
@@ -1122,6 +1289,46 @@ class HistoireView extends React.Component {
                       style={{ padding: 0, textAlign: "end" }}
                     >
                       <div>
+                        {this.state.histoire.etatHistoire == 'EN_ATTANTE_USER' ? (
+                          <Tooltip
+                            title={
+                              "Accepter les illustrations"
+                            }
+                          >
+                            <IconButton
+                              aria-controls="customized-menu"
+                              aria-haspopup="true"
+                              variant="contained"
+                              onClick={() => {
+                                this.setState({ accepterIllustration: true });
+                              }}
+                            >
+                              <CheckCircleOutlineIcon
+                                style={{ color: "#1e1548" }}
+                              />
+                            </IconButton>
+                          </Tooltip>
+                        ):(<div></div>)}
+                        {this.state.histoire.etatHistoire == 'EN_ATTANTE_USER' ? (
+                          <Tooltip
+                            title={
+                              "Refuser les illustrations"
+                            }
+                          >
+                            <IconButton
+                              aria-controls="customized-menu"
+                              aria-haspopup="true"
+                              variant="contained"
+                              onClick={() => {
+                                this.setState({ refuserIllustration: true });
+                              }}
+                            >
+                              <HighlightOffIcon
+                                style={{ color: "#1e1548" }}
+                              />
+                            </IconButton>
+                          </Tooltip>
+                        ):(<div></div>)}
                         <Link
                           to={
                             "/modifier/histoire/3/" +
@@ -1170,6 +1377,30 @@ class HistoireView extends React.Component {
                 ) : (
                   <div></div>
                 )}
+                <GridContainer
+                  style={{
+                    width: "90%",
+                    marginLeft: "auto",
+                    marginRight: "auto"
+                  }}
+                >
+                  <GridItem
+                      xs={12}
+                      sm={12}
+                      md={12}
+                      style={{ padding: 0, textAlign: 'center' }}
+                    >
+                      <h2 style={{
+                        fontFamily: 'goudy',
+                        fontWeight: 'bold',
+                        color: 'rgba(39, 39, 39, 0.88)',
+                        textAlign: 'center'
+                      }}>
+                        {this.state.histoire.titreHistoire[0].toUpperCase() +  
+                           this.state.histoire.titreHistoire.slice(1).toLowerCase()}
+                      </h2>
+                  </GridItem>
+                </GridContainer>
                 <GridContainer
                   style={{
                     width: "90%",
@@ -1229,6 +1460,7 @@ class HistoireView extends React.Component {
                           >
                             <p
                               style={{
+                                fontFamily: 'lato',
                                 color: "#5a517f",
                                 fontWeight: "bold",
                                 fontSize: 17,
@@ -1345,6 +1577,7 @@ class HistoireView extends React.Component {
                           >
                             <p
                               style={{
+                                fontFamily: 'lato',
                                 color: "#5a517f",
                                 fontWeight: "bold",
                                 fontSize: 17,
@@ -1415,7 +1648,7 @@ class HistoireView extends React.Component {
                       style={{ padding: 0 }}
                     ></GridItem>
                   )}
-                  <GridItem
+                  {/* <GridItem
                     xs={12}
                     sm={12}
                     md={12}
@@ -1492,9 +1725,25 @@ class HistoireView extends React.Component {
                         </div>
                       </Card>
                     </ButtonBase>
-                  </GridItem>
+                  </GridItem> */}
                 </GridContainer>
-
+                <div style={{
+                  position: 'relative'
+                }}>
+                <SampleNextArrow
+                    onClick={() => this.next()}
+                    style={Styles.NextArrow}
+                    Color={
+                      this.state.counter === this.state.planches.length
+                        ? "rgba(0, 0, 0, 0.26)"
+                        : "#332861"
+                    }
+                    disabled={
+                      this.state.counter === this.state.planches.length
+                        ? true
+                        : false
+                    }
+                  />
                 <div
                   style={{
                     width: "90%",
@@ -1525,7 +1774,7 @@ class HistoireView extends React.Component {
                                   style={{
                                     margin: 0,
                                     marginBottom: 30,
-                                    marginTop: 20
+                                    marginTop: 0
                                   }}
                                   justify="center"
                                   alignItems="center"
@@ -1614,13 +1863,13 @@ class HistoireView extends React.Component {
                                           width: "100%",
                                           margin: 0,
                                           marginBottom: 30,
-                                          marginTop: 20
+                                          marginTop: 5
                                         }
                                       : {
                                           width: "100%",
                                           margin: 0,
                                           marginBottom: 30,
-                                          marginTop: 20,
+                                          marginTop: 0,
                                           marginLeft: "auto",
                                           marginRight: "auto"
                                         }
@@ -1674,19 +1923,21 @@ class HistoireView extends React.Component {
                                             }
                                       }
                                     >
-                                      <h5
+                                      <p
                                         style={{
                                           color: "#332861",
+                                          fontFamily: 'lato',
                                           width: "100%",
                                           maxHeight: "450px",
                                           margin: "0px",
                                           paddingLeft: "30px",
                                           paddingRight: "30px",
-                                          fontSize: "17px"
+                                          fontSize: "24px",
+                                          whiteSpace: 'pre-line'
                                         }}
                                       >
                                         {planche.text}
-                                      </h5>
+                                      </p>
                                     </SimpleBar>
                                   </GridItem>
                                 </GridContainer>
@@ -1697,7 +1948,7 @@ class HistoireView extends React.Component {
                                   style={{
                                     margin: 0,
                                     marginBottom: 30,
-                                    marginTop: 20
+                                    marginTop: 0
                                   }}
                                 >
                                   <GridItem
@@ -1820,19 +2071,21 @@ class HistoireView extends React.Component {
                                               }
                                         }
                                       >
-                                        <h5
+                                        <p
                                           style={{
                                             color: "#332861",
+                                            fontFamily: 'lato',
                                             width: "100%",
                                             maxHeight: "450px",
                                             margin: "0px",
                                             paddingLeft: "30px",
                                             paddingRight: "30px",
-                                            fontSize: "17px"
+                                            fontSize: "24px",
+                                            whiteSpace: 'pre-line'
                                           }}
                                         >
                                           {planche.text}
-                                        </h5>
+                                        </p>
                                       </SimpleBar>
                                     </div>
                                   </GridItem>
@@ -1852,7 +2105,6 @@ class HistoireView extends React.Component {
                   </Slider>
                 </div>
 
-                {this.state.planches.lenght > 18 ? (
                   <SamplePrevArrow
                     onClick={() => this.previous()}
                     Color={
@@ -1862,10 +2114,7 @@ class HistoireView extends React.Component {
                     }
                     disabled={this.state.counter === 1 ? true : false}
                   />
-                ) : (
-                  <div></div>
-                )}
-
+                </div>
                 <Divider
                   style={{
                     height: 2,
@@ -1908,7 +2157,7 @@ class HistoireView extends React.Component {
 
                 <List
                   className={classes.root}
-                  style={{ background: "#777", color: "aliceblue", padding: 0 }}
+                  style={{ background: "rgb(79, 78, 78)", color: "aliceblue", padding: 0 }}
                 >
                   {this.state.commentaires.map((commentaire, index) => {
                     return (
@@ -1963,7 +2212,13 @@ class HistoireView extends React.Component {
                                 </ListItemAvatar>
                               </Link>
                               <ListItemText
-                                primary={commentaire.user.pseudo}
+                                primary={
+                                  <React.Fragment>
+                                    <span style={{ color: "aliceblue", fontFamily: 'lato', fontWeight: 'bold' }}>
+                                      {commentaire.user.pseudo}
+                                    </span>
+                                  </React.Fragment>
+                                }
                                 secondary={
                                   <React.Fragment>
                                     <small style={{ color: "aliceblue" }}>
@@ -2025,6 +2280,7 @@ class HistoireView extends React.Component {
                               )}
                             </div>
                           </GridItem>
+                          { commentaire.noteDessin > 0 || commentaire.noteHistoire > 0 ? (
                           <GridItem xs={12} sm={12} md={12}>
                             <GridContainer
                               justify="flex-start"
@@ -2047,8 +2303,8 @@ class HistoireView extends React.Component {
                                 >
                                   <div
                                     style={{
-                                      height: 30,
-                                      width: 30
+                                      height: 40,
+                                      width: 40
                                     }}
                                   >
                                     <Tooltip
@@ -2113,8 +2369,8 @@ class HistoireView extends React.Component {
                                 >
                                   <div
                                     style={{
-                                      height: 30,
-                                      width: 30
+                                      height: 40,
+                                      width: 40
                                     }}
                                   >
                                     <Tooltip
@@ -2168,6 +2424,7 @@ class HistoireView extends React.Component {
                               )}
                             </GridContainer>
                           </GridItem>
+                          ) : (<div></div>) }
                         </GridContainer>
 
                         <p
@@ -2176,7 +2433,8 @@ class HistoireView extends React.Component {
                             fontSize: 17,
                             textAlign: "left",
                             paddingLeft: 72,
-                            paddingRight: 16
+                            paddingRight: 16,
+                            fontFamily: 'goudy'
                           }}
                         >
                           {commentaire.commentaire}
@@ -2252,21 +2510,48 @@ class HistoireView extends React.Component {
                   />
                 </ListItem>
                 <GridContainer style={{ marginRight: 0 }}>
+                <GridItem
+                    xs={12}
+                    sm={12}
+                    md={12}
+                    style={this.state.permition ? {
+                      display: "flex",
+                      justifyContent: "flex-end",
+                    }:{
+                      display: "flex",
+                      justifyContent: "flex-end",
+                      marginBottom: 10
+                    }}
+                  >
+                    <Button
+                      variant="contained"
+                      style={{
+                        backgroundColor: "rgb(31, 23, 72)",
+                      }}
+                      color="rgb(90, 81, 127)"
+                      onClick={() => this.submitCommantaire()}
+                    >
+                      Commenter
+                    </Button>
+                  </GridItem>
+                  {console.log(this.state.permition)}
+                  {this.state.permition == true ? (
                   <GridItem xs={12} sm={12} md={12}>
                     <GridContainer
                       justify="flex-start"
                       style={{
                         width: "100%",
                         margin: "auto",
-                        paddingLeft: 50
+                        paddingLeft: 50,
+                        justifyContent: 'center'
                       }}
                       spacing={1}
                     >
                       {this.state.histoire.userDessin ? (
                         <GridItem
-                          xs={3}
-                          sm={2}
-                          md={1}
+                          xs={isMobile ? 6 : 3}
+                          sm={isMobile ? 6 : 2}
+                          md={isMobile ? 6 : 1}
                           style={{
                             display: "flex",
                             justifyContent: "center",
@@ -2337,9 +2622,9 @@ class HistoireView extends React.Component {
                       )}
                       {this.state.histoire.userText ? (
                         <GridItem
-                          xs={3}
-                          sm={2}
-                          md={1}
+                          xs={isMobile ? 6 : 3}
+                          sm={isMobile ? 6 : 2}
+                          md={isMobile ? 6 : 1}
                           style={{
                             textAlign: "-webkit-center"
                           }}
@@ -2406,9 +2691,48 @@ class HistoireView extends React.Component {
                       ) : (
                         <GridItem xs={0} sm={0} md={0}></GridItem>
                       )}
+                      <GridItem
+                        xs={this.state.histoire.userText && this.state.histoire.userDessin && !isMobile ? 6 : isMobile ? 12 : 9}
+                        sm={this.state.histoire.userText && this.state.histoire.userDessin && !isMobile ? 8 : isMobile ? 12 : 10}
+                        md={this.state.histoire.userText && this.state.histoire.userDessin && !isMobile ? 10 : isMobile ? 12 : 11}
+                        style={{
+                          display: "flex",
+                          justifyContent: "flex-end",
+                          paddingBottom: "15px"
+                        }}
+                      >
+                        <Button
+                          onClick={() => {
+                            this.setState({
+                              ratingDessin: 0,
+                              ratingText: 0,
+                              ratingDessinTemp: 0,
+                              ratingTextTemp: 0,
+                              commentaire: ""
+                            });
+                          }}
+                          style={{ backgroundColor: "rgb(255, 44, 77)" }}
+                        >
+                          Annuler
+                        </Button>
+
+                        <Button
+                          variant="contained"
+                          style={{
+                            backgroundColor: "rgb(31, 23, 72)",
+                            marginLeft: 15
+                          }}
+                          color="rgb(90, 81, 127)"
+                          onClick={() => this.submitNote()}
+                          disabled={this.state.ratingText == 0 && this.state.ratingDessin == 0 ? true : false}
+                        >
+                          noter
+                        </Button>
+                      </GridItem>
                     </GridContainer>
                   </GridItem>
-                  <GridItem
+                  ):(<div></div>)}
+                  {/* <GridItem
                     xs={12}
                     sm={12}
                     md={12}
@@ -2440,11 +2764,12 @@ class HistoireView extends React.Component {
                         marginLeft: 15
                       }}
                       color="rgb(90, 81, 127)"
-                      onClick={() => this.submitCommantaire()}
+                      onClick={() => this.submitNote()}
+                      disabled={this.state.ratingText == 0 && this.state.ratingDessin == 0 ? true : false}
                     >
-                      Commenter
+                      noter
                     </Button>
-                  </GridItem>
+                  </GridItem> */}
                 </GridContainer>
               </Paper>
             </GridItem>
@@ -2480,7 +2805,70 @@ class HistoireView extends React.Component {
             >
               {!this.state.histoire.demandeSuppression
                 ? "Voulez vous proceder a la suppression de cette histoire ?"
-                : "Vouler vous annuler la suppresssion de cette histoire?"}
+                : "Vouler vous annuler la suppression de cette histoire?"}
+            </Alert>
+          </Snackbar>
+          <Snackbar
+            open={this.state.accepterIllustration}
+            autoHideDuration={12000}
+            onClose={this.handleCloseSnack}
+          >
+            <Alert
+              onClose={this.handleCloseSnack}
+              severity="warning"
+              action={
+                <div>
+                  <Buttons
+                    color="inherit"
+                    size="small"
+                    onClick={() => {
+                      this.accepterIllustration();
+                    }}
+                  >
+                    OUI
+                  </Buttons>
+                  <Buttons
+                    color="inherit"
+                    size="small"
+                    onClick={this.handleCloseSnack}
+                  >
+                    NON
+                  </Buttons>
+                </div>
+              }
+            >
+              Voulez vous accepter les illustrations de cette histoire ?
+            </Alert>
+          </Snackbar><Snackbar
+            open={this.state.refuserIllustration}
+            autoHideDuration={12000}
+            onClose={this.handleCloseSnack}
+          >
+            <Alert
+              onClose={this.handleCloseSnack}
+              severity="warning"
+              action={
+                <div>
+                  <Buttons
+                    color="inherit"
+                    size="small"
+                    onClick={() => {
+                      this.refuserIllustrations();
+                    }}
+                  >
+                    OUI
+                  </Buttons>
+                  <Buttons
+                    color="inherit"
+                    size="small"
+                    onClick={this.handleCloseSnack}
+                  >
+                    NON
+                  </Buttons>
+                </div>
+              }
+            >
+              Voulez vous refuser les illustrations de cette histoire ?
             </Alert>
           </Snackbar>
         </div>
@@ -2529,12 +2917,21 @@ function SampleNextArrow(props) {
   return (
     <IconButton
       aria-label="delete"
-      style={{
+      style={
+        !isMobile ? {
         ...style,
         display: "block",
         position: "absolute",
-        top: "45%",
-        right: "-10px",
+        top: "42%",
+        right: "6px",
+        zIndex: 100,
+        padding: 0
+      } : {
+        ...style,
+        display: "block",
+        position: "absolute",
+        top: "45.1%",
+        right: "-15px",
         zIndex: 100,
         padding: 0
       }}
@@ -2555,13 +2952,22 @@ function SamplePrevArrow(props) {
   const { className, style, onClick, disabled, Color } = props;
   return (
     <IconButton
-      style={{
+      style={
+        !isMobile ? {
         ...style,
         display: "block",
         position: "absolute",
-        top: "45%",
+        top: "42%",
         zIndex: 100,
-        left: "-10px",
+        left: "6px",
+        padding: 0
+      }:{
+        ...style,
+        display: "block",
+        position: "absolute",
+        top: "45.1%",
+        zIndex: 100,
+        left: "-15px",
         padding: 0
       }}
       onClick={onClick}

@@ -26,10 +26,12 @@ import Messages from "views/ChatPage/ChatPage.js";
 import ActivationPage from "views/ActivationPage/ActivationPage.js";
 import UsersPage from "views/UsersPage/UsersPage.js";
 import ContactPage from "views/ContactPage/ContactPage";
+import AccueilPage from "views/AccueilPage/AccueilPage";
 import "firebase/database";
 import * as firebase from "firebase/app";
 import HeaderGlobale from "components/Header/HeaderGloble";
 import ErrorPage from "views/404Page/ErrorPage";
+import './fonts/Lato-Regular.ttf'
 firebase.initializeApp(config.firebaseConfig);
 var hist = createBrowserHistory();
 export default class App extends React.Component {
@@ -95,7 +97,8 @@ export default class App extends React.Component {
             <Route path="/profile-page" component={ProfilePage} />
             <Route path="/login-page" component={LoginPage} />
             <Route path="/Connexion" component={HomePage} />
-            <Route path="/" component={AllHistoiresPage} />
+            <Route path="/LesHistoires" component={AllHistoiresPage} />
+            <Route path="/" component={AccueilPage} />
           </Switch>
         </Router>
       </div>

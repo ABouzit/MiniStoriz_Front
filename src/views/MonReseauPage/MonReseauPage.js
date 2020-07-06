@@ -59,6 +59,9 @@ import * as firebase from "firebase/app";
 import "firebase/database";
 import PersonAddDisabledIcon from "@material-ui/icons/PersonAddDisabled";
 import HeaderGloble from "components/Header/HeaderGloble";
+import Buttons from "@material-ui/core/Button";
+import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
+import PersonIcon from '@material-ui/icons/Person';
 const dashboardRoutes = [];
 
 const useStyles = makeStyles(styles);
@@ -75,6 +78,8 @@ export default function MesOeuvresPage(props) {
   const [ami, setAmi] = React.useState(false);
   const [requestF, setRequestF] = React.useState(false);
   const [requestRF, setRequestRF] = React.useState(false);
+  const [requestRRF, setRequestRRF] = React.useState(false);
+  const [accepteRequestF, setAccepteRequestF] = React.useState(false);
   const [userCurrent, setUserCurrent] = React.useState(
     JSON.parse(localStorage.getItem("user"))
   );
@@ -86,6 +91,7 @@ export default function MesOeuvresPage(props) {
     subscriber.subscribe(v => {
       if (v.user) {
         setUser(v.user);
+        console.log(user)
       }
       if (v.view) {
         setView(v.view);
@@ -112,13 +118,35 @@ export default function MesOeuvresPage(props) {
           to: id,
           numbe: 100000 + Math.random() * (100000 - 1)
         });
-      setAmi(true);
-      setRequestF(true);
+      setAmi(1);
+      setRequestF(false);
     });
   };
+  const accepteRequestFriend = () => {
+    let tuser = user;
+    Axios.put(config.API_URL + "users/accRelation/"+userCurrent.id+"/"+view, {
+      
+    }).then(res => {
+      firebase.database().ref('notifications/' + view).set({
+        from: userCurrent.id,
+        to: view,
+        numbe: 100000 + Math.random() * (100000 - 1)
+      });
+      tuser.nombreReseau += 1;
+      setUser(tuser)
+      setAccepteRequestF(false);
+      setAmi(2);
+    })
+    .catch(
+      function(error) {
+        console.log(error);
+      }
+    );
+  }
   const removeRequestFriend = id => {
+    let tuser = user;
     Axios.delete(
-      config.API_URL + "relations/between/" + userCurrent.id + "/" + id
+      config.API_URL + "users/deleteRelation/" + userCurrent.id + "/" + id
     ).then(res => {
       firebase
         .database()
@@ -128,8 +156,15 @@ export default function MesOeuvresPage(props) {
           to: id,
           numbe: 100000 + Math.random() * (100000 - 1)
         });
-      setAmi(false);
-      setRequestRF(true);
+      if (ami == 2) {
+        tuser.nombreReseau -= 1;
+        setUser(tuser)
+      }
+      
+      setAmi(0);
+      setRequestRF(false);
+      setRequestRRF(false);
+      setAccepteRequestF(false);
     });
   };
   const handleClose = (event, reason) => {
@@ -305,7 +340,7 @@ export default function MesOeuvresPage(props) {
                       </div>
                       <h3
                         style={{
-                          fontFamily: "monospace",
+                          fontFamily: "lato",
                           fontWeight: "bold",
                           color: "black",
                           marginTop: 65,
@@ -320,20 +355,20 @@ export default function MesOeuvresPage(props) {
                         />
                         <GridContainer justify="center">
                           <GridItem xs={8} sm={8} md={6}>
-                            <h6
+                            <h5
                               style={{
-                                fontFamily: "cursive",
+                                fontFamily: "goudy",
                                 color: "black",
                                 textAlign: "center",
                               }}
                             >
-                              Histoires
-                            </h6>
+                              Oeuvres
+                            </h5>
                           </GridItem>
                           <GridItem xs={4} sm={4} md={4}>
                             <h6
                               style={{
-                                fontFamily: "monospace",
+                                fontFamily: "lato",
                                 fontWeight: "bold",
                                 color: "black",
                                 textAlign: "center",
@@ -348,20 +383,20 @@ export default function MesOeuvresPage(props) {
                         />
                         <GridContainer justify="center">
                           <GridItem xs={8} sm={8} md={6}>
-                            <h6
+                            <h5
                               style={{
-                                fontFamily: "cursive",
+                                fontFamily: "goudy",
                                 color: "black",
                                 textAlign: "center",
                               }}
                             >
                               Réseau
-                            </h6>
+                            </h5>
                           </GridItem>
                           <GridItem xs={4} sm={4} md={4}>
                             <h6
                               style={{
-                                fontFamily: "monospace",
+                                fontFamily: "lato",
                                 fontWeight: "bold",
                                 color: "black",
                                 textAlign: "center",
@@ -376,15 +411,15 @@ export default function MesOeuvresPage(props) {
                         />
                         <GridContainer justify="center">
                           <GridItem xs={12} sm={12} md={12}>
-                            <h6
+                            <h5
                               style={{
-                                fontFamily: "cursive",
+                                fontFamily: "goudy",
                                 color: "black",
                                 textAlign: "center",
                               }}
                             >
                               Note moyenne
-                            </h6>
+                            </h5>
                           </GridItem>
                           <GridItem xs={3} sm={3} md={3}>
                             <Tooltip
@@ -531,7 +566,8 @@ export default function MesOeuvresPage(props) {
                                 <Link to="/MesOeuvres">
                                   <h5
                                     style={{
-                                      fontFamily: "cursive",
+                                      fontFamily: "goudy",
+                                      fontSize: 20 ,
                                       fontWeight: "bold",
                                       color: "#1e1548",
                                       margin: 0,
@@ -559,7 +595,8 @@ export default function MesOeuvresPage(props) {
                                 <Link to="/MonProfil">
                                   <h5
                                     style={{
-                                      fontFamily: "cursive",
+                                      fontFamily: "goudy",
+                                      fontSize: 20,
                                       fontWeight: "bold",
                                       color: "#1e1548",
                                       margin: 0,
@@ -582,7 +619,8 @@ export default function MesOeuvresPage(props) {
                                 <Link to={"/LesOeuvres/" + view}>
                                   <h5
                                     style={{
-                                      fontFamily: "cursive",
+                                      fontFamily: "goudy",
+                                      fontSize: 20,
                                       fontWeight: "bold",
                                       color: "#1e1548",
                                       margin: 0,
@@ -620,33 +658,44 @@ export default function MesOeuvresPage(props) {
                                   </small>
                                 </Link>
                               </GridItem>
-                              {!ami ? (
+                              {ami == 0 ? (
                                 <GridItem
                                   xs={4}
                                   sm={4}
                                   md={4}
                                   style={{ textAlign: "center" }}
                                 >
+                                  <Tooltip
+                                      title="envoyer une invitation"
+                                      aria-label="envoyer une invitation"
+                                    
+                                    >
                                   <ButtonBase
                                     onClick={() => {
-                                      requestFriend(view);
+                                      setRequestF(true)
                                     }}
                                   >
                                     <small style={{ color: "#1e1548" }}>
                                       <PersonAddIcon style={{ width: 20 }} />
                                     </small>
                                   </ButtonBase>
+                                  </Tooltip>
                                 </GridItem>
-                              ) : (
+                              ) : ami == 1 ? (
                                 <GridItem
                                   xs={4}
                                   sm={4}
                                   md={4}
                                   style={{ textAlign: "center" }}
                                 >
+                                  <Tooltip
+                                      title="retirer l'invitation"
+                                      aria-label="retirer l'invitation"
+                                    
+                                    >
                                   <ButtonBase
                                     onClick={() => {
-                                      removeRequestFriend(view);
+                                      setRequestRRF(true)
                                     }}
                                   >
                                     <small style={{ color: "#1e1548" }}>
@@ -655,8 +704,59 @@ export default function MesOeuvresPage(props) {
                                       />
                                     </small>
                                   </ButtonBase>
+                                  </Tooltip>
                                 </GridItem>
-                              )}
+                              ) : ami == 2 ? (
+                                <GridItem
+                                  xs={4}
+                                  sm={4}
+                                  md={4}
+                                  style={{ textAlign: "center" }}
+                                >
+                                  <Tooltip
+                                    title="retirer de la liste d'amis"
+                                    aria-label="retirer de la liste d'amis"
+                                   
+                                  >
+                                    <ButtonBase
+                                      onClick={() => {
+                                        setRequestRF(true)
+                                      }}
+                                    >
+                                      <small style={{ color: "#1e1548" }}>
+                                        <PersonIcon
+                                          style={{ width: 20 }}
+                                        />
+                                      </small>
+                                    </ButtonBase>
+                                  </Tooltip>
+                                </GridItem>
+                                ) : (
+                                  <GridItem
+                                    xs={4}
+                                    sm={4}
+                                    md={4}
+                                    style={{ textAlign: "center" }}
+                                  >
+                                    <Tooltip
+                                      title="accepter l'invitation"
+                                      aria-label="accepter l'invitation"
+                                    
+                                    >
+                                      <ButtonBase
+                                        onClick={() => {
+                                          setAccepteRequestF(true)
+                                        }}
+                                      >
+                                        <small style={{ color: "#1e1548" }}>
+                                          <CheckCircleOutlineIcon
+                                            style={{ width: 20 }}
+                                          />
+                                        </small>
+                                      </ButtonBase>
+                                  </Tooltip>
+                              </GridItem>
+                            )}
                             </GridContainer>
                           </div>
                         )}
@@ -780,7 +880,7 @@ export default function MesOeuvresPage(props) {
                       </div>
                       <h3
                         style={{
-                          fontFamily: "monospace",
+                          fontFamily: "lato",
                           fontWeight: "bold",
                           color: "black",
                           marginTop: 65,
@@ -795,20 +895,20 @@ export default function MesOeuvresPage(props) {
                         />
                         <GridContainer justify="center">
                           <GridItem xs={4} sm={4} md={6}>
-                            <h6
+                            <h5
                               style={{
-                                fontFamily: "cursive",
+                                fontFamily: "goudy",
                                 color: "black",
                                 textAlign: "center",
                               }}
                             >
-                              Histoires
-                            </h6>
+                              Oeuvres
+                            </h5>
                           </GridItem>
                           <GridItem xs={4} sm={4} md={4}>
                             <h6
                               style={{
-                                fontFamily: "monospace",
+                                fontFamily: "lato",
                                 fontWeight: "bold",
                                 color: "black",
                                 textAlign: "center",
@@ -823,20 +923,20 @@ export default function MesOeuvresPage(props) {
                         />
                         <GridContainer justify="center">
                           <GridItem xs={4} sm={4} md={6}>
-                            <h6
+                            <h5
                               style={{
-                                fontFamily: "cursive",
+                                fontFamily: "goudy",
                                 color: "black",
                                 textAlign: "center",
                               }}
                             >
                               Réseau
-                            </h6>
+                            </h5>
                           </GridItem>
                           <GridItem xs={4} sm={4} md={4}>
                             <h6
                               style={{
-                                fontFamily: "monospace",
+                                fontFamily: "lato",
                                 fontWeight: "bold",
                                 color: "black",
                                 textAlign: "center",
@@ -851,15 +951,15 @@ export default function MesOeuvresPage(props) {
                         />
                         <GridContainer justify="center">
                           <GridItem xs={12} sm={12} md={12}>
-                            <h6
+                            <h5
                               style={{
-                                fontFamily: "cursive",
+                                fontFamily: "goudy",
                                 color: "black",
                                 textAlign: "center",
                               }}
                             >
                               Note moyenne
-                            </h6>
+                            </h5>
                           </GridItem>
                           <GridItem xs={3} sm={3} md={3}>
                             <Tooltip
@@ -1006,7 +1106,8 @@ export default function MesOeuvresPage(props) {
                                 <Link to="/MesOeuvres">
                                   <h5
                                     style={{
-                                      fontFamily: "cursive",
+                                      fontFamily: "goudy",
+                                      fontSize: 20,
                                       fontWeight: "bold",
                                       color: "#1e1548",
                                       margin: 0,
@@ -1034,7 +1135,8 @@ export default function MesOeuvresPage(props) {
                                 <Link to="/MonProfil">
                                   <h5
                                     style={{
-                                      fontFamily: "cursive",
+                                      fontFamily: "goudy",
+                                      fontSize: 20,
                                       fontWeight: "bold",
                                       color: "#1e1548",
                                       margin: 0,
@@ -1057,7 +1159,8 @@ export default function MesOeuvresPage(props) {
                                 <Link to={"/LesOeuvres/" + view}>
                                   <h5
                                     style={{
-                                      fontFamily: "cursive",
+                                      fontFamily: "goudy",
+                                      fontSize: 20,
                                       fontWeight: "bold",
                                       color: "#1e1548",
                                       margin: 0,
@@ -1095,33 +1198,44 @@ export default function MesOeuvresPage(props) {
                                   </small>
                                 </Link>
                               </GridItem>
-                              {!ami ? (
+                              {ami == 0 ? (
                                 <GridItem
                                   xs={4}
                                   sm={4}
                                   md={4}
                                   style={{ textAlign: "center" }}
                                 >
+                                  <Tooltip
+                                      title="envoyer une invitation"
+                                      aria-label="envoyer une invitation"
+                                    
+                                    >
                                   <ButtonBase
                                     onClick={() => {
-                                      requestFriend(view);
+                                      setRequestF(true)
                                     }}
                                   >
                                     <small style={{ color: "#1e1548" }}>
                                       <PersonAddIcon style={{ width: 20 }} />
                                     </small>
                                   </ButtonBase>
+                                  </Tooltip>
                                 </GridItem>
-                              ) : (
+                              ) : ami == 1 ? (
                                 <GridItem
                                   xs={4}
                                   sm={4}
                                   md={4}
                                   style={{ textAlign: "center" }}
                                 >
+                                  <Tooltip
+                                      title="retirer l'invitation"
+                                      aria-label="retirer l'invitation"
+                                    
+                                    >
                                   <ButtonBase
                                     onClick={() => {
-                                      removeRequestFriend(view);
+                                      setRequestRRF(true)
                                     }}
                                   >
                                     <small style={{ color: "#1e1548" }}>
@@ -1130,8 +1244,59 @@ export default function MesOeuvresPage(props) {
                                       />
                                     </small>
                                   </ButtonBase>
+                                  </Tooltip>
                                 </GridItem>
-                              )}
+                              ) : ami == 2 ? (
+                                <GridItem
+                                  xs={4}
+                                  sm={4}
+                                  md={4}
+                                  style={{ textAlign: "center" }}
+                                >
+                                  <Tooltip
+                                    title="retirer de la liste d'amis"
+                                    aria-label="retirer de la liste d'amis"
+                                   
+                                  >
+                                    <ButtonBase
+                                      onClick={() => {
+                                        setRequestRF(true)
+                                      }}
+                                    >
+                                      <small style={{ color: "#1e1548" }}>
+                                        <PersonIcon
+                                          style={{ width: 20 }}
+                                        />
+                                      </small>
+                                    </ButtonBase>
+                                  </Tooltip>
+                                </GridItem>
+                                ) : (
+                                  <GridItem
+                                    xs={4}
+                                    sm={4}
+                                    md={4}
+                                    style={{ textAlign: "center" }}
+                                  >
+                                    <Tooltip
+                                      title="accepter l'invitation"
+                                      aria-label="accepter l'invitation"
+                                    
+                                    >
+                                      <ButtonBase
+                                        onClick={() => {
+                                          setAccepteRequestF(true)
+                                        }}
+                                      >
+                                        <small style={{ color: "#1e1548" }}>
+                                          <CheckCircleOutlineIcon
+                                            style={{ width: 20 }}
+                                          />
+                                        </small>
+                                      </ButtonBase>
+                                  </Tooltip>
+                              </GridItem>
+                            )}
                             </GridContainer>
                           </div>
                         )}
@@ -1171,8 +1336,31 @@ export default function MesOeuvresPage(props) {
               autoHideDuration={8000}
               onClose={handleClose}
             >
-              <Alert onClose={handleClose} severity="success">
-                Votre invitation a été envoyée
+              <Alert
+                onClose={handleClose}
+                severity="warning"
+                action={
+                  <div>
+                    <Buttons
+                      color="inherit"
+                      size="small"
+                      onClick={() => {
+                        requestFriend(view);
+                      }}
+                    >
+                      OUI
+                    </Buttons>
+                    <Buttons
+                      color="inherit"
+                      size="small"
+                      onClick={handleClose}
+                    >
+                      NON
+                    </Buttons>
+                  </div>
+                }
+              >
+                Voulez vous envoyer une invitation ?
               </Alert>
             </Snackbar>
             <Snackbar
@@ -1180,8 +1368,97 @@ export default function MesOeuvresPage(props) {
               autoHideDuration={8000}
               onClose={handleClose}
             >
-              <Alert onClose={handleClose} severity="success">
-                Votre ami(e) a été supprimé
+              <Alert
+                onClose={handleClose}
+                severity="warning"
+                action={
+                  <div>
+                    <Buttons
+                      color="inherit"
+                      size="small"
+                      onClick={() => {
+                        removeRequestFriend(view);
+                      }}
+                    >
+                      OUI
+                    </Buttons>
+                    <Buttons
+                      color="inherit"
+                      size="small"
+                      onClick={handleClose}
+                    >
+                      NON
+                    </Buttons>
+                  </div>
+                }
+              >
+                Voulez vous retirer de votre liste d'amis ?
+              </Alert>
+            </Snackbar>
+            <Snackbar
+              open={requestRRF}
+              autoHideDuration={8000}
+              onClose={handleClose}
+            >
+              <Alert
+                onClose={handleClose}
+                severity="warning"
+                action={
+                  <div>
+                    <Buttons
+                      color="inherit"
+                      size="small"
+                      onClick={() => {
+                        removeRequestFriend(view);
+                      }}
+                    >
+                      OUI
+                    </Buttons>
+                    <Buttons
+                      color="inherit"
+                      size="small"
+                      onClick={handleClose}
+                    >
+                      NON
+                    </Buttons>
+                  </div>
+                }
+              >
+                 Voulez vous annuler l'invitation ?
+              </Alert>
+            </Snackbar>
+            <Snackbar
+              open={accepteRequestF}
+              autoHideDuration={8000}
+              onClose={handleClose}
+            >
+              <Alert
+                onClose={handleClose}
+                severity="warning"
+                action={
+                  <div>
+                    <Buttons
+                      color="inherit"
+                      size="small"
+                      onClick={() => {
+                        accepteRequestFriend(view);
+                      }}
+                    >
+                      ACCEPTER
+                    </Buttons>
+                    <Buttons
+                      color="inherit"
+                      size="small"
+                      onClick={() => {
+                        removeRequestFriend(view);
+                      }}
+                    >
+                      REFUSER
+                    </Buttons>
+                  </div>
+                }
+              >
+                Voulez vous vraiment
               </Alert>
             </Snackbar>
           </GridItem>

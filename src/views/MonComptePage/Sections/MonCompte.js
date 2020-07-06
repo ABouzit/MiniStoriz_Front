@@ -55,6 +55,7 @@ class MonCompte extends React.Component {
     this.headerClasse = makeStyles(headerStyle);
     // Don't call this.setState() here!
     this.state = {
+      ville: "",
       redirect: 0,
       userLocal: "",
       idUser: "",
@@ -546,11 +547,9 @@ class MonCompte extends React.Component {
                   >
                     <span
                       style={{
-                        fontFamily: "monospace",
-                        fontVariant: "petite-caps",
-                        fontWeight: "bold",
+                        fontFamily: "goudy",
                         color: "#1e1548",
-                        fontSize: "xx-large"
+                        fontSize: "large"
                       }}
                     >
                       Pseudo
@@ -587,7 +586,9 @@ class MonCompte extends React.Component {
                               }}
                             >
                               <InputAdornment position="end">
+                                {this.state.pseudo.length > 2 && this.state.pseudo.length < 13 ? (
                                 <DoneOutlineIcon style={{ color: "black" }} />
+                                ):(<div></div>)}
                               </InputAdornment>
                             </ButtonBase>
                           )
@@ -633,11 +634,9 @@ class MonCompte extends React.Component {
                   >
                     <span
                       style={{
-                        fontFamily: "monospace",
-                        fontVariant: "petite-caps",
-                        fontWeight: "bold",
+                        fontFamily: "goudy",
                         color: "#1e1548",
-                        fontSize: "xx-large"
+                        fontSize: "large"
                       }}
                     >
                       Nom
@@ -672,7 +671,8 @@ class MonCompte extends React.Component {
                               }}
                             >
                               <InputAdornment position="end">
-                                <DoneOutlineIcon style={{ color: "black" }} />
+                                {this.state.nom.length > 2 && this.state.nom.length < 16 ? (
+                                <DoneOutlineIcon style={{ color: "black" }} />):(<div></div>)}
                               </InputAdornment>
                             </ButtonBase>
                           )
@@ -718,11 +718,9 @@ class MonCompte extends React.Component {
                   >
                     <span
                       style={{
-                        fontFamily: "monospace",
-                        fontVariant: "petite-caps",
-                        fontWeight: "bold",
+                        fontFamily: "goudy",
                         color: "#1e1548",
-                        fontSize: "xx-large"
+                        fontSize: "large"
                       }}
                     >
                       Prénom
@@ -759,7 +757,8 @@ class MonCompte extends React.Component {
                               }}
                             >
                               <InputAdornment position="end">
-                                <DoneOutlineIcon style={{ color: "black" }} />
+                              {this.state.prenom.length > 2 && this.state.prenom.length < 16 ? (
+                                <DoneOutlineIcon style={{ color: "black" }} />):(<div></div>)}
                               </InputAdornment>
                             </ButtonBase>
                           )
@@ -805,16 +804,15 @@ class MonCompte extends React.Component {
                   >
                     <span
                       style={{
-                        fontFamily: "monospace",
-                        fontVariant: "petite-caps",
-                        fontWeight: "bold",
+                        fontFamily: "goudy",
                         color: "#1e1548",
-                        fontSize: "xx-large"
+                        fontSize: "large"
                       }}
                     >
                       Adresse mail
                     </span>
                   </GridItem>
+                  {this.state.user.motDePasse !== null && this.state.password !== "ée" ? (
                   <GridItem xs={12} sm={12} md={6}>
                     {this.state.updateMail ? (
                       <CustomInput
@@ -882,6 +880,24 @@ class MonCompte extends React.Component {
                       />
                     )}
                   </GridItem>
+                  ):(
+                  <GridItem xs={12} sm={12} md={6}>
+                    <CustomInput
+                        readOnly={true}
+                        id="material"
+                        formControlProps={{
+                          fullWidth: true
+                        }}
+                        defaultValue={this.state.mail}
+                        value={this.state.mail}
+                        onChange={(mail, event) => {
+                          this.setState({
+                            mail: mail.target.value
+                          });
+                        }}
+                      />
+                  </GridItem>  
+                  )}
                   <GridItem
                     xs={12}
                     sm={12}
@@ -890,11 +906,9 @@ class MonCompte extends React.Component {
                   >
                     <span
                       style={{
-                        fontFamily: "monospace",
-                        fontVariant: "petite-caps",
-                        fontWeight: "bold",
+                        fontFamily: "goudy",
                         color: "#1e1548",
-                        fontSize: "xx-large"
+                        fontSize: "large"
                       }}
                     >
                       Ville
@@ -931,7 +945,8 @@ class MonCompte extends React.Component {
                               }}
                             >
                               <InputAdornment position="end">
-                                <DoneOutlineIcon style={{ color: "black" }} />
+                              {this.state.ville.length > 2 && this.state.ville.length < 16 ? (
+                                <DoneOutlineIcon style={{ color: "black" }} />):(<div></div>)}
                               </InputAdornment>
                             </ButtonBase>
                           )
@@ -969,6 +984,7 @@ class MonCompte extends React.Component {
                       />
                     )}
                   </GridItem>
+                  {this.state.user.motDePasse !== null && this.state.password !== "ée" ? (
                   <GridItem
                     xs={12}
                     sm={12}
@@ -977,16 +993,16 @@ class MonCompte extends React.Component {
                   >
                     <span
                       style={{
-                        fontFamily: "monospace",
-                        fontVariant: "petite-caps",
-                        fontWeight: "bold",
+                        fontFamily: "goudy",
                         color: "#1e1548",
-                        fontSize: "xx-large"
+                        fontSize: "large"
                       }}
                     >
                       Mot de passe
                     </span>
                   </GridItem>
+                  ) : (<div></div>)}
+                  {this.state.user.motDePasse !== null && this.state.password !== "ée" ? (
                   <GridItem xs={12} sm={12} md={6}>
                     {this.state.updatePassword ? (
                       <GridContainer justify="flex-end">
@@ -1031,9 +1047,10 @@ class MonCompte extends React.Component {
                                     }}
                                   >
                                     <InputAdornment position="end">
+                                    {this.state.Npassword.length > 5 ? (
                                       <DoneOutlineIcon
                                         style={{ color: "black" }}
-                                      />
+                                      />):(<div></div>)}
                                     </InputAdornment>
                                   </ButtonBase>
                                 )
@@ -1078,9 +1095,10 @@ class MonCompte extends React.Component {
                                     }}
                                   >
                                     <InputAdornment position="end">
+                                    {this.state.Npassword.length > 5 ? (
                                       <DoneOutlineIcon
                                         style={{ color: "black" }}
-                                      />
+                                      />):(<div></div>)}
                                     </InputAdornment>
                                   </ButtonBase>
                                 )
@@ -1224,6 +1242,7 @@ class MonCompte extends React.Component {
                       />
                     )}
                   </GridItem>
+                  ) : (<div></div>)}
                 </GridContainer>
               </CardBody>
             </Card>
@@ -1237,7 +1256,7 @@ class MonCompte extends React.Component {
                 onClick={() => {
                   this.saveUsers();
                 }}
-                style={{ color: "#1e1548", fontWeight: "bold" }}
+                style={{ backgroundColor: "#1e1548", fontWeight: "bold", color: 'white' }}
                 disabled={this.state.change ? false : true}
               >
                 Valider

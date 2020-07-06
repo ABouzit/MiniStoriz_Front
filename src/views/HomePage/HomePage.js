@@ -130,9 +130,9 @@ export default function HomePage(props) {
       <HeaderGloble />
       <div style={{backgroundColor: "#ecfbfc"}}>
         <GridContainer justify="center" direction={isMobile ? "column-reverse" : null} style={{margin: 0,marginTop: 95, padding: 0 }}>
-          <GridItem xs={12} sm={12} md={6}>
+          {/* <GridItem xs={12} sm={12} md={6}>
             <GridContainer justify="center">
-              <GridItem xs={10} sm={10} md={11} style={isMobile? {marginTop: 20, padding: 0}:{marginTop: 20}}>
+              <GridItem xs={10} sm={10} md={11} style={isMobile ? {marginTop: 20, padding: 0}:{marginTop: 20}}>
                 <Paper elevation={0}>
                 <GridContainer justify="center">
                   <GridItem xs={10} sm={10} md={10}>
@@ -170,17 +170,14 @@ export default function HomePage(props) {
                     </GridContainer>
                   </GridItem>
                   <GridItem xs={10} sm={10} md={10} style={{textAlign: 'center',marginTop: 20,paddingBottom: 20}}>
-                    {/* <Button  color="primary" size="md" onClick={()=>{}}>
-                      Je m’inscris
-                    </Button> */}
                   </GridItem>
                 </GridContainer>
                 </Paper>
               </GridItem>
             </GridContainer>
             
-          </GridItem>
-          <GridItem xs={12} sm={12} md={6}>
+          </GridItem> */}
+          <GridItem xs={12} sm={12} md={10}>
             <GridContainer justify="center">
               <GridItem xs={11} sm={11} md={11}>
                 <Login/>

@@ -48,6 +48,7 @@ import PersonAddIcon from "@material-ui/icons/PersonAdd";
 import ForumRoundedIcon from "@material-ui/icons/ForumRounded";
 import RoomIcon from "@material-ui/icons/Room";
 import EditIcon from "@material-ui/icons/Edit";
+import Buttons from "@material-ui/core/Button";
 //scroll bare text
 import SimpleBar from "simplebar-react";
 import "simplebar/dist/simplebar.min.css";
@@ -69,10 +70,13 @@ import Chat from "@material-ui/icons/Chat";
 import Contacts from "@material-ui/icons/Contacts";
 import AccountBoxIcon from "@material-ui/icons/AccountBox";
 import TitleIcon from "@material-ui/icons/Title";
+import PersonIcon from '@material-ui/icons/Person';
+import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import Fab from "@material-ui/core/Fab";
 import Avatar from "@material-ui/core/Avatar";
 import CreateIcon from "@material-ui/icons/Create";
+import {ReactComponent as Bruche} from '../../../icons/bruche.svg';
 import BrushIcon from "@material-ui/icons/Brush";
 import CommentIcon from "@material-ui/icons/Comment";
 import VisibilityIcon from "@material-ui/icons/Visibility";
@@ -102,12 +106,14 @@ class AllUsers extends React.Component {
       page: 1,
       user: "",
       requestFriend: false,
+      accepteRequest: false,
       redirect: 0,
       connected: false,
       numberPage: 0,
       search: "",
       selectedFiltre: "",
       deleteRequest: false,
+      deleteRequestF: false,
       showMore: false,
       commentaire: "",
       ratingText: 0,
@@ -125,6 +131,7 @@ class AllUsers extends React.Component {
     this.handleVisibility = this.handleVisibility.bind(this);
     this.handleClose = this.handleClose.bind(this);
     this.deleteRequest = this.deleteRequest.bind(this);
+    this.accepteRequest = this.accepteRequest.bind(this);
   }
   componentDidMount() {
     const _this = this;
@@ -151,7 +158,7 @@ class AllUsers extends React.Component {
       return;
     }
 
-    this.setState({ requestFriend: false, deleteRequest: false });
+    this.setState({ requestFriend: false, deleteRequest: false, deleteRequestF: false, accepteRequest: false });
   };
   handleChangePage() {
     // this.setState({ page: this.state.page + 1 });
@@ -248,6 +255,25 @@ class AllUsers extends React.Component {
       }
     });
   }
+  accepteRequest (id) {
+    Axios.put(config.API_URL + "users/accRelation/"+this.state.user.id+"/"+id, {
+      
+    }).then(res => {
+      firebase.database().ref('notifications/' + id).set({
+        from: this.state.user.id,
+        to: id,
+        numbe: 100000 + Math.random() * (100000 - 1)
+      });
+      this.setState({ accepteRequest: false }, () => {
+        this.searchCheck();
+      });
+    })
+    .catch(
+      function(error) {
+        console.log(error);
+      }
+    );
+  }
   requestFriend(id) {
     Axios.post(config.API_URL + "relations/", {
       userOne: { id: this.state.user.id },
@@ -261,11 +287,11 @@ class AllUsers extends React.Component {
           to: id,
           numbe: 100000 + Math.random() * (100000 - 1)
         });
-      this.setState({ requestFriend: true });
+      this.setState({ requestFriend: false });
       this.fetchUsers();
     });
   }
-  deleteRequest(id) {
+  deleteRequest(id, type) {
     Axios.delete(
       config.API_URL + "relations/between/" + this.state.user.id + "/" + id
     ).then(res => {
@@ -277,9 +303,20 @@ class AllUsers extends React.Component {
           to: id,
           numbe: 100000 + Math.random() * (100000 - 1)
         });
-      this.setState({ deleteRequest: true }, () => {
-        this.searchCheck();
-      });
+      if (type == 2) {
+        this.setState({ deleteRequest: false }, () => {
+          this.searchCheck();
+        });
+      } else if (type == 3){
+        this.setState({ accepteRequest: false }, () => {
+          this.searchCheck();
+        });
+      } else {
+        this.setState({ deleteRequestF: false }, () => {
+          this.searchCheck();
+        });
+      }
+      
     });
   }
   handleVisibility = () => {
@@ -588,7 +625,7 @@ class AllUsers extends React.Component {
                                         <div
                                           style={{ height: 40, paddingTop: 8 }}
                                         >
-                                          <CreateIcon
+                                          <Bruche
                                             style={{
                                               width: 20,
                                               color: "black",
@@ -816,36 +853,98 @@ class AllUsers extends React.Component {
                                 </small>
                               </Link>
                             </GridItem>
-                            {!user.ami ? (
+                            {user.ami == 0 ? (
                               <GridItem xs={4} sm={4} md={4}>
-                                <ButtonBase
-                                  onClick={() => {
-                                    this.requestFriend(user.user.id);
-                                  }}
+                                <Tooltip
+                                  title="envoyer une invitation"
+                                  aria-label="envoyer une invitation"
+                                
                                 >
-                                  <small style={{ color: "#1e1548" }}>
-                                    <PersonAddIcon style={{ width: 20 }} />
-                                  </small>
-                                </ButtonBase>
+                                  <ButtonBase
+                                    onClick={() => {
+                                      this.setState({requestFriend: true, userInv: user.user.id})
+                                    }}
+                                  >
+                                    <small style={{ color: "#1e1548" }}>
+                                      <PersonAddIcon style={{ width: 20 }} />
+                                    </small>
+                                  </ButtonBase>
+                                </Tooltip>
                               </GridItem>
-                            ) : (
+                            ) : user.ami == 1 ? (
                               <GridItem
                                 xs={4}
                                 sm={4}
                                 md={4}
                                 style={{ textAlign: "center" }}
                               >
-                                <ButtonBase
-                                  onClick={() => {
-                                    this.deleteRequest(user.user.id);
-                                  }}
+                                <Tooltip
+                                  title="annuler l'invitation"
+                                  aria-label="annuler l'invitation"
+                                
                                 >
-                                  <small style={{ color: "#1e1548" }}>
-                                    <PersonAddDisabledIcon
-                                      style={{ width: 20 }}
-                                    />
-                                  </small>
-                                </ButtonBase>
+                                  <ButtonBase
+                                    onClick={() => {
+                                      this.setState({deleteRequestF: true, userInv: user.user.id})
+                                    }}
+                                  >
+                                    <small style={{ color: "#1e1548" }}>
+                                      <PersonAddDisabledIcon
+                                        style={{ width: 20 }}
+                                      />
+                                    </small>
+                                  </ButtonBase>
+                                </Tooltip>
+                              </GridItem>
+                              ) : user.ami == 2 ? (
+                                <GridItem
+                                  xs={4}
+                                  sm={4}
+                                  md={4}
+                                  style={{ textAlign: "center" }}
+                                >
+                                  <Tooltip
+                                    title="retirer de la liste d'amis"
+                                    aria-label="retirer de la liste d'amis"
+                                   
+                                  >
+                                    <ButtonBase
+                                      onClick={() => {
+                                        this.setState({deleteRequest: true, userInv: user.user.id})
+                                      }}
+                                    >
+                                      <small style={{ color: "#1e1548" }}>
+                                        <PersonIcon
+                                          style={{ width: 20 }}
+                                        />
+                                      </small>
+                                    </ButtonBase>
+                                  </Tooltip>
+                                </GridItem>
+                                ) : (
+                                  <GridItem
+                                    xs={4}
+                                    sm={4}
+                                    md={4}
+                                    style={{ textAlign: "center" }}
+                                  >
+                                    <Tooltip
+                                      title="accepter l'invitation"
+                                      aria-label="accepter l'invitation"
+                                    
+                                    >
+                                      <ButtonBase
+                                        onClick={() => {
+                                          this.setState({accepteRequest: true, userInv: user.user.id})
+                                        }}
+                                      >
+                                        <small style={{ color: "#1e1548" }}>
+                                          <CheckCircleOutlineIcon
+                                            style={{ width: 20 }}
+                                          />
+                                        </small>
+                                      </ButtonBase>
+                                  </Tooltip>
                               </GridItem>
                             )}
                           </GridContainer>
@@ -897,8 +996,31 @@ class AllUsers extends React.Component {
               autoHideDuration={8000}
               onClose={this.handleClose}
             >
-              <Alert onClose={this.handleClose} severity="success">
-                Votre invitation a été envoyée
+              <Alert
+                onClose={this.handleClose}
+                severity="warning"
+                action={
+                  <div>
+                    <Buttons
+                      color="inherit"
+                      size="small"
+                      onClick={() => {
+                        this.requestFriend(this.state.userInv);
+                      }}
+                    >
+                      OUI
+                    </Buttons>
+                    <Buttons
+                      color="inherit"
+                      size="small"
+                      onClick={this.handleClose}
+                    >
+                      NON
+                    </Buttons>
+                  </div>
+                }
+              >
+                Voulez vous envoyer une invitation ?
               </Alert>
             </Snackbar>
             <Snackbar
@@ -906,8 +1028,97 @@ class AllUsers extends React.Component {
               autoHideDuration={8000}
               onClose={this.handleClose}
             >
-              <Alert onClose={this.handleClose} severity="success">
-                Votre ami(e) a été supprimé
+              <Alert
+                onClose={this.handleClose}
+                severity="warning"
+                action={
+                  <div>
+                    <Buttons
+                      color="inherit"
+                      size="small"
+                      onClick={() => {
+                        this.deleteRequest(this.state.userInv,2);
+                      }}
+                    >
+                      OUI
+                    </Buttons>
+                    <Buttons
+                      color="inherit"
+                      size="small"
+                      onClick={this.handleClose}
+                    >
+                      NON
+                    </Buttons>
+                  </div>
+                }
+              >
+                Voulez vous retirer de votre liste d'amis ?
+              </Alert>
+            </Snackbar>
+            <Snackbar
+              open={this.state.deleteRequestF}
+              autoHideDuration={8000}
+              onClose={this.handleClose}
+            >
+              <Alert
+                onClose={this.handleClose}
+                severity="warning"
+                action={
+                  <div>
+                    <Buttons
+                      color="inherit"
+                      size="small"
+                      onClick={() => {
+                        this.deleteRequest(this.state.userInv,1);
+                      }}
+                    >
+                      OUI
+                    </Buttons>
+                    <Buttons
+                      color="inherit"
+                      size="small"
+                      onClick={this.handleClose}
+                    >
+                      NON
+                    </Buttons>
+                  </div>
+                }
+              >
+                Voulez vous annuler l'invitation ?
+              </Alert>
+            </Snackbar>
+            <Snackbar
+              open={this.state.accepteRequest}
+              autoHideDuration={8000}
+              onClose={this.handleClose}
+            >
+              <Alert
+                onClose={this.handleClose}
+                severity="warning"
+                action={
+                  <div>
+                    <Buttons
+                      color="inherit"
+                      size="small"
+                      onClick={() => {
+                        this.accepteRequest(this.state.userInv);
+                      }}
+                    >
+                      ACCEPTER
+                    </Buttons>
+                    <Buttons
+                      color="inherit"
+                      size="small"
+                      onClick={() => {
+                        this.deleteRequest(this.state.userInv,3);
+                      }}
+                    >
+                      REFUSER
+                    </Buttons>
+                  </div>
+                }
+              >
+                Voulez vous vraiment
               </Alert>
             </Snackbar>
           </div>

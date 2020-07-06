@@ -28,6 +28,38 @@ const productStyle = {
     WebkitBoxOrient: "vertical",
     height: "60px"
   },
+  buttonFB: {
+    width: 235,
+    height:35,
+    borderRadius: 4,
+    background: '#3b5998',
+    color:'white',
+    border:'0px transparent',  
+    textAlign: 'center',
+    margin:5,
+    display: 'inline-block',
+
+    '&:hover':{
+        background: '#3b5998',
+        opacity: 0.6,
+    }
+  },
+  buttonGoogle: {
+    margin:5,
+    width: 235,
+    marginTop: 5,
+    height:35,
+    borderRadius: 4,
+    background: '#db3236',
+    color:'white',
+    border:'0px transparent',
+    textAlign: 'center',
+
+    '&:hover':{
+        background: '#3b5998',
+        opacity: 0.6,
+    }
+  }
 };
 
 export default productStyle;

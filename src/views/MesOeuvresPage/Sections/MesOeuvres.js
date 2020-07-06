@@ -34,6 +34,7 @@ import StarBorderIcon from "@material-ui/icons/StarBorder";
 import SnackbarContent from "@material-ui/core/SnackbarContent";
 import CustomTabs from "components/CustomTabs/CustomTabs.js";
 //scroll bare text
+import {ReactComponent as Bruche} from '../../../icons/bruche.svg';
 import SimpleBar from "simplebar-react";
 import "simplebar/dist/simplebar.min.css";
 import Axios from "axios";
@@ -77,6 +78,7 @@ import "moment/locale/fr";
 import Moment from "moment";
 import { subscriber, messageService } from "./../../../services/messageService";
 import { Redirect } from "react-router-dom";
+import Icon from '@material-ui/core/Icon';
 
 class MesOeuvres extends React.Component {
   constructor(props) {
@@ -121,7 +123,6 @@ class MesOeuvres extends React.Component {
           { idUser: this.props.match.params.userId, idCurrentUser: user.id },
           () => {
             this.fetchUser();
-            this.fetchRelation(this.props.match.params.userId);
             this.fetchHistoire();
             subscriber.next({ view: this.props.match.params.userId });
             this.forceUpdate();
@@ -152,17 +153,15 @@ class MesOeuvres extends React.Component {
   fetchRelationInit(id) {
     Axios.get(
       config.API_URL +
-        "relations/getRelationId/" +
+        "relations/getRelationType/" +
         this.state.idCurrentUser +
         "/" +
         id,
       {}
     ).then(res => {
-      console.log(res.data);
-      if (res.data > 0) {
-        subscriber.next({ ami: true });
+        console.log(res.data.ami)
+        subscriber.next({ ami: res.data.ami });
         this.forceUpdate();
-      }
     });
   }
   fetchRelation(id) {
@@ -689,7 +688,7 @@ function CardHistoire(props) {
       >
         <Parallax
           image={
-            histoire.lienIllustration !== null ? histoire.lienIllustration : ""
+            histoire.lienIllustration !== null && histoire.lienIllustration !== "" ? histoire.lienIllustration : config.API_URL + "images/asset/logoHistoire.png"
           }
           style={{
             height: "240px",
@@ -720,25 +719,26 @@ function CardHistoire(props) {
 
       <h5
         style={{
-          fontFamily: "monospace",
-          fontWeight: "bold",
-          color: "black",
-          marginLeft: "5%",
-          textAlign: "left"
+          fontFamily: 'goudy',
+          color: "#272727e0",
+          fontWeight: 'bold',
+          fontSize: 23,
+          textAlign: "center",
+          lineHeight: 1.4,
         }}
       >
-        {histoire.titreHistoire}
-        {/* {histoire.nombreVue ? histoire.nombreVue : 0} vues -{" "}
-          {this.getDay(histoire.dateDeCreation)} */}
+        {histoire.titreHistoire[0].toUpperCase() +  
+            histoire.titreHistoire.slice(1).toLowerCase()}
       </h5>
       <GridContainer>
         <GridItem md={6} sm={6} lg={6}>
           <h6
             style={{
-              fontFamily: "monospace",
+              fontFamily: "lato",
               color: "black",
               marginLeft: "10%",
-              textAlign: "left"
+              textAlign: "left",
+              fontVariant: 'unicase',
             }}
           >
             {functionDate(histoire.dateDeCreation)}
@@ -758,6 +758,13 @@ function CardHistoire(props) {
               color="success"
               label="VALIDE"
               style={{ color: "white", backgroundColor: "rgb(46, 153, 176)" }}
+            />
+          ) : histoire.etatHistoire === "EN_ATTANTE_USER" ? (
+            <Chip
+              size="small"
+              color="success"
+              label="EN_ATTENTE_USER"
+              style={{ color: "rgb(51, 40, 97)", backgroundColor: "rgb(252, 215, 127)", fontWeight: 500 }}
             />
           ) : (
             <Chip
@@ -786,9 +793,9 @@ function CardHistoire(props) {
                 <GridItem xs={8} sm={8} md={8}>
                   <h6
                     style={{
-                      fontFamily: "monospace",
+                      fontFamily: "lato",
+                      textTransform: 'none',
                       color: "black",
-                      fontWeight: "bold",
                       marginLeft: "5%",
                       textAlign: "left"
                     }}
@@ -856,27 +863,28 @@ function CardHistoire(props) {
             </GridItem>
             <GridItem xs={3} sm={3} md={3} style={{ textAlign: "right" }}>
               <div style={{ height: 40, paddingTop: 8 }}>
-                <CreateIcon style={{ width: 20 }} />
+              <Bruche style={{width: 20}} />
+                {/* <CreateIcon style={{ width: 20 }} /> */}
               </div>
             </GridItem>
           </GridContainer>
         ) : (
           <GridContainer style={{ marginTop: "4%" }}>
-            <GridItem xs={6} sm={6} md={6}>
+            <GridItem xs={12} sm={12} md={12}>
               <GridContainer>
-                <GridItem xs={4} sm={4} md={4}>
+                <GridItem xs={2} sm={2} md={2}>
                   <Avatar
                     alt=""
                     src={config.API_URL + "images/asset/defaultPhotoProfil.jpg"}
                     // style={{ width: 200, height: 200 }}
                   />
                 </GridItem>
-                <GridItem xs={8} sm={8} md={8}>
+                <GridItem xs={10} sm={10} md={10}>
                   <h6
                     style={{
-                      fontFamily: "monospace",
+                      fontFamily: "lato",
+                      textTransform: 'none',
                       color: "black",
-                      fontWeight: "bold",
                       marginLeft: "5%",
                       textAlign: "left"
                     }}
@@ -903,9 +911,9 @@ function CardHistoire(props) {
                 <GridItem xs={8} sm={8} md={8}>
                   <h6
                     style={{
-                      fontFamily: "monospace",
+                      fontFamily: "lato",
+                      textTransform: 'none',
                       color: "black",
-                      fontWeight: "bold",
                       marginLeft: "5%",
                       textAlign: "left"
                     }}
@@ -980,21 +988,21 @@ function CardHistoire(props) {
           </GridContainer>
         ) : (
           <GridContainer style={{ marginTop: "4%" }}>
-            <GridItem xs={6} sm={6} md={6}>
+            <GridItem xs={12} sm={12} md={12}>
               <GridContainer>
-                <GridItem xs={4} sm={4} md={4}>
+                <GridItem xs={2} sm={2} md={2}>
                   <Avatar
                     alt=""
                     src={config.API_URL + "images/asset/defaultPhotoProfil.jpg"}
                     // style={{ width: 200, height: 200 }}
                   />
                 </GridItem>
-                <GridItem xs={8} sm={8} md={8}>
+                <GridItem xs={10} sm={10} md={10}>
                   <h6
                     style={{
-                      fontFamily: "monospace",
+                      fontFamily: "lato",
+                      textTransform: 'none',
                       color: "black",
-                      fontWeight: "bold",
                       marginLeft: "5%",
                       textAlign: "left"
                     }}
@@ -1009,13 +1017,13 @@ function CardHistoire(props) {
         <Divider
           style={{ marginTop: "4%", marginLeft: -30, marginRight: -30 }}
         />
-        <GridContainer justify="flex-end" style={{ marginTop: "7%" }}>
-          <GridItem xs={4} sm={4} md={4}>
+        <GridContainer justify="center" style={{ marginTop: "7%" }}>
+          <GridItem xs={4} sm={4} md={4} style={{textAlign: 'center'}}>
             <small>
               <CommentIcon style={{ width: 20 }} /> {histoire.nombreComment}
             </small>{" "}
           </GridItem>
-          <GridItem xs={4} sm={4} md={4}>
+          <GridItem xs={4} sm={4} md={4} style={{textAlign: 'center'}}>
             <small>
               <VisibilityIcon style={{ width: 20 }} /> {histoire.nombreVue}
             </small>{" "}
