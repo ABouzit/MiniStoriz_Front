@@ -116,6 +116,7 @@ class Login extends React.Component {
     }
   }
   responseGoogle (response) {
+    console.log(response)
     var credential = firebase.auth.GoogleAuthProvider.credential(
       response.tokenId);
       
@@ -158,6 +159,7 @@ class Login extends React.Component {
       });
   }
   responseFacebook (response) {
+    console.log(response)
     var credential = firebase.auth.FacebookAuthProvider.credential(
       response.accessToken);
       Axios.get(config.API_URL + "users/DispoLogin/" + response.email, {}).then(res => {
@@ -227,7 +229,8 @@ class Login extends React.Component {
       prenom: user.displayName.split(" ")[1],
       ville: "",
       token: user.refreshToken,
-      pseudo: user.displayName.split(" ")[0].substring(0, 2)+user.displayName.split(" ")[1].substring(0, 5),
+      pseudo: user.displayName.split(" ")[1],
+      // pseudo: user.displayName.split(" ")[0].substring(0, 2)+user.displayName.split(" ")[1].substring(0, 5),
       email: user.email,
       lienPhoto: user.photoURL,
       methode: methode
@@ -766,7 +769,7 @@ class Login extends React.Component {
                             <Divider orientation="vertical" flexItem />
                           )}
 
-                          <div style={{ width: "90%" }}>
+                          <div style={{ width: "100%" }}>
                             <GridItem xs={10} sm={10} md={10}>
                               <h4
                                 style={{
@@ -780,10 +783,10 @@ class Login extends React.Component {
                             </GridItem>
                             
                             <GridItem
-                              xs={10}
-                              sm={10}
-                              md={10}
-                              style={{ textAlign: "center" }}
+                              xs={12}
+                              sm={12}
+                              md={12}
+                              style={{ textAlign: "center", padding: 0 }}
                             >
                               <FacebookLogin
                                 appId="568131850559669"
@@ -950,7 +953,7 @@ class Login extends React.Component {
                           ) : (
                             <Divider orientation="vertical" flexItem />
                           )}
-                          <div style={{ width: "90%" }}>
+                          <div style={{ width: "100%" }}>
                             <GridItem xs={10} sm={10} md={10}>
                               <h4
                                 style={{
@@ -964,10 +967,10 @@ class Login extends React.Component {
                             </GridItem>
                             
                             <GridItem
-                              xs={10}
-                              sm={10}
-                              md={10}
-                              style={{ textAlign: "center" }}
+                              xs={12}
+                              sm={12}
+                              md={12}
+                              style={{ textAlign: "center", padding: 0 }}
                             >
                               <FacebookLogin
                                 appId="568131850559669"
@@ -1546,8 +1549,7 @@ class Login extends React.Component {
                     onClose={this.handleClose}
                   >
                     <Alert onClose={this.handleClose} severity="error">
-                      Le mot de passe ne correspond pas à la connexion spécifiée
-                      !
+                    Mot de passe incorrect.
                     </Alert>
                   </Snackbar>
                   <Snackbar
@@ -1565,7 +1567,7 @@ class Login extends React.Component {
                     onClose={this.handleClose}
                   >
                     <Alert onClose={this.handleClose} severity="error">
-                      Impossible de se conneter avec facebook email déjà utilisé. 
+                    Connexion impossible car cette adresse mail est déjà utilisée. 
                     </Alert>
                   </Snackbar>
                   <Snackbar
@@ -1574,7 +1576,7 @@ class Login extends React.Component {
                     onClose={this.handleClose}
                   >
                     <Alert onClose={this.handleClose} severity="error">
-                      Impossible de se conneter avec google email déjà utilisé. 
+                    Connexion impossible car cette adresse mail est déjà utilisée. 
                     </Alert>
                   </Snackbar>
                   <Snackbar

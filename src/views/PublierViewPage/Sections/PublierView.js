@@ -505,6 +505,8 @@ class PublierView extends React.Component {
     });
     let idHistoire = "";
     let etatHistoire = "";
+    if (_this.state.planche.length > 3) {
+
     if (this.state.dataImgHistoire == "") {
       if (typeof this.props.match.params.histoireId === "undefined") {
         return Axios.post(config.API_URL + "histoires/"+ this.state.id, {
@@ -572,9 +574,10 @@ class PublierView extends React.Component {
                           planche: [{ text: "", img: "", data: "", lien: "" }],
                           lienInputUpload: "",
                           lienInputUploadhistoire: "",
-                          submit: false
+                          submit: false,
+                          snackValidation: true
                         },
-                        () => _this.props.history.push("/lesHistoires")
+                        () => setTimeout(()=>_this.props.history.push("/lesHistoires"),3000)
                       );
                     });
                 } else if (!_this.state.userDessin) {
@@ -601,9 +604,10 @@ class PublierView extends React.Component {
                           planche: [{ text: "", img: "", data: "", lien: "" }],
                           lienInputUpload: "",
                           lienInputUploadhistoire: "",
-                          submit: false
+                          submit: false,
+                          snackValidation: true
                         },
-                        () => _this.props.history.push("/lesHistoires")
+                        ()=>setTimeout(()=>_this.props.history.push("/lesHistoires"),3000)
                       );
                     });
                 } else if (
@@ -632,9 +636,10 @@ class PublierView extends React.Component {
                           planche: [{ text: "", img: "", data: "", lien: "" }],
                           lienInputUpload: "",
                           lienInputUploadhistoire: "",
-                          submit: false
+                          submit: false,
+                          snackValidation: true
                         },
-                        () => _this.props.history.push("/lesHistoires")
+                        ()=>setTimeout(()=>_this.props.history.push("/lesHistoires"),3000)
                       );
                     });
                 }
@@ -670,9 +675,10 @@ class PublierView extends React.Component {
                           planche: [{ text: "", img: "", data: "", lien: "" }],
                           lienInputUpload: "",
                           lienInputUploadhistoire: "",
-                          submit: false
+                          submit: false,
+                          snackValidation: true
                         },
-                        () => _this.props.history.push("/lesHistoires")
+                        ()=>setTimeout(()=>_this.props.history.push("/lesHistoires"),3000)
                       );
                     });
                 }
@@ -684,18 +690,25 @@ class PublierView extends React.Component {
           });
       } else {
         idHistoire = this.props.match.params.histoireId;
+        var idHistoire1 = '';
+        var originalHistoire= '';
         if (this.props.match.params.type == "2" ) {
-          etatHistoire = 'EN_ATTANTE_USER'
+          etatHistoire = 'EN_ATTANTE_USER';
+          idHistoire1 = "";
+          originalHistoire = idHistoire;
         } else {
-          etatHistoire = 'EN_ATTANTE'
+          etatHistoire = 'EN_ATTANTE';
+          idHistoire1 = idHistoire;
+          originalHistoire = "";
         }
         return Axios.put(config.API_URL + "histoires", {
-          id: idHistoire,
+          id: idHistoire1,
           userText: this.state.userText,
           userDessin: this.state.userDessin,
           lienIllustration: this.state.imgHistoire,
           titreHistoire: this.state.titreHistoire,
           etatHistoire: etatHistoire,
+          originalHistoire: originalHistoire,
         })
           .then(function(response) {
             Promise.all(
@@ -757,9 +770,10 @@ class PublierView extends React.Component {
                   planche: [{ text: "", img: "", data: "", lien: "" }],
                   lienInputUpload: "",
                   lienInputUploadhistoire: "",
-                  submit: false
+                  submit: false,
+                  snackValidation: true
                 },
-                () => _this.props.history.push("/lesHistoires")
+                ()=>setTimeout(()=>_this.props.history.push("/lesHistoires"),3000)
               );
             });
           })
@@ -870,9 +884,10 @@ class PublierView extends React.Component {
                             ],
                             lienInputUpload: "",
                             lienInputUploadhistoire: "",
-                            submit: false
+                            submit: false,
+                            snackValidation: true
                           },
-                          () => _this.props.history.push("/lesHistoires")
+                          ()=>setTimeout(()=>_this.props.history.push("/lesHistoires"),3000)
                         );
                       });
                   } else if (!_this.state.userDessin) {
@@ -901,9 +916,10 @@ class PublierView extends React.Component {
                             ],
                             lienInputUpload: "",
                             lienInputUploadhistoire: "",
-                            submit: false
+                            submit: false,
+                            snackValidation: true
                           },
-                          () => _this.props.history.push("/lesHistoires")
+                          ()=>setTimeout(()=>_this.props.history.push("/lesHistoires"),3000)
                         );
                       });
                   } else if (
@@ -934,9 +950,10 @@ class PublierView extends React.Component {
                             ],
                             lienInputUpload: "",
                             lienInputUploadhistoire: "",
-                            submit: false
+                            submit: false,
+                            snackValidation: true
                           },
-                          () => _this.props.history.push("/lesHistoires")
+                          ()=>setTimeout(()=>_this.props.history.push("/lesHistoires"),3000)
                         );
                       });
                   }
@@ -974,9 +991,10 @@ class PublierView extends React.Component {
                             ],
                             lienInputUpload: "",
                             lienInputUploadhistoire: "",
-                            submit: false
+                            submit: false,
+                            snackValidation: true
                           },
-                          () => _this.props.history.push("/lesHistoires")
+                          ()=>setTimeout(()=>_this.props.history.push("/lesHistoires"),3000)
                         );
                       });
                   }
@@ -989,10 +1007,16 @@ class PublierView extends React.Component {
         });
       } else {
         idHistoire = this.props.match.params.histoireId;
+        var idHistoire1 = '';
+        var originalHistoire= '';
         if (this.props.match.params.type == "2" ) {
-          etatHistoire = 'EN_ATTANTE_USER'
+          etatHistoire = 'EN_ATTANTE_USER';
+          idHistoire1 = "";
+          originalHistoire = idHistoire;
         } else {
-          etatHistoire = 'EN_ATTANTE'
+          etatHistoire = 'EN_ATTANTE';
+          idHistoire1 = idHistoire;
+          originalHistoire = "";
         }
         return Axios({
           method: "post",
@@ -1003,12 +1027,13 @@ class PublierView extends React.Component {
           .then(res => {
             let s = res.data.filePath.replace("\\", "/").replace("\\", "/");
             return Axios.put(config.API_URL + "histoires", {
-              id: idHistoire,
+              id: idHistoire1,
               userText: this.state.userText,
               userDessin: this.state.userDessin,
               lienIllustration: config.API_URL + s,
               titreHistoire: this.state.titreHistoire,
               etatHistoire: etatHistoire,
+              originalHistoire: originalHistoire,
             }).then(function(response) {
               Promise.all(
                 _this.state.planche.map((planch, index) => {
@@ -1069,9 +1094,10 @@ class PublierView extends React.Component {
                     planche: [{ text: "", img: "", data: "", lien: "" }],
                     lienInputUpload: "",
                     lienInputUploadhistoire: "",
-                    submit: false
+                    submit: false,
+                    snackValidation: true
                   },
-                  () => _this.props.history.push("/lesHistoires")
+                  ()=>setTimeout(()=>_this.props.history.push("/lesHistoires"),3000)
                 );
               });
             });
@@ -1081,6 +1107,9 @@ class PublierView extends React.Component {
           });
       }
     }
+    } else {
+        this.setState({snackLimit: true, chargement: false}, ()=>{this.forceUpdate()})
+    } 
   }
   saveHistoireWithPlanche() {
     this.setState({ submit: true });
@@ -1252,7 +1281,7 @@ class PublierView extends React.Component {
       return;
     }
 
-    this.setState({ openSnackBar: false });
+    this.setState({ openSnackBar: false, snackLimit: false, snackValidation: false });
   };
   handleVisibility = () => {
     this.setState({ hidden: !this.state.hidden });
@@ -1321,7 +1350,25 @@ class PublierView extends React.Component {
           onClose={this.handleClose}
         >
           <Alert onClose={this.handleClose} severity="error">
-            Remplissez touts les champs pour cree cette histoire
+          Veuillez remplir tous les champs.
+          </Alert>
+        </Snackbar>
+        <Snackbar
+          open={this.state.snackLimit}
+          autoHideDuration={6000}
+          onClose={this.handleClose}
+        >
+          <Alert onClose={this.handleClose} severity="error">
+          Veuillez publier une histoire dont le contenu est supérieur à 2 planches.
+          </Alert>
+        </Snackbar>
+        <Snackbar
+          open={this.state.snackValidation}
+          autoHideDuration={6000}
+          onClose={this.handleClose}
+        >
+          <Alert onClose={this.handleClose} severity="success">
+          Ton histoire est en cours de validation, tu seras informé très vite si elle est publiée ou non.
           </Alert>
         </Snackbar>
         <GridContainer style={{ margin: 0, paddingTop: "20px" }}>

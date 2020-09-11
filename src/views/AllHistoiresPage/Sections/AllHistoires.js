@@ -1127,13 +1127,13 @@ class AllHistoires extends React.Component {
               <GridItem
                 xs={12}
                 sm={12}
-                md={4}
+                md={6}
                 justify="center"
                 style={isMobile? { width: "auto",marginTop: 10 }:{ width: "auto",marginTop: 100 }}
               >
                 <SnackbarContent
                 style={{backgroundColor: '#1e1548'}}
-                  message={this.state.connected ? "aucune histoire n'a été trouvée." : "aucune histoire n'a été trouvée."
+                  message={this.state.connected ? "Aucune histoire n’a été publiée pour l’instant ." : "Aucune histoire n’a été publiée pour l’instant."
                   }
                   action={this.state.connected ? null : (<Link to={"/Connexion"} style={{color: '#ff2e4c'}}>connectez-vous</Link>)}
                 />
@@ -1680,7 +1680,7 @@ function CardHistoire(props) {
                       textAlign: "left",
                     }}
                   >
-                    non spécifié
+                    Non illustrée
                   </h6>
                 </GridItem>
               </GridContainer>
@@ -1799,7 +1799,7 @@ function CardHistoire(props) {
                       textAlign: "left",
                     }}
                   >
-                    non spécifié
+                    Non illustrée
                   </h6>
                 </GridItem>
               </GridContainer>

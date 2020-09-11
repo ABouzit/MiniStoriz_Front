@@ -114,16 +114,16 @@ class Contact extends React.Component {
           onClose={this.handleClose}
         >
           <Alert onClose={this.handleClose} severity="success">
-            Votre mail a bien été envoyé !
+          Ton message a bien été envoyé. Tu recevras une réponse très bientôt !
           </Alert>
         </Snackbar>
         <GridContainer justify="center">
-          <GridItem xs={12} sm={12} md={12}>
+          <GridItem xs={12} sm={12} md={9}>
             <Card style={{ backgroundColor: "#fff" }}>
               <CardBody>
                 <GridContainer justify="center">
                   <GridItem xs={12} sm={12} md={8}>
-                    <h2 className={classes.title}>CONTACTEZ-NOUS</h2>
+                    <h2 className={classes.title} style={{ fontFamily: 'goudy'}}>CONTACTEZ-NOUS</h2>
                   </GridItem>
                 </GridContainer>
                 <GridContainer
@@ -135,10 +135,10 @@ class Contact extends React.Component {
                   <GridItem
                     xs={12}
                     sm={12}
-                    md={6}
+                    md={12}
                     style={{ color: "#212121", textAlign: "justify" }}
                   >
-                    <h4>
+                    <h4 style={{fontFamily: 'goudy'}}>
                       Si tu souhaites nous laisser un commentaire, voici un
                       formulaire de contact. Tu peux également nous envoyer un
                       mail ou nous retrouver sur les réseaux sociaux !
@@ -299,9 +299,8 @@ class Contact extends React.Component {
                           this.valideContact();
                         }}
                         style={{
-                          color: "rgb(89, 79, 118)",
-                          fontWeight: "bold",
-                          margin: 0
+                          backgroundColor: "#1e1548", fontWeight: "bold", color: 'white', 
+                          fontFamily: 'goudy'
                         }}
                       >
                         Envoyer
@@ -329,7 +328,7 @@ class Contact extends React.Component {
                       >
                         <Button
                           color="transparent"
-                          href="https://www.instagram.com/ministoriz/"
+                          href="https://www.instagram.com/beazz_y/?hl=fr"
                           target="_blank"
                           className={this.headerClasse.navLink}
                         >
@@ -338,14 +337,14 @@ class Contact extends React.Component {
                               this.headerClasse.socialIcons +
                               " fab fa-instagram"
                             }
-                            style={{ color: "#000000", fontSize: 35 }}
+                            style={{ color: "#1e1548", fontSize: 35, marginRight: 0 }}
                           />
                         </Button>
                       </Tooltip>
-                      <h4 style={{ color: "#000000", fontFamily: "monospace" }}>
+                      <h4 style={{ color: "#000000", fontFamily: 'goudy' }}>
                         Instagram
                       </h4>
-                      <h4 style={{ color: "#9c27b0", fontFamily: "monospace" }}>
+                      <h4 style={{ color: "#9c27b0", fontFamily: 'goudy' }}>
                         Ministoriz
                       </h4>
                     </GridItem>
@@ -371,14 +370,14 @@ class Contact extends React.Component {
                             className={
                               this.headerClasse.socialIcons + " far fa-envelope"
                             }
-                            style={{ color: "#000000", fontSize: 35 }}
+                            style={{ color: "#1e1548", fontSize: 35, marginRight: 0 }}
                           />
                         </Button>
                       </Tooltip>
-                      <h4 style={{ color: "#000000", fontFamily: "monospace" }}>
+                      <h4 style={{ color: "#000000", fontFamily: 'goudy' }}>
                         Mail
                       </h4>
-                      <h4 style={{ color: "#9c27b0", fontFamily: "monospace" }}>
+                      <h4 style={{ color: "#9c27b0", fontFamily: 'goudy' }}>
                         contact@ministoriz.com
                       </h4>
                     </GridItem>

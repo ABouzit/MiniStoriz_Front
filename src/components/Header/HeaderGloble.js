@@ -228,7 +228,7 @@ class HeaderGloale extends React.Component  {
                                 <Button
                                     color="transparent"
                                     className={classes.navLink}
-                                    style={{ padding: 0 }}
+                                    style={{ padding: 0, fontFamily: 'goudy', fontWeight: 'bold', alignItems: 'flex-end' }}
                                 >
                                     <MenuBookOutlinedIcon style={{ width: 22, height: 22 }} />{" "}
               Histoires
@@ -240,7 +240,7 @@ class HeaderGloale extends React.Component  {
                                 <Button
                                     color="transparent"
                                     className={classes.navLink}
-                                    style={{ padding: 0 }}
+                                    style={{ padding: 0, fontFamily: 'goudy', fontWeight: 'bold', alignItems: 'flex-end' }}
                                 >
                                     <InputIcon style={{ width: 22, height: 22 }} />{" "}
               Connexion
@@ -252,7 +252,7 @@ class HeaderGloale extends React.Component  {
                                 <Button
                                     color="transparent"
                                     className={classes.navLink}
-                                    style={{ padding: 0 }}
+                                    style={{ padding: 0, fontFamily: 'goudy', fontWeight: 'bold', alignItems: 'flex-end' }}
                                 >
                                     <PhoneForwardedIcon style={{ width: 22, height: 22 }} />
               Contactez-nous

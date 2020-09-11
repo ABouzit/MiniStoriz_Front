@@ -209,15 +209,15 @@ export default function HeaderUser(props) {
     return () => messageRef.off('value');
   }, [firebase]);
   React.useEffect(() => {
-const functionRel=(snapshot)=>{
-    if (snapshot && snapshot.val()) {
+    const functionRel=(snapshot)=>{
+        if (snapshot && snapshot.val()) {
 
-      if (snapshot.val().to == user.id) {
-        getNumberRequest()
-      }
+          if (snapshot.val().to == user.id) {
+            getNumberRequest()
+          }
+        }
+      
     }
-  
-}
     var relationRef = firebase.database().ref('relations/' + user.id);
     relationRef.on('value', functionRel );
     return () =>
@@ -318,7 +318,7 @@ const functionRel=(snapshot)=>{
             }}
           >
             <img
-              src={"http://localhost:5600/images/asset/logo.png"}
+              src={config.API_URL + "images/asset/logo.png"}
               alt="Logo"
               style={{
                 display: "block",

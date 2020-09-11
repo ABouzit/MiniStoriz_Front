@@ -2,6 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 // react component for creating beautiful carousel
 import Slider from "react-slick";
+import { isMobile } from "react-device-detect";
 // @material-ui/core components
 import { withStyles } from "@material-ui/core/styles";
 import Rating from "@material-ui/lab/Rating";
@@ -9,15 +10,6 @@ import CustomInput from "components/CustomInput/CustomInput.js";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import Search from "@material-ui/icons/Search";
 import { Link, withRouter } from "react-router-dom";
-// core components
-import SpeedDial from "@material-ui/lab/SpeedDial";
-import SpeedDialIcon from "@material-ui/lab/SpeedDialIcon";
-import SpeedDialAction from "@material-ui/lab/SpeedDialAction";
-import FileCopyIcon from "@material-ui/icons/FileCopyOutlined";
-import SaveIcon from "@material-ui/icons/Save";
-import PrintIcon from "@material-ui/icons/Print";
-import ShareIcon from "@material-ui/icons/Share";
-import FavoriteIcon from "@material-ui/icons/Favorite";
 import Tooltip from "@material-ui/core/Tooltip";
 import GridContainer from "components/Grid/GridContainer.js";
 import GridItem from "components/Grid/GridItem.js";
@@ -481,7 +473,7 @@ class AllUsers extends React.Component {
           </div>
           <div>
             <GridContainer justify="center" spacing={"auto"}>
-              {this.state.users.map((user, index) => {
+              {this.state.users.length ? this.state.users.map((user, index) => {
                 if (this.state.user.id !== user.user.id) {
                   return (
                     <GridItem
@@ -577,7 +569,7 @@ class AllUsers extends React.Component {
 
                               <h5
                                 style={{
-                                  fontFamily: "monospace",
+                                  fontFamily: "lato",
                                   fontWeight: "bold",
                                   color: "black",
                                   marginLeft: "5%",
@@ -591,7 +583,7 @@ class AllUsers extends React.Component {
                               <div style={{ display: "flex" }}>
                                 <h6
                                   style={{
-                                    fontFamily: "monospace",
+                                    fontFamily: "goudy",
                                     color: "black",
                                     marginLeft: "5%",
                                     width: "50%",
@@ -603,7 +595,7 @@ class AllUsers extends React.Component {
                                 </h6>
                                 <h6
                                   style={{
-                                    fontFamily: "monospace",
+                                    fontFamily: "goudy",
                                     color: "black",
                                     marginLeft: "5%",
                                     width: "50%",
@@ -636,9 +628,8 @@ class AllUsers extends React.Component {
                                       <GridItem xs={8} sm={8} md={8}>
                                         <h6
                                           style={{
-                                            fontFamily: "monospace",
+                                            fontFamily: "goudy",
                                             color: "black",
-                                            fontWeight: "bold",
                                             marginLeft: "5%",
                                             textAlign: "left",
                                           }}
@@ -656,7 +647,7 @@ class AllUsers extends React.Component {
                                   >
                                     <h6
                                       style={{
-                                        fontFamily: "monospace",
+                                        fontFamily: "lato",
                                         color: "black",
                                         fontWeight: "bold",
                                         textAlign: "center",
@@ -749,9 +740,8 @@ class AllUsers extends React.Component {
                                       <GridItem xs={8} sm={8} md={8}>
                                         <h6
                                           style={{
-                                            fontFamily: "monospace",
+                                            fontFamily: "goudy",
                                             color: "black",
-                                            fontWeight: "bold",
                                             marginLeft: "5%",
                                             textAlign: "left",
                                           }}
@@ -764,7 +754,7 @@ class AllUsers extends React.Component {
                                   <GridItem xs={3} sm={3} md={3}>
                                     <h6
                                       style={{
-                                        fontFamily: "monospace",
+                                        fontFamily: "lato",
                                         color: "black",
                                         fontWeight: "bold",
                                         textAlign: "center",
@@ -963,7 +953,21 @@ class AllUsers extends React.Component {
                     </GridItem>
                   );
                 }
-              })}
+              }) : (
+                <GridContainer justify="center">
+                  <GridItem
+                    xs={12}
+                    sm={12}
+                    md={4}
+                    justify="center"
+                    style={isMobile? { width: "auto",marginTop: 10 }:{ width: "auto",marginTop: 100 }}
+                  >
+                    <SnackbarContent
+                    style={{backgroundColor: '#1e1548'}}
+                      message={"Aucun utilisateur pour l’instant."}/>
+                  </GridItem>
+              </GridContainer>
+              )}
             </GridContainer>
             <GridContainer justify="center">
               <GridItem xs={4} sm={4} md={4}>

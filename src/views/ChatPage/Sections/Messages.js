@@ -10,6 +10,7 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import Search from "@material-ui/icons/Search";
 import { isMobile } from "react-device-detect";
 import LockOpenOutlinedIcon from "@material-ui/icons/LockOpenOutlined";
+import DeleteOutlinedIcon from "@material-ui/icons/DeleteOutlined";
 // core components
 import Collapse from "@material-ui/core/Collapse";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -133,6 +134,7 @@ class Messages extends React.Component {
 
     this.scrollBottom = this.scrollBottom.bind(this);
     this.fetchMessages = this.fetchMessages.bind(this);
+    this.supprimer = this.supprimer.bind(this);
   }
   componentDidMount() {
     this._isMounted = true;
@@ -315,6 +317,13 @@ class Messages extends React.Component {
         });
       });
     }
+  }
+  supprimer() {
+    console.log('id2 :'+this.state.idUserChat )
+    Axios.get(config.API_URL + "messages/delete/between/"+this.state.idUser+"/"+this.state.idUserChat, {}).then(() => {
+      this.fetchMessages();
+
+    });
   }
   bloquer() {
     Axios.post(config.API_URL + "bloquer", {
@@ -544,9 +553,17 @@ class Messages extends React.Component {
                             maxHeight: HEIGHT - 249,
                             height: HEIGHT - 249,
                             overflowX: "hidden",
+                            textAlign: '-webkit-center',
                           }}
                           autoHide={true}
                         >
+                          {this.state.usersMessages.length < 1 ? (
+                              <SnackbarContent
+                                style={{backgroundColor: '#1e1548', width: '90%', textAlign: 'justify', marginTop: '5%'}}
+                                  message={"Aucun membre ne fait partie de ton réseau pour l’instant, c’est le moment d’ajouter de nouveaux membres ."
+                                  }
+                                />
+                          ):(<div></div>)}
                           
                           {this.state.usersMessages.map((user, index) => {
                             if (user.message_userTwoId == this.state.idUser) {
@@ -795,7 +812,6 @@ class Messages extends React.Component {
                                     onClick={() => this.bloquer()}
                                     style={{
                                       marginLeft: "auto",
-                                      marginRight: 25,
                                       borderRadius: 50,
                                     }}
                                   >
@@ -804,7 +820,6 @@ class Messages extends React.Component {
                                       style={{
                                         borderRadius: 50,
                                         marginLeft: "auto",
-                                        marginRight: 25,
                                       }}
                                     >
                                       <IconButton
@@ -830,7 +845,6 @@ class Messages extends React.Component {
                                     }}
                                     style={{
                                       marginLeft: "auto",
-                                      marginRight: 25,
                                       borderRadius: 50,
                                     }}
                                   >
@@ -839,7 +853,6 @@ class Messages extends React.Component {
                                       style={{
                                         borderRadius: 50,
                                         marginLeft: "auto",
-                                        marginRight: 25,
                                       }}
                                     >
                                       <IconButton
@@ -857,6 +870,33 @@ class Messages extends React.Component {
                               ) : (
                                 <div></div>
                               )}
+                              {this.state.messages.length > 0 ? (
+                                <ButtonBase
+                                  onClick={() => this.supprimer()}
+                                  style={{
+                                    borderRadius: 50,
+                                  }}
+                                >
+                                  <Tooltip
+                                    title="supprimer la conversation"
+                                    style={{
+                                      borderRadius: 50,
+                                      marginLeft: 0,
+                                      marginRight: 25,
+                                    }}
+                                  >
+                                    <IconButton
+                                      aria-controls="customized-menu"
+                                      aria-haspopup="true"
+                                      variant="contained"
+                                    >
+                                      <DeleteOutlinedIcon
+                                        style={{ color: "#1e1548" }}
+                                      />
+                                    </IconButton>
+                                  </Tooltip>
+                                </ButtonBase>
+                              ):(<div></div>)}
                             </div>
                           </GridItem>
                         </GridContainer>
@@ -894,7 +934,7 @@ class Messages extends React.Component {
                             {this.state.messages.length < 1 ? (
                               <SnackbarContent
                               style={{backgroundColor: '#1e1548'}}
-                                message={"aucune message n'a été trouvée."
+                                message={"Aucun message pour l’instant."
                                 }
                               />
                             ):(<div></div>)}
@@ -1421,7 +1461,6 @@ class Messages extends React.Component {
                                   style={{
                                     borderRadius: 50,
                                     marginLeft: "auto",
-                                    marginRight: 25,
                                   }}
                                 >
                                   <IconButton
@@ -1454,7 +1493,6 @@ class Messages extends React.Component {
                                   style={{
                                     borderRadius: 50,
                                     marginLeft: "auto",
-                                    marginRight: 25,
                                   }}
                                 >
                                   <IconButton
@@ -1472,6 +1510,35 @@ class Messages extends React.Component {
                           ) : (
                             <div></div>
                           )}
+                          {this.state.messages.length > 0 ? (
+                                <ButtonBase
+                                  onClick={() => this.supprimer()}
+                                  style={{
+                                    marginLeft: 0,
+                                    marginRight: 25,
+                                    borderRadius: 50,
+                                  }}
+                                >
+                                  <Tooltip
+                                    title="supprimer la conversation"
+                                    style={{
+                                      borderRadius: 50,
+                                      marginLeft: "auto",
+                                      marginRight: 25,
+                                    }}
+                                  >
+                                    <IconButton
+                                      aria-controls="customized-menu"
+                                      aria-haspopup="true"
+                                      variant="contained"
+                                    >
+                                      <DeleteOutlinedIcon
+                                        style={{ color: "#1e1548" }}
+                                      />
+                                    </IconButton>
+                                  </Tooltip>
+                                </ButtonBase>
+                              ):(<div></div>)}
                         </div>
                       </GridItem>
                       <GridItem
@@ -1519,9 +1586,17 @@ class Messages extends React.Component {
                         maxHeight: HEIGHT - 249,
                         height: HEIGHT - 249,
                         overflowX: "hidden",
+                        textAlign: '-webkit-center',
                       }}
                       autoHide={true}
                     >
+                      {this.state.usersMessages.length < 1 ? (
+                              <SnackbarContent
+                                style={{backgroundColor: '#1e1548', width: '90%', textAlign: 'justify', marginTop: '5%'}}
+                                  message={"Aucun membre ne fait partie de ton réseau pour l’instant, c’est le moment d’ajouter de nouveaux membres ."
+                                  }
+                                />
+                          ):(<div></div>)}
                       {this.state.usersMessages.map((user, index) => {
                         if (user.message_userTwoId == this.state.idUser) {
                           return (
@@ -1686,7 +1761,7 @@ class Messages extends React.Component {
                         {this.state.messages.length < 1 ? (
                               <SnackbarContent
                               style={{backgroundColor: '#1e1548'}}
-                                message={"aucune message n'a été trouvée."
+                                message={"Aucun message pour l’instant."
                                 }
                               />
                         ):(<div></div>)}

@@ -522,7 +522,7 @@ export default function MonComptePage(props) {
                             </div>{" "}
                           </GridItem>
                         </GridContainer>
-                        <Divider
+                        {/* <Divider
                           style={{
                             marginTop: "2%",
                             marginLeft: -30,
@@ -576,7 +576,7 @@ export default function MonComptePage(props) {
                               </h5>
                             </Link>
                           </GridItem>
-                        </GridContainer>
+                        </GridContainer> */}
                       </CardBody>
                     </Card>
                     <Button
@@ -979,7 +979,7 @@ export default function MonComptePage(props) {
                             </div>{" "}
                           </GridItem>
                         </GridContainer>
-                        <Divider
+                        {/* <Divider
                           style={{
                             marginTop: "2%",
                             marginLeft: -30,
@@ -1033,7 +1033,7 @@ export default function MonComptePage(props) {
                               </h5>
                             </Link>
                           </GridItem>
-                        </GridContainer>
+                        </GridContainer> */}
                       </CardBody>
                     </Card>
                     <Button

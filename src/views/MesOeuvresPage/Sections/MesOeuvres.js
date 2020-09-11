@@ -79,7 +79,7 @@ import Moment from "moment";
 import { subscriber, messageService } from "./../../../services/messageService";
 import { Redirect } from "react-router-dom";
 import Icon from '@material-ui/core/Icon';
-
+const HEIGHT = window.innerHeight;
 class MesOeuvres extends React.Component {
   constructor(props) {
     super(props);
@@ -538,7 +538,7 @@ class MesOeuvres extends React.Component {
         <div className={classes.section} style={{ paddingTop: 0 }}>
           <div>
             <GridContainer justify="center" spacing={"auto"}>
-              {this.state.histoires.map((histoire, index) => {
+              {this.state.histoires.length > 0 ? this.state.histoires.map((histoire, index) => {
                 return (
                   <GridItem xs={12} sm={12} md={4} justify="center" key={index}>
                     <Link to={"/Histoire/" + histoire.id}>
@@ -546,7 +546,16 @@ class MesOeuvres extends React.Component {
                     </Link>
                   </GridItem>
                 );
-              })}
+              }):(
+                <GridItem xs={12} sm={12} md={4} justify="center" style={{height: HEIGHT - 200}}>
+                  <SnackbarContent
+                  style={{backgroundColor: '#1e1548', marginTop: 100}}
+                    message={"aucune histoire n'a été trouvée."
+                    }
+                  />
+                </GridItem>
+                
+              )}
             </GridContainer>
             <GridContainer justify="center">
               <GridItem xs={4} sm={4} md={4}>
@@ -889,7 +898,7 @@ function CardHistoire(props) {
                       textAlign: "left"
                     }}
                   >
-                    non spécifié
+                    Non illustrée
                   </h6>
                 </GridItem>
               </GridContainer>
@@ -1007,7 +1016,7 @@ function CardHistoire(props) {
                       textAlign: "left"
                     }}
                   >
-                    non spécifié
+                    Non illustrée
                   </h6>
                 </GridItem>
               </GridContainer>

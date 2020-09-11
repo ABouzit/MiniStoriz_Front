@@ -552,16 +552,10 @@ export default function MesOeuvresPage(props) {
                             </div>{" "}
                           </GridItem>
                         </GridContainer>
-                        <Divider
-                          style={{
-                            marginTop: "2%",
-                            marginLeft: -30,
-                            marginRight: -30,
-                          }}
-                        />
+                        
                         {view == "" ? (
                           <div>
-                            <GridContainer justify="center">
+                            {/* <GridContainer justify="center">
                               <GridItem xs={12} sm={12} md={12}>
                                 <Link to="/MesOeuvres">
                                   <h5
@@ -610,10 +604,17 @@ export default function MesOeuvresPage(props) {
                                   </h5>
                                 </Link>
                               </GridItem>
-                            </GridContainer>
+                            </GridContainer> */}
                           </div>
                         ) : (
                           <div>
+                            <Divider
+                              style={{
+                                marginTop: "2%",
+                                marginLeft: -30,
+                                marginRight: -30,
+                              }}
+                            />
                             <GridContainer justify="center">
                               <GridItem xs={12} sm={12} md={12}>
                                 <Link to={"/LesOeuvres/" + view}>
@@ -1092,16 +1093,10 @@ export default function MesOeuvresPage(props) {
                             </div>{" "}
                           </GridItem>
                         </GridContainer>
-                        <Divider
-                          style={{
-                            marginTop: "2%",
-                            marginLeft: -30,
-                            marginRight: -30,
-                          }}
-                        />
+                        
                         {view == "" ? (
                           <div>
-                            <GridContainer justify="center">
+                            {/* <GridContainer justify="center">
                               <GridItem xs={12} sm={12} md={12}>
                                 <Link to="/MesOeuvres">
                                   <h5
@@ -1150,10 +1145,17 @@ export default function MesOeuvresPage(props) {
                                   </h5>
                                 </Link>
                               </GridItem>
-                            </GridContainer>
+                            </GridContainer> */}
                           </div>
                         ) : (
                           <div>
+                            <Divider
+                              style={{
+                                marginTop: "2%",
+                                marginLeft: -30,
+                                marginRight: -30,
+                              }}
+                            />
                             <GridContainer justify="center">
                               <GridItem xs={12} sm={12} md={12}>
                                 <Link to={"/LesOeuvres/" + view}>

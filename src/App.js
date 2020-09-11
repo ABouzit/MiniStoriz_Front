@@ -31,6 +31,7 @@ import "firebase/database";
 import * as firebase from "firebase/app";
 import HeaderGlobale from "components/Header/HeaderGloble";
 import ErrorPage from "views/404Page/ErrorPage";
+import HttpsRedirect from 'react-https-redirect';
 import './fonts/Lato-Regular.ttf'
 firebase.initializeApp(config.firebaseConfig);
 var hist = createBrowserHistory();
@@ -44,6 +45,7 @@ export default class App extends React.Component {
   render() {
     return (
       <div>
+        
         <Router history={hist}>
           {/* <HeaderGlobale /> */}
           {/* <Link to="/Messages">
@@ -97,8 +99,7 @@ export default class App extends React.Component {
             <Route path="/profile-page" component={ProfilePage} />
             <Route path="/login-page" component={LoginPage} />
             <Route path="/Connexion" component={HomePage} />
-            <Route path="/LesHistoires" component={AllHistoiresPage} />
-            <Route path="/" component={AccueilPage} />
+            <Route path="/" component={AllHistoiresPage} />
           </Switch>
         </Router>
       </div>

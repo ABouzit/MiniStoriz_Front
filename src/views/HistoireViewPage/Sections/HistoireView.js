@@ -314,9 +314,12 @@ class HistoireView extends React.Component {
             to: _this.state.histoire.userDessin.id,
             numbe: 100000 + Math.random() * (100000 - 1)
           });
-        _this.fetchHistoireAndPlanchesAndCommentes(
-          _this.props.match.params.histoireId
-        );
+          _this.setState({accepterIllustration: false, snackValidation: true},
+            () => setTimeout(()=>_this.props.history.push("/MesOeuvres"),3000))
+          
+        // _this.fetchHistoireAndPlanchesAndCommentes(
+        //   _this.props.match.params.histoireId
+        // );
     })
   }
   refuserIllustrations(){
@@ -340,9 +343,10 @@ class HistoireView extends React.Component {
             to: _this.state.histoire.userDessin.id,
             numbe: 100000 + Math.random() * (100000 - 1)
           });
-        _this.fetchHistoireAndPlanchesAndCommentes(
-          _this.props.match.params.histoireId
-        );
+          _this.props.history.push("/MesOeuvres")
+        // _this.fetchHistoireAndPlanchesAndCommentes(
+        //   _this.props.match.params.histoireId
+        // );
     })
   }
   fetchHistoireNew(id) {
@@ -397,7 +401,7 @@ class HistoireView extends React.Component {
       return;
     }
 
-    this.setState({ deleteHistoire: false, accepterIllustration: false, refuserIllustration: false });
+    this.setState({ deleteHistoire: false, accepterIllustration: false, refuserIllustration: false, snackValidation: false });
   };
   fetchCommentaires() {
     const id = this.props.match.params.histoireId;
@@ -1933,7 +1937,8 @@ class HistoireView extends React.Component {
                                           paddingLeft: "30px",
                                           paddingRight: "30px",
                                           fontSize: "24px",
-                                          whiteSpace: 'pre-line'
+                                          whiteSpace: 'pre-line',
+                                          wordWrap: 'break-word'
                                         }}
                                       >
                                         {planche.text}
@@ -2081,7 +2086,8 @@ class HistoireView extends React.Component {
                                             paddingLeft: "30px",
                                             paddingRight: "30px",
                                             fontSize: "24px",
-                                            whiteSpace: 'pre-line'
+                                            whiteSpace: 'pre-line',
+                                            wordWrap: 'break-word'
                                           }}
                                         >
                                           {planche.text}
@@ -2444,7 +2450,8 @@ class HistoireView extends React.Component {
                     );
                   })}
                 </List>
-
+                {this.state.histoire.etatHistoire == 'VALIDE' ? (
+                <div>
                 <Button2
                   style={{ width: "100%", height: 60 }}
                   onClick={() => this.fetchCommentaires()}
@@ -2771,6 +2778,7 @@ class HistoireView extends React.Component {
                     </Button>
                   </GridItem> */}
                 </GridContainer>
+                </div>):(<div></div>)}
               </Paper>
             </GridItem>
           </GridContainer>
@@ -2809,6 +2817,15 @@ class HistoireView extends React.Component {
             </Alert>
           </Snackbar>
           <Snackbar
+            open={this.state.snackValidation}
+            autoHideDuration={6000}
+            onClose={this.handleCloseSnack}
+          >
+            <Alert onClose={this.handleCloseSnack} severity="success">
+              Ton histoire est en cours de validation, tu seras informé très vite si elle est publiée ou non.
+            </Alert>
+        </Snackbar>
+          <Snackbar
             open={this.state.accepterIllustration}
             autoHideDuration={12000}
             onClose={this.handleCloseSnack}
@@ -2822,7 +2839,7 @@ class HistoireView extends React.Component {
                     color="inherit"
                     size="small"
                     onClick={() => {
-                      this.accepterIllustration();
+                      this.accepterIllustrations();
                     }}
                   >
                     OUI

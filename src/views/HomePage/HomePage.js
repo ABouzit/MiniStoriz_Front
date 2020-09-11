@@ -177,7 +177,7 @@ export default function HomePage(props) {
             </GridContainer>
             
           </GridItem> */}
-          <GridItem xs={12} sm={12} md={10}>
+          <GridItem xs={12} sm={12} md={8}>
             <GridContainer justify="center">
               <GridItem xs={11} sm={11} md={11}>
                 <Login/>

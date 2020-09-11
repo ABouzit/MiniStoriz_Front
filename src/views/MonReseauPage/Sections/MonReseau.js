@@ -453,23 +453,11 @@ class AllUsers extends React.Component {
                             /> */}
                             </div>
 
-                            <h5
-                              style={{
-                                fontFamily: "lato",
-                                fontWeight: "bold",
-                                color: "black",
-                                marginLeft: "5%",
-                                textAlign: "left",
-                              }}
-                            >
-                              {user.pseudo}
-                              {/* {histoire.nombreVue ? histoire.nombreVue : 0} vues -{" "}
-                            {this.getDay(histoire.dateDeCreation)} */}
-                            </h5>
+                            
                             <div style={{ display: "flex" }}>
-                              <h6
+                              {/* <h6
                                 style={{
-                                  fontFamily: "lato",
+                                  fontFamily: "goudy",
                                   color: "black",
                                   marginLeft: "5%",
                                   width: "50%",
@@ -477,15 +465,28 @@ class AllUsers extends React.Component {
                                 }}
                               >
                                 {user.nom + " " + user.prenom}
-                                {/* {this.getDay()} */}
-                              </h6>
-                              <h6
+                              </h6> */}
+                              <h5
                                 style={{
                                   fontFamily: "lato",
+                                  fontWeight: "bold",
                                   color: "black",
-                                  marginLeft: "5%",
                                   width: "50%",
-                                  marginTop: 0,
+                                  marginLeft: "5%",
+                                  textAlign: "left",
+                                }}
+                              >
+                                {user.pseudo}
+                                {/* {histoire.nombreVue ? histoire.nombreVue : 0} vues -{" "}
+                              {this.getDay(histoire.dateDeCreation)} */}
+                              </h5>
+                              <h6
+                                style={{
+                                  fontFamily: "goudy",
+                                  color: "black",
+                                  marginLeft: "9%",
+                                  width: "50%",
+                                  marginTop: 8,
                                   textAlign: "center",
                                 }}
                               >
@@ -510,7 +511,7 @@ class AllUsers extends React.Component {
                                     <GridItem xs={8} sm={8} md={8}>
                                       <h6
                                         style={{
-                                          fontFamily: "lato",
+                                          fontFamily: "goudy",
                                           color: "black",
                                           marginLeft: "5%",
                                           textAlign: "left",
@@ -619,7 +620,7 @@ class AllUsers extends React.Component {
                                     <GridItem xs={8} sm={8} md={8}>
                                       <h6
                                         style={{
-                                          fontFamily: "lato",
+                                          fontFamily: "goudy",
                                           color: "black",
                                           marginLeft: "5%",
                                           textAlign: "left",
@@ -734,7 +735,7 @@ class AllUsers extends React.Component {
                             >
                               <ButtonBase
                                 onClick={() => {
-                                  this.setState({deleteRequest:true, userInv: user.id})
+                                  this.setState({ userInv: user.id, userPseudo: user.pseudo, deleteRequest:true})
                                 }}
                               >
                                 <small style={{ color: "#1e1548" }}>
@@ -831,10 +832,10 @@ class AllUsers extends React.Component {
                   </div>
                 }
               >
-                Voulez vous retirer de votre liste d'amis ?
+                Souhaites-tu vraiment retirer {this.state.userPseudo} de ton réseau ?
               </Alert>
             </Snackbar>
-            <Snackbar
+            {/* <Snackbar
               open={this.state.deleteRequest}
               autoHideDuration={8000}
               onClose={this.handleClose}
@@ -863,9 +864,9 @@ class AllUsers extends React.Component {
                   </div>
                 }
               >
-                Voulez vous retirer de votre liste d'amis ?
+                Souhaites-tu vraiment retirer <strong>{this.state.userPseudo}</strong> de ton réseau ?
               </Alert>
-            </Snackbar>
+            </Snackbar> */}
           </div>
 
           {/* <GridContainer justify="center" style={{ marginTop: 20 }}>
@@ -1035,7 +1036,7 @@ function CardUser(props) {
       <div style={{ display: "flex" }}>
         <h6
           style={{
-            fontFamily: "lato",
+            fontFamily: "goudy",
             color: "black",
             marginLeft: "5%",
             width: "50%",
@@ -1047,7 +1048,7 @@ function CardUser(props) {
         </h6>
         <h6
           style={{
-            fontFamily: "lato",
+            fontFamily: "goudy",
             color: "black",
             marginLeft: "5%",
             width: "50%",
@@ -1072,7 +1073,7 @@ function CardUser(props) {
               <GridItem xs={8} sm={8} md={8}>
                 <h6
                   style={{
-                    fontFamily: "lato",
+                    fontFamily: "goudy",
                     color: "black",
                     marginLeft: "5%",
                     textAlign: "left",
@@ -1164,7 +1165,7 @@ function CardUser(props) {
               <GridItem xs={8} sm={8} md={8}>
                 <h6
                   style={{
-                    fontFamily: "lato",
+                    fontFamily: "goudy",
                     color: "black",
                     marginLeft: "5%",
                     textAlign: "left",
