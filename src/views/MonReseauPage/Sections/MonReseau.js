@@ -789,7 +789,7 @@ class AllUsers extends React.Component {
               >
                 <SnackbarContent
                 style={{backgroundColor: '#1e1548'}}
-                  message={"aucun utilisateur n'a été trouvée." }
+                  message={"Aucun utilisateur pour l’instant." }
                 />
               </GridItem>
             </GridContainer>

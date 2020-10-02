@@ -775,6 +775,13 @@ function CardHistoire(props) {
               label="EN_ATTENTE_USER"
               style={{ color: "rgb(51, 40, 97)", backgroundColor: "rgb(252, 215, 127)", fontWeight: 500 }}
             />
+          ) :histoire.etatHistoire === "EN_ATTANTE_UPDATE" ? (
+            <Chip
+              size="small"
+              color="success"
+              label="EN_ATTENTE_UPDATE"
+              style={{ color: "white", backgroundColor: "rgb(119, 119, 119)" }}
+            />
           ) : (
             <Chip
               size="small"

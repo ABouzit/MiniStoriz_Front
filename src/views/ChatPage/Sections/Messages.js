@@ -557,13 +557,7 @@ class Messages extends React.Component {
                           }}
                           autoHide={true}
                         >
-                          {this.state.usersMessages.length < 1 ? (
-                              <SnackbarContent
-                                style={{backgroundColor: '#1e1548', width: '90%', textAlign: 'justify', marginTop: '5%'}}
-                                  message={"Aucun membre ne fait partie de ton réseau pour l’instant, c’est le moment d’ajouter de nouveaux membres ."
-                                  }
-                                />
-                          ):(<div></div>)}
+                          
                           
                           {this.state.usersMessages.map((user, index) => {
                             if (user.message_userTwoId == this.state.idUser) {
@@ -934,8 +928,8 @@ class Messages extends React.Component {
                             {this.state.messages.length < 1 ? (
                               <SnackbarContent
                               style={{backgroundColor: '#1e1548'}}
-                                message={"Aucun message pour l’instant."
-                                }
+                              message={"Aucun membre ne fait partie de ton réseau pour l’instant, c’est le moment d’ajouter de nouveaux membres ."
+                            }
                               />
                             ):(<div></div>)}
                             
@@ -1590,13 +1584,7 @@ class Messages extends React.Component {
                       }}
                       autoHide={true}
                     >
-                      {this.state.usersMessages.length < 1 ? (
-                              <SnackbarContent
-                                style={{backgroundColor: '#1e1548', width: '90%', textAlign: 'justify', marginTop: '5%'}}
-                                  message={"Aucun membre ne fait partie de ton réseau pour l’instant, c’est le moment d’ajouter de nouveaux membres ."
-                                  }
-                                />
-                          ):(<div></div>)}
+                      
                       {this.state.usersMessages.map((user, index) => {
                         if (user.message_userTwoId == this.state.idUser) {
                           return (
@@ -1761,8 +1749,8 @@ class Messages extends React.Component {
                         {this.state.messages.length < 1 ? (
                               <SnackbarContent
                               style={{backgroundColor: '#1e1548'}}
-                                message={"Aucun message pour l’instant."
-                                }
+                              message={"Aucun membre ne fait partie de ton réseau pour l’instant, c’est le moment d’ajouter de nouveaux membres ."
+                            }
                               />
                         ):(<div></div>)}
                         {this.state.messages.map((message, index) => {

@@ -692,8 +692,13 @@ class PublierView extends React.Component {
         idHistoire = this.props.match.params.histoireId;
         var idHistoire1 = '';
         var originalHistoire= '';
-        if (this.props.match.params.type == "2" ) {
-          etatHistoire = 'EN_ATTANTE_USER';
+        if (this.props.match.params.type == "1" || this.props.match.params.type == "2" || this.props.match.params.type == "3") {
+          if (this.props.match.params.type == "2") {
+            etatHistoire = 'EN_ATTANTE_USER';
+          } else {
+            etatHistoire = 'EN_ATTANTE_UPDATE';
+          }
+          
           idHistoire1 = "";
           originalHistoire = idHistoire;
         } else {
@@ -740,6 +745,7 @@ class PublierView extends React.Component {
                 }
               })
             ).then(res => {
+              if (_this.state.userDessin) {
               firebase
                 .database()
                 .ref("newStoriz/" + _this.state.userText.id)
@@ -755,6 +761,7 @@ class PublierView extends React.Component {
                   to: _this.state.userText.id,
                   numbe: 100000 + Math.random() * (100000 - 1)
                 });
+              }
               _this.setState(
                 {
                   imgSrc: "",
@@ -1009,8 +1016,13 @@ class PublierView extends React.Component {
         idHistoire = this.props.match.params.histoireId;
         var idHistoire1 = '';
         var originalHistoire= '';
-        if (this.props.match.params.type == "2" ) {
-          etatHistoire = 'EN_ATTANTE_USER';
+        if (this.props.match.params.type == "1" || this.props.match.params.type == "2" || this.props.match.params.type == "3") {
+          if (this.props.match.params.type == "2") {
+            etatHistoire = 'EN_ATTANTE_USER';
+          } else {
+            etatHistoire = 'EN_ATTANTE_UPDATE';
+          }
+          
           idHistoire1 = "";
           originalHistoire = idHistoire;
         } else {
@@ -1064,6 +1076,7 @@ class PublierView extends React.Component {
                   }
                 })
               ).then(res => {
+              if (_this.state.userDessin) {
                firebase
                 .database()
                 .ref("newStoriz/" + _this.state.userText.id)
@@ -1079,6 +1092,7 @@ class PublierView extends React.Component {
                   to: _this.state.userText.id,
                   numbe: 100000 + Math.random() * (100000 - 1)
                 });
+              }
                 _this.setState(
                   {
                     imgSrc: "",
@@ -2661,7 +2675,7 @@ class PublierView extends React.Component {
                                         backgroundColor: "white"
                                       }}
                                       inputProps={{
-                                        maxLength: 500
+                                        maxLength: 1500
                                       }}
                                       error={
                                         index ===
@@ -2693,7 +2707,7 @@ class PublierView extends React.Component {
                                       }}
                                     />
                                     <div style={{textAlign: 'end', marginTop: 1}}>
-                                      <Chip label={this.state.numberChar +" / 500"} color="white" variant="outlined" />
+                                      <Chip label={this.state.numberChar +" / 1500"} color="white" variant="outlined" />
                                     </div>
                                   </div>
                                   
@@ -2893,7 +2907,7 @@ class PublierView extends React.Component {
                                       multiline
                                       rows="12"
                                       inputProps={{
-                                        maxLength: 500
+                                        maxLength: 1500
                                       }}
                                       error={
                                         index ===
@@ -2932,7 +2946,7 @@ class PublierView extends React.Component {
                                       }}
                                     />
                                     <div style={{textAlign: 'end', marginTop: 1}}>
-                                      <Chip label={this.state.numberChar +" / 500"} color="white" variant="outlined" />
+                                      <Chip label={this.state.numberChar +" / 1500"} color="white" variant="outlined" />
                                     </div>
                                   </div>
                                 </GridItem>

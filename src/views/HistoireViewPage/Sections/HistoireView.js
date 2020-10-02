@@ -401,7 +401,7 @@ class HistoireView extends React.Component {
       return;
     }
 
-    this.setState({ deleteHistoire: false, accepterIllustration: false, refuserIllustration: false, snackValidation: false });
+    this.setState({ deleteHistoire: false, accepterIllustration: false, refuserIllustration: false, snackValidation: false, snackValidationSuppresion: true });
   };
   fetchCommentaires() {
     const id = this.props.match.params.histoireId;
@@ -564,7 +564,7 @@ class HistoireView extends React.Component {
     hist.demandeSuppression = !this.state.histoire.demandeSuppression;
     Axios.put(config.API_URL + "histoires/", hist).then(res => {
       console.log(res);
-      this.setState({ deleteHistoire: false });
+      this.setState({ deleteHistoire: false, snackValidationSuppresion: true });
       Axios.get(config.API_URL + "histoires/byId/" + hist.id).then(histoire => {
         console.log(JSON.stringify(histoire));
         this.setState({ histoire: histoire.data[0] }, () =>
@@ -2812,7 +2812,7 @@ class HistoireView extends React.Component {
               }
             >
               {!this.state.histoire.demandeSuppression
-                ? "Voulez vous proceder a la suppression de cette histoire ?"
+                ? "Souhaites-tu vraiment supprimer ton histoire ?"
                 : "Vouler vous annuler la suppression de cette histoire?"}
             </Alert>
           </Snackbar>
@@ -2823,6 +2823,15 @@ class HistoireView extends React.Component {
           >
             <Alert onClose={this.handleCloseSnack} severity="success">
               Ton histoire est en cours de validation, tu seras informé très vite si elle est publiée ou non.
+            </Alert>
+        </Snackbar>
+        <Snackbar
+            open={this.state.snackValidationSuppresion}
+            autoHideDuration={6000}
+            onClose={this.handleCloseSnack}
+          >
+            <Alert onClose={this.handleCloseSnack} severity="success">
+            Ta demande de suppression est en cours.
             </Alert>
         </Snackbar>
           <Snackbar
