@@ -401,7 +401,7 @@ class HistoireView extends React.Component {
       return;
     }
 
-    this.setState({ deleteHistoire: false, accepterIllustration: false, refuserIllustration: false, snackValidation: false, snackValidationSuppresion: true });
+    this.setState({ deleteHistoire: false, accepterIllustration: false, refuserIllustration: false, snackValidation: false, snackValidationSuppresion: false });
   };
   fetchCommentaires() {
     const id = this.props.match.params.histoireId;
@@ -2813,7 +2813,7 @@ class HistoireView extends React.Component {
             >
               {!this.state.histoire.demandeSuppression
                 ? "Souhaites-tu vraiment supprimer ton histoire ?"
-                : "Vouler vous annuler la suppression de cette histoire?"}
+                : "voudrai tu annuler la suppression de cette histoire?"}
             </Alert>
           </Snackbar>
           <Snackbar
@@ -2831,7 +2831,9 @@ class HistoireView extends React.Component {
             onClose={this.handleCloseSnack}
           >
             <Alert onClose={this.handleCloseSnack} severity="success">
-            Ta demande de suppression est en cours.
+            {!this.state.histoire.demandeSuppression
+                ? "tu as annuler la suppression de ton histoire."
+                : "Ta demande de suppression est en cours."}
             </Alert>
         </Snackbar>
           <Snackbar

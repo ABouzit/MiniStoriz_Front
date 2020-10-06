@@ -31,7 +31,7 @@ import "firebase/database";
 import * as firebase from "firebase/app";
 import HeaderGlobale from "components/Header/HeaderGloble";
 import ErrorPage from "views/404Page/ErrorPage";
-import HttpsRedirect from 'react-https-redirect';
+// import HttpsRedirect from 'react-https-redirect';
 import './fonts/Lato-Regular.ttf'
 firebase.initializeApp(config.firebaseConfig);
 var hist = createBrowserHistory();

@@ -732,6 +732,7 @@ class PublierView extends React.Component {
                 }
               })
             ).then(res => {
+               
               if (_this.state.userDessin) {
               firebase
                 .database()
@@ -748,6 +749,14 @@ class PublierView extends React.Component {
                   to: _this.state.userText.id,
                   numbe: 100000 + Math.random() * (100000 - 1)
                 });
+              }
+              else {
+                firebase
+                  .database()
+                  .ref("newStoriz/" + _this.state.userText.id)
+                  .set({
+                    numbe: 100000 + Math.random() * (100000 - 1)
+                  })
               }
               _this.setState(
                 {
@@ -1078,6 +1087,13 @@ class PublierView extends React.Component {
                   numbe: 100000 + Math.random() * (100000 - 1)
                 });
               }
+              else {
+                firebase
+                  .database()
+                .ref("newStoriz/" + _this.state.userText.id)
+                .set({
+                  numbe: 100000 + Math.random() * (100000 - 1)
+                })}
                 _this.setState(
                   {
                     imgSrc: "",
