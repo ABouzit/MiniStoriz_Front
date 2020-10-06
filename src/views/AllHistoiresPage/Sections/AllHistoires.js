@@ -1504,6 +1504,7 @@ function CardHistoire(props) {
     day: "numeric"
   };
   return (
+    
     <Card style={{ backgroundColor: "white" }}>
       <div
         style={{

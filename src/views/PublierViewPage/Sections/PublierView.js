@@ -161,7 +161,6 @@ class PublierView extends React.Component {
       settings: {
         beforeChange: (current, next) => {
           this.setState({ counter: next + 1 });
-          console.log(this.state.counter);
         },
         dots: false,
         arrows: false,
@@ -213,7 +212,6 @@ class PublierView extends React.Component {
       }
     }
     Axios.get(config.API_URL + "users/relations/" + user.id, {}).then(res => {
-      console.log(res.data);
       this.setState({ reseauUsers: res.data });
       if (this.props.match.params.type == "1")
         this.setState({
@@ -236,7 +234,6 @@ class PublierView extends React.Component {
 
   fetchHistoire(id) {
     Axios.get(config.API_URL + "histoires/byId/" + id).then(histoire => {
-      console.log(histoire.data[0])
       if (this.props.match.params.type !== "2" &&
         histoire.data[0].userText.id !== this.state.userLocal.id &&
         histoire.data[0].userDessin.id !== this.state.userLocal.id
@@ -244,10 +241,9 @@ class PublierView extends React.Component {
       ) {
         this.props.history.push("/Histoire/" + id);
       } else if (this.props.match.params.type == "2") {
-        this.setState({userText: histoire.data[0].userText}, console.log(this.state.userDessin))
+        this.setState({userText: histoire.data[0].userText})
         Axios.get(config.API_URL + "planches/histoires/" + id).then(
           planches => {
-            console.log(planches);
             if (planches.data[1].lien == "") {
               this.setState(
                 {
@@ -289,7 +285,6 @@ class PublierView extends React.Component {
       } else {
         Axios.get(config.API_URL + "planches/histoires/" + id).then(
           planches => {
-            console.log(planches);
             this.setState(
               {
                 planche: planches.data,
@@ -313,7 +308,6 @@ class PublierView extends React.Component {
     });
   }
   saveHistoire(file) {
-    console.log(file);
     const allowedFileTypes = ["image/png", "image/jpeg", "image/gif"];
     if (file[0] && allowedFileTypes.indexOf(file[0].type) > -1) {
       var reader = new FileReader();
@@ -327,7 +321,6 @@ class PublierView extends React.Component {
           lienImgHistoire: "images/histoires/" + file[0].name
         });
       }.bind(this);
-      console.log(this.state.imgHistoire); // Would see a path?
     }
   }
 
@@ -370,8 +363,6 @@ class PublierView extends React.Component {
       this.setState({ testNext: 1 });
       this.forceUpdate();
     }
-    console.log("UserText :"+this.state.userText)
-    console.log("userDessin :"+this.state.userDessin)
     this.slider.slickNext();
   }
   previous() {
@@ -393,8 +384,6 @@ class PublierView extends React.Component {
         this.forceUpdate();
       }
     );
-    console.log("UserText :"+this.state.userText)
-    console.log("userDessin :"+this.state.userDessin)
     this.slider.slickPrev();
   }
   gotToIndex(index) {
@@ -413,14 +402,14 @@ class PublierView extends React.Component {
   }
   handleListItemValide() {
     this.state.planche[
-      this.state.planche.length - 1
+      this.state.counter - 1
     ].text = this.state.textHistoire;
-    this.state.planche[this.state.planche.length - 1].img = this.state.imgSrc;
+    this.state.planche[this.state.counter - 1].img = this.state.imgSrc;
     this.state.planche[
-      this.state.planche.length - 1
+      this.state.counter - 1
     ].data = this.state.dataImgPlanche;
     this.state.planche[
-      this.state.planche.length - 1
+      this.state.counter - 1
     ].lien = this.state.lienImgPlanche;
   }
   handleClickDessin = event => {
@@ -519,7 +508,6 @@ class PublierView extends React.Component {
             Promise.all(
               _this.state.planche.map((planch, index) => {
                 if (index > 0) {
-                  console.log(planch);
                   if (planch.data !== "") {
                     return Axios.post(
                       config.API_URL + "sendImage/planches/",
@@ -719,7 +707,6 @@ class PublierView extends React.Component {
             Promise.all(
               _this.state.planche.map((planch, index) => {
                 if (index > 0) {
-                  console.log(planch);
                   if (planch.data !== "") {
                     return Axios.post(
                       config.API_URL + "sendImage/planches/",
@@ -807,7 +794,6 @@ class PublierView extends React.Component {
               Promise.all(
                 _this.state.planche.map((planch, index) => {
                   if (index > 0) {
-                    console.log(planch);
                     if (planch.data !== "") {
                       return Axios.post(
                         config.API_URL + "sendImage/planches/",
@@ -1050,7 +1036,6 @@ class PublierView extends React.Component {
               Promise.all(
                 _this.state.planche.map((planch, index) => {
                   if (index > 0) {
-                    console.log(planch);
                     if (planch.data !== "") {
                       return Axios.post(
                         config.API_URL + "sendImage/planches/",
@@ -1128,10 +1113,8 @@ class PublierView extends React.Component {
   saveHistoireWithPlanche() {
     this.setState({ submit: true });
     this.handleListItemValide();
-    console.log("///////////" + this.state.dataImgHistoire);
     const _this = this;
     const tab = _this.state.planche[_this.state.planche.length - 1];
-    console.log(this.props.match.params);
     if (typeof this.props.match.params.histoireId === "undefined") {
       if (this.state.typePage == 1) {
         if (
@@ -1323,7 +1306,6 @@ class PublierView extends React.Component {
     const idText = openText ? "Text" : undefined;
     const { settings, modal } = this.state;
     const { classes } = this.props;
-    console.log(this.state.planche);
     const dateFormat = {
       weekday: "long",
       year: "numeric",
@@ -1507,11 +1489,9 @@ class PublierView extends React.Component {
                             })
                           }
                           onChange={value => {
-                            console.log(value.target.value);
                             this.setState({
                               titreHistoire: value.target.value
                             });
-                            console.log(this.state.titreHistoire);
                           }}
                           onBlur={() =>
                             this.setState({
@@ -1551,11 +1531,9 @@ class PublierView extends React.Component {
                             })
                           }
                           onChange={value => {
-                            console.log(value.target.value);
                             this.setState({
                               titreHistoire: value.target.value
                             });
-                            console.log(this.state.titreHistoire);
                           }}
                           onBlur={() =>
                             this.setState({
@@ -2956,7 +2934,6 @@ class PublierView extends React.Component {
                         );
                       })
                     : () => {
-                        console.log(this.state.histoire);
                         return (
                           <div>
                             <p>mazal maja</p>
